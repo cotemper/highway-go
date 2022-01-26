@@ -5,36 +5,27 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/sonr-io/highway-go/pkg/client"
 	"github.com/sonr-io/sonr/x/registry/types"
-	"github.com/tendermint/starport/starport/pkg/cosmosclient"
 )
 
 func main() {
-
-	// create an instance of cosmosclient
-	cosmos, err := cosmosclient.New(context.Background())
+	c, err := client.NewClient(context.Background(), "http://localhost:26657", "test", "bad-password")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// account `alice` was initialized during `starport chain serve`
-	accountName := "alice"
-
-	// get account from the keyring by account name and return a bech32 address
-	address, err := cosmos.Address(accountName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	accName := c.Account.Name
+	log.Println("Account name:", accName)
 	// define a message to create a post
 	msg := &types.MsgRegisterName{
-		Creator:        address.String(),
-		NameToRegister: "sonr",
+		Creator:        accName,
+		NameToRegister: "prad.snr",
 	}
 
 	// broadcast a transaction from account `alice` with the message to create a post
 	// store response in txResp
-	txResp, err := cosmos.BroadcastTx(accountName, msg)
+	txResp, err := c.BroadcastTx(accName, msg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,7 +35,7 @@ func main() {
 	fmt.Println(txResp)
 
 	// instantiate a query client for your `blog` blockchain
-	queryClient := types.NewQueryClient(cosmos.Context)
+	queryClient := types.NewQueryClient(c.Context)
 
 	// query the blockchain using the client's `PostAll` method to get all posts
 	// store all posts in queryResp
