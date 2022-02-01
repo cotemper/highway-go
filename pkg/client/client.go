@@ -44,28 +44,10 @@ func NewClient(ctx context.Context, addr string, sname string, passphrase string
 		}
 	}
 
-	// walletFolder, err := device.Support.CreateFolder(".wallet")
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// create a new keyring
-	// ks, m, err := crypto.GenerateKeyring(sname, cosmos.Context.Keyring, crypto.WithFolder(walletFolder))
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// log.Printf("Generated keyring with mnemonic: %s \n", m)
-
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
-
-	// // Create a new p2p host
-	// h, err := p2p.NewHost(ctx, ks.CryptoPrivKey())
-	// if err != nil {
-	// 	return nil, err
-	// }
 
 	// Create a new highway client
 	highway := highwayv1.NewHighwayServiceClient(conn)
