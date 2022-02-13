@@ -30,7 +30,7 @@ type Client struct {
 // NewClient creates a new client for the given name
 func NewClient(ctx context.Context, addr string, sname string, passphrase string) (*Client, error) {
 	// create an instance of cosmosclient
-	cosmos, err := cosmosclient.New(ctx, cosmosclient.WithKeyringBackend(cosmosaccount.KeyringOS))
+	cosmos, err := cosmosclient.New(ctx)
 	if err != nil {
 		return nil, err
 	}

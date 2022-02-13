@@ -4,7 +4,9 @@ import (
 	"context"
 	"log"
 
+	highway "github.com/sonr-io/highway-go/lib"
 	"github.com/sonr-io/highway-go/pkg/client"
+	"github.com/sonr-io/sonr/config"
 )
 
 func main() {
@@ -12,5 +14,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	cnfg, err := config.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = highway.Start(context.Background(), cnfg)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
