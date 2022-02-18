@@ -5,6 +5,7 @@ require (
 	github.com/kataras/golog v0.1.7
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
 	github.com/sonr-io/sonr v0.1.4
+	github.com/spf13/cobra v1.3.0
 	github.com/tendermint/starport v0.19.2
 	go.buf.build/grpc/go/sonr-io/highway v1.2.7
 	go.buf.build/grpc/go/sonr-io/sonr v1.2.5
@@ -177,7 +178,6 @@ require (
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
-	github.com/spf13/cobra v1.3.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.10.0 // indirect
