@@ -1,3 +1,7 @@
+/*
+Copyright © 2022 NAME HERE <EMAIL ADDRESS>
+
+*/
 package main
 
 import (
@@ -10,6 +14,7 @@ import (
 )
 
 func main() {
+	// cmd.Execute()
 	_, err := client.NewClient(context.Background(), "http://localhost:26657", "test", "bad-password")
 	if err != nil {
 		log.Fatal(err)
