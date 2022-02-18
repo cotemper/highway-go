@@ -6,6 +6,8 @@ import (
 	// "log"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/kataras/golog"
+
 	// "github.com/sonr-io/sonr/core/device"
 	// "github.com/sonr-io/sonr/pkg/crypto"
 
@@ -13,10 +15,12 @@ import (
 	"github.com/tendermint/starport/starport/pkg/cosmosaccount"
 	"github.com/tendermint/starport/starport/pkg/cosmosclient"
 	highwayv1 "go.buf.build/grpc/go/sonr-io/highway/v1"
-	"google.golang.org/grpc"
 )
 
-var sonrDeviceKeyFile = "sonr-provision.priv"
+var (
+	sonrDeviceKeyFile = "sonr-provision.priv"
+	logger            = golog.Default.Child("pkg/client")
+)
 
 // Client is a client for the Sonr network
 type Client struct {
@@ -35,27 +39,10 @@ func NewClient(ctx context.Context, addr string, sname string, passphrase string
 		return nil, err
 	}
 
-	// create an instance of highwayv1
-	acc, _, err := cosmos.AccountRegistry.Create(sname)
-	if err != nil {
-		acc, err = cosmos.AccountRegistry.GetByName(sname)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
-	if err != nil {
-		return nil, err
-	}
-
 	// Create a new highway client
-	highway := highwayv1.NewHighwayServiceClient(conn)
 	return &Client{
-		Client:               cosmos,
-		HighwayServiceClient: highway,
-		ctx:                  ctx,
-		Account:              acc,
+		Client: cosmos,
+		ctx:    ctx,
 		// Host:                 h,
 	}, nil
 }

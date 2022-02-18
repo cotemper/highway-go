@@ -10,7 +10,7 @@ For this we built our Networking layer in [Libp2p](“https://libp2p.io”) and 
 
 ### Documentation
 
-All documentation is available on [Sonr Docs](“https://docs.sonr.io”), along with comprehensive guides.
+All documentation inluding API Reference, Guides, and Recipes are available on the [Sonr Docs](“https://docs.sonr.io”) website.
 
 <!-- GETTING STARTED -->
 
@@ -18,34 +18,42 @@ All documentation is available on [Sonr Docs](“https://docs.sonr.io”), along
 
 To get a local copy up and running follow these simple steps.
 
+### Requirements
+
+- [Go](https://golang.org/doc/install)
+- [Docker](https://docs.docker.com/docker-for-mac/install/mac/)
+- [Taskfile](https://taskfile.dev)
+  - `brew install go-task/tap/go-task`
+
 ### Installation
 
-1. Clone the repo
+1. Download the `sonr-io/sonr` blockchain node.
 
-   ```sh
-   git clone https://github.com/sonr-io/highway-go.git
-   ```
+  ```shell
+  // For Non M1 Systems
+  curl https://sonr.ws/sonr! | sudo bash
 
-Docker Instructions
+  // For M1 Systems
+  curl https://sonr.ws/sonr | bash # Install
+  sudo mv sonr /usr/local/bin/ # Move to Directory
+  ```
 
-1. Build the Docker image
+2. Run the Sonr Blockchain Node
 
-   ```sh
-   docker build -t ghcr.io/sonr-io/highwayd .
-   ```
+  ```sh
+  sonrd start
+  ```
 
-2. Run the Docker image
+3. Run the `sonr-io/highway-go` server with `task run`.
 
-```sh
-docker run -it -p 443:26225 ghcr.io/sonr-io/highwayd
-```
 
 ### Structure
 
 This project is a pseudo-monorepo, meaning it has a single root directory and all of its packages are in subdirectories. The structure is as follows:
 
 ```text
-/lib             ->        Highway Service gRPC implementation
+/cmd             ->        CLI commands for the project
+/grpc            ->        Highway Service gRPC implementation
 /pkg             ->        Protocol Services for Sonr Core
   └─ acccount    ->        +   Service and Account Management
   └─ client      ->        +   Blockchain Client

@@ -3,10 +3,10 @@ version: '3'
 tasks:
   build:
     cmds:
-      - echo "Exporting Sonr Highway Dashboard Frontend"
-      - yarn install && yarn export
+      - echo "Building Sonr Highway Node"
+      - go build -o highwayd main.go
 
-  serve:
+  run:
     cmds:
       - echo "Running Sonr Highway Node"
       - go run main.go
@@ -14,6 +14,7 @@ tasks:
   buf:
     dir: proto
     cmds:
+      - echo "Generating and Pushing Protobufs"
       - buf mod update
       - buf build
       - buf push

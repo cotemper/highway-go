@@ -8,7 +8,7 @@ import (
 	"context"
 	"log"
 
-	highway "github.com/sonr-io/highway-go/lib"
+	highway "github.com/sonr-io/highway-go/grpc"
 	"github.com/sonr-io/highway-go/pkg/client"
 	"github.com/sonr-io/sonr/config"
 )
