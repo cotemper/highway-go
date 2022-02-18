@@ -83,3 +83,11 @@ nfpms:
     license: GPLv3
     priority: extra
     meta: true
+
+dockers:
+  -
+    image_templates:
+    - "ghcr.io/sonr-io/highway:{{ .Tag }}"
+    - "ghcr.io/sonr-io/highway:latest"
+    - "registry.digitalocean.com/hway-cr:{{ .Tag }}"
+    - "registry.digitalocean.com/hway-cr:latest"
