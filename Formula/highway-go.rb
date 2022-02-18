@@ -11,7 +11,7 @@ class HighwayGo < Formula
   on_macos do
     if Hardware::CPU.arm?
       url "https://github.com/sonr-io/highway-go/releases/download/v0.0.2/highwayd-0.0.2-darwin-arm64.tar.gz"
-      sha256 "c6456883c139e7ed3f7909c2500074b36bea2be3917d7deac264b7f0c1c80775"
+      sha256 "f0b1b4579a6203e3b5ae6ab1661ce5b28e5239e4b9c13ac944bd9a2333c3f56a"
 
       def install
         bin.install "highwayd"
@@ -19,7 +19,7 @@ class HighwayGo < Formula
     end
     if Hardware::CPU.intel?
       url "https://github.com/sonr-io/highway-go/releases/download/v0.0.2/highwayd-0.0.2-darwin-amd64.tar.gz"
-      sha256 "aeae4027e81230ee1882855834a95d8ff1d52d079edd0c6832fd9be2ed803c50"
+      sha256 "4e351534dfd971d7ed9cf4629aa88e31f5b91b2475d26abdfd7e3ec1519fd3a1"
 
       def install
         bin.install "highwayd"
@@ -30,7 +30,7 @@ class HighwayGo < Formula
   on_linux do
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
       url "https://github.com/sonr-io/highway-go/releases/download/v0.0.2/highwayd-0.0.2-linux-arm64.tar.gz"
-      sha256 "17170cdf86f020a2dd10e33d5c995ca9275ef912a65483bcf352acc3b3ccf349"
+      sha256 "998119cef727855c0a695a5f2280135739fa84fe719f5a0894da41d1c50cfc03"
 
       def install
         bin.install "highwayd"
@@ -38,7 +38,7 @@ class HighwayGo < Formula
     end
     if Hardware::CPU.intel?
       url "https://github.com/sonr-io/highway-go/releases/download/v0.0.2/highwayd-0.0.2-linux-amd64.tar.gz"
-      sha256 "dc6a8ef094b3104afc9a52116f2ee8d0740add290eefe8f97001abf81b26cd6f"
+      sha256 "fbaac8af1b847cf7a3731f2f036b42b4f2e1b88076885c2cbd57418a0d5d2a7b"
 
       def install
         bin.install "highwayd"
