@@ -1,5 +1,15 @@
 package client
 
+
+
+//
+//   This class was used for testing purposes but demonstrates creating a transaction from a Highway Node
+//   onto the Sonr blockchain. The Code is currently commented out but functional. For additional documentation,
+//   read this article by starport: 
+//
+
+
+
 // accName := c.Account.Name
 // log.Println("Account name:", accName)
 // // define a message to create a post

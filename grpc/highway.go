@@ -10,7 +10,7 @@ import (
 
 	"github.com/kataras/golog"
 	"github.com/phayes/freeport"
-	"github.com/sonr-io/sonr/config"
+	"github.com/sonr-io/highway-go/config"
 	"github.com/sonr-io/sonr/pkg/p2p"
 
 	channel "github.com/sonr-io/sonr/x/channel/service"
@@ -59,7 +59,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) (*HighwayStub, error) {
 		return nil, err
 	}
 
-	
+
 
 	// Create a cmux.
 	stub, err := NewHighwayRPC(ctx, l, nil)
