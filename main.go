@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-
 	//TODO cosmos setup
 	// Creates a new client with an `.snr` name called 'test' and a wallet passphrase called 'bad-password'
 	// and attempts to connect to the Sonr Blockchain node at the address "http://localhost:26657"
@@ -31,12 +30,12 @@ func main() {
 	}
 
 	// This is starting the Highway based Node utilizing the configuration
-	_, err = highway.Start(context.Background(), cnfg)
+	err = highway.Start(context.Background(), cnfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// This is bad practice however this is being used to block the code
 	// from completing execution
-	select {}
+	//select {}
 }
