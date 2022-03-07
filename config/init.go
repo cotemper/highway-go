@@ -84,12 +84,13 @@ func Load() (*SonrConfig, error) {
 
 	// Create the configuration object.
 	config := &SonrConfig{
-		HomeDir:         hp,
-		CacheDir:        tp,
-		ConfigDir:       sp,
-		WalletDir:       wf.String(),
-		DeviceId:        id,
-		HighwayAddress:  viper.GetString("highway.address"),
+		HomeDir:   hp,
+		CacheDir:  tp,
+		ConfigDir: sp,
+		WalletDir: wf.String(),
+		DeviceId:  id,
+		//HighwayAddress:  viper.GetString("highway.address"),
+		HighwayAddress:  "127.0.0.1",
 		HighwayPort:     viper.GetInt("highway.port"),
 		HighwayNetwork:  viper.GetString("highway.network"),
 		LibP2PLowWater:  viper.GetInt("libp2p.lowWater"),

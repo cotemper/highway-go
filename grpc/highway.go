@@ -59,7 +59,11 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) (*HighwayStub, error) {
 		return nil, err
 	}
 
-
+	print("\n\n\n\n\n\n\n\n\n\n\n")
+	fmt.Print(l.Addr().Network())
+	print("\n")
+	fmt.Print(l.Addr().String())
+	print("\n\n\n\n\n\n\n\n\n\n\n")
 
 	// Create a cmux.
 	stub, err := NewHighwayRPC(ctx, l, nil)
