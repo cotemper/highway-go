@@ -10,13 +10,16 @@ import (
 
 	"github.com/sonr-io/highway-go/config"
 	highway "github.com/sonr-io/highway-go/grpc"
-	"github.com/sonr-io/highway-go/pkg/client"
 )
 
 func main() {
+
+	//TODO cosmos setup
 	// Creates a new client with an `.snr` name called 'test' and a wallet passphrase called 'bad-password'
 	// and attempts to connect to the Sonr Blockchain node at the address "http://localhost:26657"
-	_, err := client.NewClient(context.Background(), "http://localhost:26657", "test", "bad-password")
+	//_, err := client.NewClient(context.Background(), "http://127.0.0.1:26657", "test", "bad-password")
+
+	var err error = nil
 	if err != nil {
 		log.Fatal(err)
 	}
