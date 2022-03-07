@@ -11,6 +11,7 @@ import (
 	"github.com/kataras/golog"
 	"github.com/phayes/freeport"
 	"github.com/sonr-io/highway-go/config"
+	"github.com/sonr-io/highway-go/reflection"
 	"github.com/sonr-io/sonr/pkg/p2p"
 
 	channel "github.com/sonr-io/sonr/x/channel/service"
@@ -75,7 +76,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 
 	// TODO add grpc services
 	hw.RegisterHighwayServiceServer(stub.grpc, stub)
-	RegisterReflect(stub.grpc)
+	reflection.RegisterReflection(stub.grpc)
 	logger.Infof("Starting RPC Service on %s", l.Addr().String())
 	return stub.grpc.Serve(l)
 }

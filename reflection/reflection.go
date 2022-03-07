@@ -28,7 +28,7 @@ To register server reflection on a gRPC server:
 	reflection.Register(s)
 	s.Serve(lis)
 */
-package reflection // import "google.golang.org/grpc/reflection"
+package reflection
 
 import (
 	"bytes"
@@ -68,7 +68,7 @@ type serverReflectionServer struct {
 }
 
 // Register registers the server reflection service on the given gRPC server.
-func Register(s GRPCServer) {
+func RegisterReflection(s GRPCServer) {
 	rpb.RegisterServerReflectionServer(s, &serverReflectionServer{
 		s: s,
 	})

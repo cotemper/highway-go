@@ -12,7 +12,7 @@ require (
 	github.com/tendermint/starport v0.19.2
 	go.buf.build/grpc/go/sonr-io/highway v1.2.7
 	go.buf.build/grpc/go/sonr-io/sonr v1.2.5
-	google.golang.org/grpc v1.44.0
+	google.golang.org/grpc v1.43.0
 )
 
 require (
@@ -144,7 +144,6 @@ require (
 	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
-	github.com/mozilla/tls-observatory v0.0.0-20210609171429-7bc42856d2e5 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/multiformats/go-base32 v0.0.3 // indirect
@@ -173,7 +172,6 @@ require (
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
