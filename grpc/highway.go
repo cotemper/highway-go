@@ -59,8 +59,8 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 		return err
 	}
 
-	fmt.Println("Network: " + l.Addr().Network())
-	fmt.Println("Address: " + l.Addr().String())
+	logger.Debugf("Network: " + l.Addr().Network())
+	logger.Debugf("Address: " + l.Addr().String())
 
 	// TODO create an instance of cosmosclient
 
@@ -73,31 +73,12 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 		listener: l,
 	}
 
+	// TODO add grpc services
 	hw.RegisterHighwayServiceServer(stub.grpc, stub)
-	fmt.Println("server running...")
+	RegisterReflect(stub.grpc)
+	logger.Infof("Starting RPC Service on %s", l.Addr().String())
 	return stub.grpc.Serve(l)
 }
-
-// // NewHighway creates a new Highway service stub for the node.
-// func NewHighwayRPC(ctx context.Context, l net.Listener, h p2p.HostImpl) (*HighwayStub, error) {
-// 	// // create an instance of cosmosclient
-// 	// cosmos, err := cosmosclient.New(ctx)
-// 	// if err != nil {
-// 	// 	return nil, err
-// 	// }
-
-// 	// Create the RPC Service
-// 	stub := &HighwayStub{
-// 		Host: h,
-// 		ctx:  ctx,
-// 		grpc: grpc.NewServer(),
-// 		//	cosmos:   cosmos,
-// 		listener: l,
-// 	}
-
-// 	hw.RegisterHighwayServiceServer(stub.grpc, stub)
-// 	return stub.Serve(ctx, l), nil
-// }
 
 // Serve serves the RPC Service on the given port.
 func (s *HighwayStub) Serve(ctx context.Context, listener net.Listener) {

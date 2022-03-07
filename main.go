@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+
 	//TODO cosmos setup
 	// Creates a new client with an `.snr` name called 'test' and a wallet passphrase called 'bad-password'
 	// and attempts to connect to the Sonr Blockchain node at the address "http://localhost:26657"
