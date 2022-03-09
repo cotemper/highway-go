@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"strings"
@@ -17,6 +18,7 @@ import (
 	channel "github.com/sonr-io/sonr/x/channel/service"
 	hw "go.buf.build/grpc/go/sonr-io/highway/v1"
 
+	"github.com/sonr-io/highway-go/pkg/client"
 	"github.com/tendermint/starport/starport/pkg/cosmosclient"
 	"google.golang.org/grpc"
 )
@@ -60,21 +62,24 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 		return err
 	}
 
-	logger.Debugf("Network: " + l.Addr().Network())
-	logger.Debugf("Address: " + l.Addr().String())
+	logger.Infof("Network: " + l.Addr().Network())
+	logger.Infof("Address: " + l.Addr().String())
 
 	// TODO create an instance of cosmosclient
+	cosmos, err := client.NewClient(context.Background(), l.Addr().String(), "test", "bad-password")
+	if err != nil {
+		log.Fatal("your cosmos is bad") //TODO error better when you're done debugging
+	}
 
 	// Create the RPC Service
 	stub := &HighwayStub{
-		Host: nil,
-		ctx:  ctx,
-		grpc: grpc.NewServer(),
-		//	cosmos:   cosmos,
+		Host:     nil,
+		ctx:      ctx,
+		grpc:     grpc.NewServer(),
+		cosmos:   cosmos.Client,
 		listener: l,
 	}
 
-	// TODO add grpc services
 	hw.RegisterHighwayServiceServer(stub.grpc, stub)
 	reflection.RegisterReflection(stub.grpc)
 	logger.Infof("Starting RPC Service on %s", l.Addr().String())

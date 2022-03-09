@@ -1,32 +1,84 @@
 package highway
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"log"
+	"os/exec"
 
 	hw "go.buf.build/grpc/go/sonr-io/highway/v1"
 	bt "go.buf.build/grpc/go/sonr-io/sonr/bucket"
 	ct "go.buf.build/grpc/go/sonr-io/sonr/channel"
 	ot "go.buf.build/grpc/go/sonr-io/sonr/object"
 	rt "go.buf.build/grpc/go/sonr-io/sonr/registry"
+	"google.golang.org/grpc"
 )
 
 // AccessName accesses a name.
 func (s *HighwayStub) AccessName(ctx context.Context, req *hw.AccessNameRequest) (*hw.AccessNameResponse, error) {
-	// instantiate a query client for your `blog` blockchain
-	// print response from querying all the dids
-	fmt.Print("\n\nAll Dids:\n\n")
-	//fmt.Println(queryResp)
 	return nil, ErrMethodUnimplemented
 }
 
 // RegisterName registers a name.
 func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName) (*rt.MsgRegisterNameResponse, error) {
-	// print response from broadcasting a transaction
-	fmt.Print("MsgCreateDidDocument:\n\n")
+	//ctx := sdk.UnwrapSDKContext(goctx)
 
-	// fmt.Println(txResp)
-	return nil, ErrMethodUnimplemented
+	//port 1317 get request
+	//port 2667
+
+	// TODO transfer $X for name
+	//k.bankKeeper.SendCoinsFromAccountToModule(ctx, buyer, types.ModuleName, bid)
+
+	success, err := s.setWhois(ctx, req.NameToRegister, req.Creator, "fake-jwt")
+	if err != nil {
+		return &rt.MsgRegisterNameResponse{}, errors.New("")
+	}
+
+	did := "did:sonr:" + req.PublicKey
+	fmt.Println(did)
+
+	var aliases []string
+	aliases = append(aliases, req.NameToRegister+".snr")
+
+	response := rt.MsgRegisterNameResponse{}
+	response.IsSuccess = success
+	response.DidDocument = &rt.DidDocument{
+		Id:          did,
+		AlsoKnownAs: aliases,
+	}
+
+	return &response, nil
+}
+
+func (s *HighwayStub) setWhois(ctx context.Context, name string, creator string, jwt string) (bool, error) {
+	//call RegisterName on port 1317
+
+	opts := grpc.WithInsecure()
+	cc, err := grpc.Dial("localhost:1317", opts)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cc.Close()
+
+	grpcurl := "grpcurl -plaintext -d '{\"creator\": \" " + creator + " \",\"jwt\": \"" + jwt + "\",\"nameToRegister\": \"" + name + "\",}' 0.0.0.0:1317/register/name"
+
+	// execute grpcurl
+	var outb, errb bytes.Buffer
+	var cmd *exec.Cmd
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	cmd = exec.Command(grpcurl)
+
+	err = cmd.Run()
+	if err != nil {
+		return false, errors.New("grpcurl command failed")
+	}
+
+	//TODO unmarshal resp
+
+	return false, nil
 }
 
 // UpdateName updates a name.
@@ -75,7 +127,7 @@ func (s *HighwayStub) UpdateService(ctx context.Context, req *rt.MsgUpdateServic
 
 // CreateChannel creates a new channel.
 func (s *HighwayStub) CreateChannel(ctx context.Context, req *ct.MsgCreateChannel) (*ct.MsgCreateChannelResponse, error) {
-	// _, err := channel.New(ctx, s.Host, nil)
+	//_, err := channel.New(ctx, s.Host, nil)
 	// if err != nil {
 	// 	return nil, err
 	// }
