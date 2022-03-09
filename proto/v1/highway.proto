@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 // Node
-package sonrio.sonr.highway.v1;
+package sonrio.highway.v1;
 import "channel/channel.proto";
 import "channel/tx.proto";
 import "bucket/tx.proto";
@@ -21,7 +21,7 @@ service Highway {
   // Returns details and publicly available information about the Peer given calling node
   // has permission to access.
   // i.e `prad.snr` -> "firstname online profilePic city"
-  rpc AccessName(sonrio.sonr.highway.v1.MsgAccessName) returns (sonrio.sonr.highway.v1.MsgAccessNameResponse) {
+  rpc AccessName(sonrio.highway.v1.MsgAccessName) returns (sonrio.highway.v1.MsgAccessNameResponse) {
     option (google.api.http) = {
       get: "/access/name/{name}"
     };
@@ -30,7 +30,7 @@ service Highway {
   // Generate credentials
   //
   // Recieves client side JWT and attaches it to the users DID
-  rpc GenerateCreds(sonrio.sonr.highway.v1.MsgWebToken) returns (sonrio.sonr.highway.v1.MsgGenerateCredsResponse) {
+  rpc GenerateCreds(sonrio.highway.v1.MsgWebToken) returns (sonrio.highway.v1.MsgGenerateCredsResponse) {
     option (google.api.http) = {
       get: "/register/token"
     };
@@ -59,7 +59,7 @@ service Highway {
   //
   // Creates a new signing key for the calling node in order to be authorized to
   // access the service. It is only allowed to be called once per node.
-  rpc AccessService(sonrio.sonr.highway.v1.MsgAccessService) returns (sonrio.sonr.highway.v1.MsgAccessServiceResponse) {
+  rpc AccessService(sonrio.highway.v1.MsgAccessService) returns (sonrio.highway.v1.MsgAccessServiceResponse) {
     option (google.api.http) = {
       get: "/access/service/{did}"
     };
@@ -126,7 +126,7 @@ service Highway {
   //
   // Subscribes the calling node to the given channel and returns all publish events
   // as a stream.
-  rpc ListenChannel(sonrio.sonr.highway.v1.MsgListenChannel) returns (stream sonrio.sonr.channel.ChannelMessage) {
+  rpc ListenChannel(sonrio.highway.v1.MsgListenChannel) returns (stream sonrio.sonr.channel.ChannelMessage) {
     option (google.api.http) = {
       post: "/listen/channel/{did}"
     };
@@ -210,7 +210,7 @@ service Highway {
   // Upload Blob
   //
   // Uploads a file or buffer to the calling node's service IPFS storage.
-  rpc UploadBlob(sonrio.sonr.highway.v1.MsgUploadBlob) returns (sonrio.sonr.highway.v1.MsgUploadBlobResponse) {
+  rpc UploadBlob(sonrio.highway.v1.MsgUploadBlob) returns (sonrio.highway.v1.MsgUploadBlobResponse) {
     option (google.api.http) = {
       post: "/upload/blob"
     };
@@ -219,7 +219,7 @@ service Highway {
   // Download a Blob
   //
   // Downloads a file or buffer from the calling node's service IPFS storage.
-  rpc DownloadBlob(sonrio.sonr.highway.v1.MsgDownloadBlob) returns (sonrio.sonr.highway.v1.MsgDownloadBlobResponse) {
+  rpc DownloadBlob(sonrio.highway.v1.MsgDownloadBlob) returns (sonrio.highway.v1.MsgDownloadBlobResponse) {
     option (google.api.http) = {
       get: "/download/blob/{did}"
     };
@@ -228,7 +228,7 @@ service Highway {
   // Synchronize Blob
   //
   // Synchronizes a local file from the calling node to the given service's IPFS storage.
-  rpc SyncBlob(sonrio.sonr.highway.v1.MsgSyncBlob) returns (sonrio.sonr.highway.v1.MsgSyncBlobResponse) {
+  rpc SyncBlob(sonrio.highway.v1.MsgSyncBlob) returns (sonrio.highway.v1.MsgSyncBlobResponse) {
     option (google.api.http) = {
       put: "/sync/blob/{did}"
     };
@@ -237,7 +237,7 @@ service Highway {
   // Delete a Blob
   //
   // Deletes the given blob from the calling node's service IPFS storage.
-  rpc DeleteBlob(sonrio.sonr.highway.v1.MsgDeleteBlob) returns (sonrio.sonr.highway.v1.MsgDeleteBlobResponse) {
+  rpc DeleteBlob(sonrio.highway.v1.MsgDeleteBlob) returns (sonrio.highway.v1.MsgDeleteBlobResponse) {
     option (google.api.http) = {
       delete: "/delete/blob/{did}"
     };
@@ -246,7 +246,7 @@ service Highway {
   // Parse a Did
   //
   // Parses a potential DID string into a DID object, using the calling node's network access.
-  rpc ParseDid(sonrio.sonr.highway.v1.MsgParseDid) returns (sonrio.sonr.highway.v1.MsgResolveDidResponse) {
+  rpc ParseDid(sonrio.highway.v1.MsgParseDid) returns (sonrio.highway.v1.MsgResolveDidResponse) {
     option (google.api.http) = {
       get: "/did/parse/{did_string}"
     };
@@ -256,7 +256,7 @@ service Highway {
   //
   // Resolves a DID to its DID document if the DID is valid and the calling node has
   // access to the DID Document.
-  rpc ResolveDid(sonrio.sonr.highway.v1.MsgResolveDid) returns (sonrio.sonr.highway.v1.MsgResolveDidResponse) {
+  rpc ResolveDid(sonrio.highway.v1.MsgResolveDid) returns (sonrio.highway.v1.MsgResolveDidResponse) {
     option (google.api.http) = {
       post: "/resolve/did/{did_string}"
     };
