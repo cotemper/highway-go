@@ -20,6 +20,12 @@ message MsgAccessNameResponse {
     // Data of the response
     sonrio.sonr.registry.Peer peer = 3;
 }
+
+message MsgGenerateCredsResponse {
+    // boolean response to know fi token was attached to the did successfully
+    bool tokenAttached = 1;
+}
+
 // AccessServiceResponse represents a response to a request for a service
 message MsgAccessServiceResponse {
     // Code of the response

@@ -1,19 +1,16 @@
 package highway
 
 import (
-	"bytes"
 	"context"
-	"errors"
+	"encoding/hex"
 	"fmt"
-	"log"
-	"os/exec"
 
+	"github.com/sonr-io/sonr/x/registry/types"
 	hw "go.buf.build/grpc/go/sonr-io/highway/v1"
 	bt "go.buf.build/grpc/go/sonr-io/sonr/bucket"
 	ct "go.buf.build/grpc/go/sonr-io/sonr/channel"
 	ot "go.buf.build/grpc/go/sonr-io/sonr/object"
 	rt "go.buf.build/grpc/go/sonr-io/sonr/registry"
-	"google.golang.org/grpc"
 )
 
 // AccessName accesses a name.
@@ -25,23 +22,66 @@ func (s *HighwayStub) AccessName(ctx context.Context, req *hw.AccessNameRequest)
 func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName) (*rt.MsgRegisterNameResponse, error) {
 	//ctx := sdk.UnwrapSDKContext(goctx)
 
-	//port 1317 get request
-	//port 2667
+	// success, err := s.setWhois(ctx, req.NameToRegister, req.Creator, "fake-jwt")
+	// if err != nil {
+	// 	return &rt.MsgRegisterNameResponse{}, errors.New("")
+	// }
 
-	// TODO transfer $X for name
-	//k.bankKeeper.SendCoinsFromAccountToModule(ctx, buyer, types.ModuleName, bid)
+	//rt.MsgRegisterName()
 
-	success, err := s.setWhois(ctx, req.NameToRegister, req.Creator, "fake-jwt")
+	// account `alice` was initialized during `starport chain serve`
+	accountName := req.Creator
+
+	// get account from the keyring by account name and return a bech32 address
+	address, err := s.cosmos.Address(accountName)
 	if err != nil {
-		return &rt.MsgRegisterNameResponse{}, errors.New("")
+		logger.Errorf("Error in cosmos.address: ")
+		return &rt.MsgRegisterNameResponse{}, err
 	}
 
-	did := "did:sonr:" + req.PublicKey
-	fmt.Println(did)
+	// define a message to create a post
+	fmt.Println(address.String())
+	msg := &types.MsgRegisterName{
+		Creator:        address.String(),
+		DeviceId:       req.DeviceId,
+		NameToRegister: req.NameToRegister,
+		Jwt:            req.PublicKey, //TODO fix this later
+	}
+
+	fmt.Println(msg.NameToRegister)
+
+	// // Create a connection to the gRPC server.
+
+	// broadcast a transaction from account accountName with the message to create a post
+	//store response in txResp
+	txResp, err := s.cosmos.BroadcastTx(req.Creator, msg)
+	if err != nil {
+		logger.Errorf("Error in broadcastTx: ")
+		return &rt.MsgRegisterNameResponse{}, err
+	}
+
+	// // do somethign with resp
+	success := false
+	if !txResp.Empty() {
+		success = true
+	}
+
+	fmt.Println("raw:" + txResp.RawLog)
+	fmt.Println("log: " + txResp.Logs.String())
+	fmt.Println("data: " + txResp.Data)
+	fmt.Println("Info: " + txResp.Info)
+
+	bs, err := hex.DecodeString(txResp.Data)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("decode data: " + string(bs))
+
+	////////////////////////////////////////////
 
 	var aliases []string
 	aliases = append(aliases, req.NameToRegister+".snr")
-
+	did := "did:sonr:" + req.PublicKey
 	response := rt.MsgRegisterNameResponse{}
 	response.IsSuccess = success
 	response.DidDocument = &rt.DidDocument{
@@ -50,35 +90,6 @@ func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName)
 	}
 
 	return &response, nil
-}
-
-func (s *HighwayStub) setWhois(ctx context.Context, name string, creator string, jwt string) (bool, error) {
-	//call RegisterName on port 1317
-
-	opts := grpc.WithInsecure()
-	cc, err := grpc.Dial("localhost:1317", opts)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer cc.Close()
-
-	grpcurl := "grpcurl -plaintext -d '{\"creator\": \" " + creator + " \",\"jwt\": \"" + jwt + "\",\"nameToRegister\": \"" + name + "\",}' 0.0.0.0:1317/register/name"
-
-	// execute grpcurl
-	var outb, errb bytes.Buffer
-	var cmd *exec.Cmd
-	cmd.Stdout = &outb
-	cmd.Stderr = &errb
-	cmd = exec.Command(grpcurl)
-
-	err = cmd.Run()
-	if err != nil {
-		return false, errors.New("grpcurl command failed")
-	}
-
-	//TODO unmarshal resp
-
-	return false, nil
 }
 
 // UpdateName updates a name.

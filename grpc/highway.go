@@ -65,8 +65,8 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	logger.Infof("Network: " + l.Addr().Network())
 	logger.Infof("Address: " + l.Addr().String())
 
-	// TODO create an instance of cosmosclient
-	cosmos, err := client.NewClient(context.Background(), l.Addr().String(), "test", "bad-password")
+	// create an instance of cosmosclient
+	cosmos, err := client.NewClient(context.Background(), l.Addr().String(), "test", "unimplemented-password")
 	if err != nil {
 		log.Fatal("your cosmos is bad") //TODO error better when you're done debugging
 	}
