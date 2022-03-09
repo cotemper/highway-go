@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"strings"
@@ -11,11 +12,13 @@ import (
 	"github.com/kataras/golog"
 	"github.com/phayes/freeport"
 	"github.com/sonr-io/highway-go/config"
+	"github.com/sonr-io/highway-go/reflection"
 	"github.com/sonr-io/sonr/pkg/p2p"
 
 	channel "github.com/sonr-io/sonr/x/channel/service"
 	hw "go.buf.build/grpc/go/sonr-io/highway/v1"
 
+	"github.com/sonr-io/highway-go/pkg/client"
 	"github.com/tendermint/starport/starport/pkg/cosmosclient"
 	"google.golang.org/grpc"
 )
@@ -48,47 +51,39 @@ type HighwayStub struct {
 	channels map[string]channel.Channel
 }
 
-func Start(ctx context.Context, cnfg *config.SonrConfig) (*HighwayStub, error) {
+func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	// Create the main listener.
 	l, err := net.Listen(verifyAddress(cnfg))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
+	logger.Infof("Network: " + l.Addr().Network())
+	logger.Infof("Address: " + l.Addr().String())
 
-
-	// Create a cmux.
-	stub, err := NewHighwayRPC(ctx, l, nil)
+	// TODO create an instance of cosmosclient
+	cosmos, err := client.NewClient(context.Background(), l.Addr().String(), "test", "bad-password")
 	if err != nil {
-		return nil, err
+		log.Fatal("your cosmos is bad") //TODO error better when you're done debugging
 	}
-	return stub, nil
-}
-
-// NewHighway creates a new Highway service stub for the node.
-func NewHighwayRPC(ctx context.Context, l net.Listener, h p2p.HostImpl) (*HighwayStub, error) {
-	// // create an instance of cosmosclient
-	// cosmos, err := cosmosclient.New(ctx)
-	// if err != nil {
-	// 	return nil, err
-	// }
 
 	// Create the RPC Service
 	stub := &HighwayStub{
-		Host: h,
-		ctx:  ctx,
-		grpc: grpc.NewServer(),
-		//	cosmos:   cosmos,
+		Host:     nil,
+		ctx:      ctx,
+		grpc:     grpc.NewServer(),
+		cosmos:   cosmos.Client,
 		listener: l,
 	}
 
 	hw.RegisterHighwayServiceServer(stub.grpc, stub)
-	go stub.Serve(ctx, l)
-	return stub, nil
+	reflection.RegisterReflection(stub.grpc)
+	logger.Infof("Starting RPC Service on %s", l.Addr().String())
+	return stub.grpc.Serve(l)
 }
 
 // Serve serves the RPC Service on the given port.
