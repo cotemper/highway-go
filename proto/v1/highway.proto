@@ -27,6 +27,15 @@ service Highway {
     };
   }
 
+  // Generate credentials
+  //
+  // Recieves client side JWT and attaches it to the users DID
+  rpc GenerateCreds(sonrio.sonr.highway.v1.MsgWebToken) returns (sonrio.sonr.highway.v1.MsgGenerateCredsResponse) {
+    option (google.api.http) = {
+      get: "/register/token"
+    };
+  }
+
   // Register a Name
   //
   // Registers a new ".snr" name for the calling node. It is only allowed to be called

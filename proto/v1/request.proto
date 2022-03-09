@@ -17,6 +17,11 @@ message MsgAccessName {
   string public_key = 3; // optional
 }
 
+message MsgWebToken {
+  // The JWT
+  string jwt = 1;
+}
+
 // MsgAccessService represents a request payload to get the service details of a peer
 message MsgAccessService {
   // The name of the peer to get the service details of
