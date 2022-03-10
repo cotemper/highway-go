@@ -10,7 +10,7 @@ require (
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/viper v1.10.0
 	github.com/tendermint/starport v0.19.2
-	go.buf.build/grpc/go/sonr-io/highway v1.2.11
+	go.buf.build/grpc/go/sonr-io/highway v1.2.13
 	go.buf.build/grpc/go/sonr-io/sonr v1.2.10
 	google.golang.org/grpc v1.45.0
 )

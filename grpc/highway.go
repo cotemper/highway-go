@@ -35,7 +35,7 @@ var (
 
 // HighwayStub is the RPC Service for the Custodian Node.
 type HighwayStub struct {
-	hw.HighwayServiceServer
+	hw.HighwayServer
 	Host   p2p.HostImpl
 	cosmos cosmosclient.Client
 
@@ -80,7 +80,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 		listener: l,
 	}
 
-	hw.RegisterHighwayServiceServer(stub.grpc, stub)
+	hw.RegisterHighwayServer(stub.grpc, stub)
 	reflection.RegisterReflection(stub.grpc)
 	logger.Infof("Starting RPC Service on %s", l.Addr().String())
 	return stub.grpc.Serve(l)

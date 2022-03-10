@@ -246,7 +246,7 @@ service Highway {
   // Parse a Did
   //
   // Parses a potential DID string into a DID object, using the calling node's network access.
-  rpc ParseDid(sonrio.highway.v1.MsgParseDid) returns (sonrio.highway.v1.MsgResolveDidResponse) {
+  rpc ParseDid(sonrio.highway.v1.MsgParseDid) returns (sonrio.highway.v1.MsgParseDidResponse) {
     option (google.api.http) = {
       get: "/did/parse/{did_string}"
     };
