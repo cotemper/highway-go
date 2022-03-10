@@ -13,7 +13,6 @@ require (
 	go.buf.build/grpc/go/sonr-io/highway v1.2.11
 	go.buf.build/grpc/go/sonr-io/sonr v1.2.10
 	google.golang.org/grpc v1.45.0
-	grpc.go4.org v0.0.0-20170609214715-11d0a25b4919
 )
 
 require (

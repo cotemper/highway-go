@@ -14,7 +14,6 @@ import (
 	"github.com/sonr-io/sonr/pkg/p2p"
 	"github.com/tendermint/starport/starport/pkg/cosmosaccount"
 	"github.com/tendermint/starport/starport/pkg/cosmosclient"
-	highwayv1 "go.buf.build/grpc/go/sonr-io/highway/v1"
 )
 
 var (
@@ -25,7 +24,7 @@ var (
 // Client is a client for the Sonr network
 type Client struct {
 	cosmosclient.Client
-	highwayv1.HighwayServiceClient
+	//highwayv1.HighwayServiceClient
 	Host    p2p.HostImpl
 	ctx     context.Context
 	Account cosmosaccount.Account

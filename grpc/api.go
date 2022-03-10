@@ -14,7 +14,7 @@ import (
 )
 
 // AccessName accesses a name.
-func (s *HighwayStub) AccessName(ctx context.Context, req *hw.AccessNameRequest) (*hw.AccessNameResponse, error) {
+func (s *HighwayStub) AccessName(ctx context.Context, req *hw.MsgAccessName) (*hw.MsgAccessNameResponse, error) {
 	return nil, ErrMethodUnimplemented
 }
 
@@ -98,7 +98,7 @@ func (s *HighwayStub) UpdateName(ctx context.Context, req *rt.MsgUpdateName) (*r
 }
 
 // AccessService accesses a service.
-func (s *HighwayStub) AccessService(ctx context.Context, req *hw.AccessServiceRequest) (*hw.AccessServiceResponse, error) {
+func (s *HighwayStub) AccessService(ctx context.Context, req *hw.MsgAccessService) (*hw.MsgAccessServiceResponse, error) {
 	return nil, ErrMethodUnimplemented
 }
 
@@ -162,30 +162,31 @@ func (s *HighwayStub) DeleteChannel(ctx context.Context, req *ct.MsgDeleteChanne
 	return nil, ErrMethodUnimplemented
 }
 
+//TODO where did this model go??
 // ListenChannel listens to a channel.
-func (s *HighwayStub) ListenChannel(req *hw.ListenChannelRequest, stream hw.HighwayService_ListenChannelServer) error {
-	// Find channel by DID
-	// ch, ok := s.channels[req.GetDid()]
-	// if !ok {
-	// 	return ErrInvalidQuery
-	// }
+// func (s *HighwayStub) ListenChannel(req *hw.MsgListenChannel, stream hw.HighwayService_ListenChannelServer) error {
+// 	// Find channel by DID
+// 	// ch, ok := s.channels[req.GetDid()]
+// 	// if !ok {
+// 	// 	return ErrInvalidQuery
+// 	// }
 
-	// Listen to the channel
-	// chListen := ch.Listen()
+// 	// Listen to the channel
+// 	// chListen := ch.Listen()
 
-	// Listen to the channel
-	for {
-		select {
-		// case msg := <-chListen:
-		// 	// Send peer to client
-		// 	if err := stream.Send(msg); err != nil {
-		// 		return err
-		// 	}
-		case <-stream.Context().Done():
-			return nil
-		}
-	}
-}
+// 	// Listen to the channel
+// 	for {
+// 		select {
+// 		// case msg := <-chListen:
+// 		// 	// Send peer to client
+// 		// 	if err := stream.Send(msg); err != nil {
+// 		// 		return err
+// 		// 	}
+// 		case <-stream.Context().Done():
+// 			return nil
+// 		}
+// 	}
+// }
 
 // CreateBucket creates a new bucket.
 func (s *HighwayStub) CreateBucket(ctx context.Context, req *bt.MsgCreateBucket) (*bt.MsgCreateBucketResponse, error) {
@@ -207,10 +208,11 @@ func (s *HighwayStub) DeleteBucket(ctx context.Context, req *bt.MsgDeleteBucket)
 	return nil, ErrMethodUnimplemented
 }
 
+//TODO where did this model go??
 // ListenBucket listens to a bucket.
-func (s *HighwayStub) ListenBucket(req *hw.ListenBucketRequest, stream hw.HighwayService_ListenBucketServer) error {
-	return nil
-}
+// func (s *HighwayStub) ListenBucket(req *hw.ListenBucketRequest, stream hw.HighwayService_ListenBucketServer) error {
+// 	return nil
+// }
 
 // CreateObject creates a new object.
 func (s *HighwayStub) CreateObject(ctx context.Context, req *ot.MsgCreateObject) (*ot.MsgCreateObjectResponse, error) {
@@ -232,55 +234,58 @@ func (s *HighwayStub) DeleteObject(ctx context.Context, req *ot.MsgDeleteObject)
 	return nil, ErrMethodUnimplemented
 }
 
+//TODO where did this model go??
 // UploadBlob uploads a blob.
-func (s *HighwayStub) UploadBlob(req *hw.UploadBlobRequest, stream hw.HighwayService_UploadBlobServer) error {
-	// hash, err := s.ipfs.Upload(req.Path)
-	// if err != nil {
-	// 	return err
-	// }
-	logger.Debug("Uploaded blob to IPFS", "hash")
-	return nil
-}
+// func (s *HighwayStub) UploadBlob(req *hw.UploadBlobRequest, stream hw.HighwayService_UploadBlobServer) error {
+// 	// hash, err := s.ipfs.Upload(req.Path)
+// 	// if err != nil {
+// 	// 	return err
+// 	// }
+// 	logger.Debug("Uploaded blob to IPFS", "hash")
+// 	return nil
+// }
 
+//TODO where did this model go??
 // DownloadBlob downloads a blob.
-func (s *HighwayStub) DownloadBlob(req *hw.DownloadBlobRequest, stream hw.HighwayService_DownloadBlobServer) error {
-	// path, err := s.ipfs.Download(req.GetDid())
-	// if err != nil {
-	// 	return err
-	// }
-	logger.Debug("Downloaded blob from IPFS", "path")
-	return nil
-}
+// func (s *HighwayStub) DownloadBlob(req *hw.DownloadBlobRequest, stream hw.HighwayService_DownloadBlobServer) error {
+// 	// path, err := s.ipfs.Download(req.GetDid())
+// 	// if err != nil {
+// 	// 	return err
+// 	// }
+// 	logger.Debug("Downloaded blob from IPFS", "path")
+// 	return nil
+// }
 
+//TODO where did this model go??
 // SyncBlob synchronizes a blob with remote version.
-func (s *HighwayStub) SyncBlob(req *hw.SyncBlobRequest, stream hw.HighwayService_SyncBlobServer) error {
-	return nil
-}
+// func (s *HighwayStub) SyncBlob(req *hw.SyncBlobRequest, stream hw.HighwayService_SyncBlobServer) error {
+// 	return nil
+// }
 
 // DeleteBlob deletes a blob.
-func (s *HighwayStub) DeleteBlob(ctx context.Context, req *hw.DeleteBlobRequest) (*hw.DeleteBlobResponse, error) {
+func (s *HighwayStub) DeleteBlob(ctx context.Context, req *hw.MsgDeleteBlob) (*hw.MsgDeleteBlobResponse, error) {
 	return nil, ErrMethodUnimplemented
 }
 
 // ParseDid parses a DID.
-func (s *HighwayStub) ParseDid(ctx context.Context, req *hw.ParseDidRequest) (*hw.ParseDidResponse, error) {
+func (s *HighwayStub) ParseDid(ctx context.Context, req *hw.MsgParseDid) (*hw.MsgParseDidResponse, error) {
 	// d, err := s.node.ParseDid(req.GetDid())
 	// if err != nil {
 	// 	return nil, err
 	// }
-	return &hw.ParseDidResponse{
+	return &hw.MsgParseDidResponse{
 		//Did: d,
 	}, nil
 }
 
 // ResolveDid resolves a DID.
-func (s *HighwayStub) ResolveDid(ctx context.Context, req *hw.ResolveDidRequest) (*hw.ResolveDidResponse, error) {
+func (s *HighwayStub) ResolveDid(ctx context.Context, req *hw.MsgResolveDid) (*hw.MsgResolveDidResponse, error) {
 	// doc, err := s.node.ResolveDid(req.GetDid())
 	// if err != nil {
 	// 	return nil, err
 	// }
 
-	return &hw.ResolveDidResponse{
+	return &hw.MsgResolveDidResponse{
 		DidDocument: nil,
 	}, nil
 }
