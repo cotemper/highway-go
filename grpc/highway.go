@@ -111,7 +111,14 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	//get http port
 	httpAddr := cnfg.HttpPort
 
-	go http.ListenAndServe(":"+httpAddr, r)
+	// Check if files exists
+	if fileExists("cert.pem") && fileExists("key.pem") {
+		logger.Debug("Using TLS")
+		go http.ListenAndServeTLS(":"+httpAddr, "cert.pem", "key.pem", r)
+	} else {
+		logger.Warn("Using insecure HTTP")
+		go http.ListenAndServe(":"+httpAddr, r)
+	}
 
 	// Create the main listener.
 	l, err := net.Listen(verifyAddress(cnfg))
@@ -188,4 +195,13 @@ func verifyAddress(cnfg *config.SonrConfig) (string, string) {
 	logger.Debugf("Address: %s", address)
 
 	return network, address
+}
+
+// Helper function to see if file exists
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }
