@@ -21,6 +21,9 @@ message MsgAccessName {
 message MsgCheckName {
   // Account address of the name owner
   string nameToRegister = 1;
+
+  // key of account that can access names
+  string creator = 2;
 }
 
 message MsgWebToken {

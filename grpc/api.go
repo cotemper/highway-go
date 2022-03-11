@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/sonr-io/go-did/did"
 	"github.com/sonr-io/sonr/x/registry/types"
@@ -26,7 +27,35 @@ func (s *HighwayStub) AccessName(ctx context.Context, req *hw.MsgAccessName) (*h
 //Check if name is available
 func (s *HighwayStub) CheckName(ctx context.Context, req *hw.MsgCheckName) (*hw.MsgCheckNameResponse, error) {
 
-	return nil, ErrMethodUnimplemented
+	address, err := s.cosmos.Address(req.Creator)
+	if err != nil {
+		logger.Errorf("Error in cosmos.address: ")
+		return &hw.MsgCheckNameResponse{}, err
+	}
+
+	// define a message to create a post
+	msg := &types.MsgCheckName{
+		NameToRegister: req.NameToRegister,
+		Creator:        address.String(),
+	}
+
+	// broadcast a transaction from account accountName with the message to create a post
+	//store response in txResp
+	txResp, err := s.cosmos.BroadcastTx(msg.Creator, msg) //TODO see if ducktyping appplies here
+	if err != nil {
+		logger.Errorf("Error in broadcastTx: ")
+		return &hw.MsgCheckNameResponse{}, err
+	}
+
+	result, _ := hex.DecodeString(txResp.Data)
+
+	fmt.Println(string(result))
+
+	boolRes, _ := strconv.ParseBool(string(result))
+
+	return &hw.MsgCheckNameResponse{
+		TokenAttached: boolRes,
+	}, ErrMethodUnimplemented
 }
 
 // AccessName accesses a name.
