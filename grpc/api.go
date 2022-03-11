@@ -54,7 +54,7 @@ func (s *HighwayStub) CheckName(ctx context.Context, req *hw.MsgCheckName) (*hw.
 	boolRes, _ := strconv.ParseBool(string(result))
 
 	return &hw.MsgCheckNameResponse{
-		TokenAttached: boolRes,
+		NameAvailable: boolRes,
 	}, ErrMethodUnimplemented
 }
 
