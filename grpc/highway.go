@@ -56,8 +56,8 @@ type HighwayStub struct {
 }
 
 // Hello Handler
-func HelloHandler(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(w, "Hello World")
+func HealthHandler(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprintf(w, "Server still works")
 }
 
 type Jwt struct {
@@ -104,7 +104,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 
 	r := mux.NewRouter()
 	// hello handler
-	r.HandleFunc("/", HelloHandler)
+	r.HandleFunc("/health/", HealthHandler)
 	// file handler
 	r.HandleFunc("/generate/", GenerateJWT).Methods("GET").Schemes("http")
 
