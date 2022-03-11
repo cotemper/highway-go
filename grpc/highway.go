@@ -2,14 +2,18 @@ package highway
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 
+	"github.com/gorilla/mux"
 	"github.com/kataras/golog"
+	"github.com/kataras/jwt"
 	"github.com/phayes/freeport"
 	"github.com/sonr-io/highway-go/config"
 	"github.com/sonr-io/highway-go/reflection"
@@ -51,7 +55,60 @@ type HighwayStub struct {
 	channels map[string]channel.Channel
 }
 
+// Hello Handler
+func HelloHandler(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprintf(w, "Hello World")
+}
+
+type Jwt struct {
+	Snr        string `json:"snr"`
+	EthAddress string `json: "ethAddress"`
+}
+
+// Keep it secret.
+var sharedKey = os.Getenv("FAKEPASSWORD")
+
+// JWT Handler
+func GenerateJWT(w http.ResponseWriter, req *http.Request) {
+
+	keys, ok := req.URL.Query()["token"]
+	if !ok || len(keys[0]) < 1 {
+		log.Println("Url Param 'key' is missing")
+		return
+	}
+
+	tokenString := keys[0]
+	verifiedToken, err := jwt.Verify(jwt.HS256, sharedKey, []byte(tokenString))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	result := Jwt{}
+	err = verifiedToken.Claims(&result)
+	if err != nil {
+		panic(err)
+	}
+
+	resp := make(map[string]string)
+	resp["message"] = "Status Created"
+	jsonResp, err := json.Marshal(result)
+	if err != nil {
+		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
+	}
+
+	w.Write(jsonResp)
+}
+
 func Start(ctx context.Context, cnfg *config.SonrConfig) error {
+
+	r := mux.NewRouter()
+	// hello handler
+	r.HandleFunc("/", HelloHandler)
+	// file handler
+	r.HandleFunc("/generate/", GenerateJWT).Methods("GET").Schemes("http")
+	go http.ListenAndServe(":8080", r)
+
 	// Create the main listener.
 	l, err := net.Listen(verifyAddress(cnfg))
 	if err != nil {

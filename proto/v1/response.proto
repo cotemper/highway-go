@@ -4,7 +4,6 @@ syntax = "proto3";
 // Package Highway is used for defining a Highway node and its accessible API Endpoints
 package sonrio.highway.v1;
 import "registry/peer.proto";
-import "registry/did.proto";
 import "object/object.proto";
 
 option go_package = "github.com/sonr-io/sonr/highway/v1";
@@ -21,8 +20,13 @@ message MsgAccessNameResponse {
     sonrio.sonr.registry.Peer peer = 3;
 }
 
+message MsgCheckNameResponse {
+    // boolean response to know if a name has been taken
+    bool tokenAttached = 1;
+}
+
 message MsgGenerateCredsResponse {
-    // boolean response to know fi token was attached to the did successfully
+    // boolean response to know if token was attached to the did successfully
     bool tokenAttached = 1;
 }
 
@@ -47,7 +51,7 @@ message MsgUploadBlobResponse {
     string message = 2;
 
     // DID of the response
-    sonrio.sonr.registry.Did did = 3;
+    string did = 3;
 
     // Pinned is true if the blob is pinned to IPFS
     bool pinned = 4;
@@ -62,7 +66,7 @@ message MsgDownloadBlobResponse {
     string message = 2;
 
     // DID of the response
-    sonrio.sonr.registry.Did did = 3;
+    string did = 3;
 
     // Path of downloaded blob
     string path = 4;
@@ -77,7 +81,7 @@ message MsgSyncBlobResponse {
     string message = 2;
 
     // DID of the response
-    sonrio.sonr.registry.Did did = 3;
+    string did = 3;
 }
 
 // MsgDeleteBlobResponse represents a response to a request to delete a blob
@@ -89,7 +93,7 @@ message MsgDeleteBlobResponse {
     string message = 2;
 
     // DID of the response
-    sonrio.sonr.registry.Did did = 3;
+    string did = 3;
 }
 
 // MsgParseDidResponse represents a response to a request to parse a DID
@@ -101,7 +105,7 @@ message MsgParseDidResponse {
     string message = 2;
 
     // DID of the response
-    sonrio.sonr.registry.Did did = 3;
+    string did = 3;
 }
 
 // MsgResolveDidResponse represents a response to a request to resolve a DID
@@ -113,6 +117,5 @@ message MsgResolveDidResponse {
     string message = 2;
 
     // DID of the response
-    sonrio.sonr.registry.DidDocument did_document = 3; // optional
+    string did_document = 3; // optional
 }
-

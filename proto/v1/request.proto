@@ -17,6 +17,12 @@ message MsgAccessName {
   string public_key = 3; // optional
 }
 
+// MsgCheckName checks the chain to see ifa  name is available 
+message MsgCheckName {
+  // Account address of the name owner
+  string nameToRegister = 1;
+}
+
 message MsgWebToken {
   // The JWT
   string jwt = 1;
@@ -108,3 +114,4 @@ message MsgResolveDid {
   // Metadata is the metadata of the blob thats being deleted
   map<string, string> metadata = 2;
 }
+	

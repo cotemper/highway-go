@@ -27,6 +27,15 @@ service Highway {
     };
   }
 
+  // Get a name
+  //
+  // Returns if a name has been taken in the system yet 
+  rpc CheckName(sonrio.highway.v1.MsgCheckName) returns (sonrio.highway.v1.MsgCheckNameResponse) {
+    option (google.api.http) = {
+      get: "/access/name/{name}"
+    };
+  }
+
   // Generate credentials
   //
   // Recieves client side JWT and attaches it to the users DID

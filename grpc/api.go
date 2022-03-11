@@ -3,8 +3,10 @@ package highway
 import (
 	"context"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 
+	"github.com/sonr-io/go-did/did"
 	"github.com/sonr-io/sonr/x/registry/types"
 	hw "go.buf.build/grpc/go/sonr-io/highway/v1"
 	bt "go.buf.build/grpc/go/sonr-io/sonr/bucket"
@@ -15,17 +17,64 @@ import (
 
 // AccessName accesses a name.
 func (s *HighwayStub) AccessName(ctx context.Context, req *hw.MsgAccessName) (*hw.MsgAccessNameResponse, error) {
+
+	// Try getting name information from the store
+
 	return nil, ErrMethodUnimplemented
+}
+
+//Check if name is available
+func (s *HighwayStub) CheckName(ctx context.Context, req *hw.MsgCheckName) (*hw.MsgCheckNameResponse, error) {
+
+	return nil, ErrMethodUnimplemented
+}
+
+// AccessName accesses a name.
+func (s *HighwayStub) RegisterJWT(ctx context.Context, req *hw.MsgWebToken) (*hw.MsgGenerateCredsResponse, error) {
+
+	// //var container Jwt // generic map to store parsed token
+	// result := Jwt{}
+	// tokenString := req.Jwt
+
+	// // Verify and extract claims from a token:
+	// verifiedToken, err := jwt.Verify(jwt.HS256, sharedKey, []byte(tokenString))
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// err = verifiedToken.Claims(&result)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// fmt.Println(result.Eth)
+	// fmt.Println(result.Snr)
+
+	// decode JWT token and verify signature using JSON Web Keyset
+	// decode JWT token without verifying the signature
+	// token, _ := jwt.ParseSigned(tokenString)
+	// _ = token.UnsafeClaimsWithoutVerification(&container)
+	// jwks := &jose.JSONWebKeySet{ // normally you can obtain this from an endpoint exposed by authorization server
+	// 	Keys: []jose.JSONWebKey{ // just an example
+	// 		{
+	// 			Key:       "sonr0329",
+	// 			Algorithm: string(jose.HS256), // should be the same as in the JWT token header
+	// 		},
+	// 	},z
+	// }
+	//_ = jwt.Claims(jwks, &claims)
+
+	// token := Jwt{}
+	// err := json.Unmarshal([]byte(req.Jwt), &token)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	return &hw.MsgGenerateCredsResponse{}, ErrMethodUnimplemented
 }
 
 // RegisterName registers a name.
 func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName) (*rt.MsgRegisterNameResponse, error) {
-	//ctx := sdk.UnwrapSDKContext(goctx)
-
-	// success, err := s.setWhois(ctx, req.NameToRegister, req.Creator, "fake-jwt")
-	// if err != nil {
-	// 	return &rt.MsgRegisterNameResponse{}, errors.New("")
-	// }
 
 	//rt.MsgRegisterName()
 
@@ -42,10 +91,10 @@ func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName)
 	// define a message to create a post
 	fmt.Println(address.String())
 	msg := &types.MsgRegisterName{
-		Creator:        address.String(),
-		DeviceId:       req.DeviceId,
+		Creator: address.String(),
+		//DeviceId:       req.DeviceId,
 		NameToRegister: req.NameToRegister,
-		Jwt:            req.PublicKey, //TODO fix this later
+		//Jwt:            req.PublicKey, //TODO fix this later
 	}
 
 	fmt.Println(msg.NameToRegister)
@@ -66,28 +115,29 @@ func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName)
 		success = true
 	}
 
-	fmt.Println("raw:" + txResp.RawLog)
-	fmt.Println("log: " + txResp.Logs.String())
-	fmt.Println("data: " + txResp.Data)
-	fmt.Println("Info: " + txResp.Info)
+	// fmt.Println("raw:" + txResp.RawLog)
+	// fmt.Println("log: " + txResp.Logs.String())
+	// fmt.Println("data: " + txResp.Data)
+	// fmt.Println("Info: " + txResp.Info)
 
 	bs, err := hex.DecodeString(txResp.Data)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("decode data: " + string(bs))
+	fmt.Println("string: " + string(bs) + "\n\n")
+	fmt.Println(bs)
 
+	// Unmarshalling of a json did document:
+	parsedDIDDoc := did.Document{}
+	err = json.Unmarshal([]byte(bs), &parsedDIDDoc)
 	////////////////////////////////////////////
 
 	var aliases []string
 	aliases = append(aliases, req.NameToRegister+".snr")
-	did := "did:sonr:" + req.PublicKey
+	//did := "did:sonr:" + JWT
 	response := rt.MsgRegisterNameResponse{}
 	response.IsSuccess = success
-	response.DidDocument = &rt.DidDocument{
-		Id:          did,
-		AlsoKnownAs: aliases,
-	}
+	// response.DidDocument = &rt.DidDocument{
+	// 	//Id:          did,
+	// 	AlsoKnownAs: aliases,
+	// }
 
 	return &response, nil
 }
@@ -286,6 +336,6 @@ func (s *HighwayStub) ResolveDid(ctx context.Context, req *hw.MsgResolveDid) (*h
 	// }
 
 	return &hw.MsgResolveDidResponse{
-		DidDocument: nil,
+		DidDocument: "",
 	}, nil
 }
