@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -80,10 +79,9 @@ var sharedKey = os.Getenv("FAKEPASSWORD")
 
 // GenerateJWT generates a JWT for the given SName and PeerID.
 func GenerateJWT(w http.ResponseWriter, req *http.Request) {
-
 	keys, ok := req.URL.Query()["token"]
 	if !ok || len(keys[0]) < 1 {
-		log.Println("Url Param 'key' is missing")
+		logger.Warn("Url Param 'key' is missing")
 		return
 	}
 
@@ -97,14 +95,14 @@ func GenerateJWT(w http.ResponseWriter, req *http.Request) {
 	result := Jwt{}
 	err = verifiedToken.Claims(&result)
 	if err != nil {
-		panic(err)
+		logger.Fatalf("JWT Error", err)
 	}
 
 	resp := make(map[string]string)
 	resp["message"] = "Status Created"
 	jsonResp, err := json.Marshal(result)
 	if err != nil {
-		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
+		logger.Fatalf("Error happened in JSON marshal. Err: %s", err)
 	}
 
 	w.Write(jsonResp)
@@ -146,7 +144,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	// create an instance of cosmosclient
 	cosmos, err := client.NewClient(context.Background(), l.Addr().String(), "test", "unimplemented-password")
 	if err != nil {
-		log.Fatal("your cosmos is bad") //TODO error better when you're done debugging
+		logger.Fatal("your cosmos is bad") //TODO error better when you're done debugging
 		return err
 	}
 
@@ -154,7 +152,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	var stub *HighwayStub
 	credentials, err := loadTLSCredentials()
 	if err != nil {
-		log.Println("Error loading TLS credentials: ", err)
+		logger.Debugf("Error loading TLS credentials: ", err)
 
 		// If TLS is not enabled, create a new listener.
 		// Create the RPC Service
