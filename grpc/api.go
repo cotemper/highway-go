@@ -60,53 +60,12 @@ func (s *HighwayStub) CheckName(ctx context.Context, req *hw.MsgCheckName) (*hw.
 
 // AccessName accesses a name.
 func (s *HighwayStub) RegisterJWT(ctx context.Context, req *hw.MsgWebToken) (*hw.MsgGenerateCredsResponse, error) {
-
-	// //var container Jwt // generic map to store parsed token
-	// result := Jwt{}
-	// tokenString := req.Jwt
-
-	// // Verify and extract claims from a token:
-	// verifiedToken, err := jwt.Verify(jwt.HS256, sharedKey, []byte(tokenString))
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// err = verifiedToken.Claims(&result)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// fmt.Println(result.Eth)
-	// fmt.Println(result.Snr)
-
-	// decode JWT token and verify signature using JSON Web Keyset
-	// decode JWT token without verifying the signature
-	// token, _ := jwt.ParseSigned(tokenString)
-	// _ = token.UnsafeClaimsWithoutVerification(&container)
-	// jwks := &jose.JSONWebKeySet{ // normally you can obtain this from an endpoint exposed by authorization server
-	// 	Keys: []jose.JSONWebKey{ // just an example
-	// 		{
-	// 			Key:       "sonr0329",
-	// 			Algorithm: string(jose.HS256), // should be the same as in the JWT token header
-	// 		},
-	// 	},z
-	// }
-	//_ = jwt.Claims(jwks, &claims)
-
-	// token := Jwt{}
-	// err := json.Unmarshal([]byte(req.Jwt), &token)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
+	//TODO remove me
 	return &hw.MsgGenerateCredsResponse{}, ErrMethodUnimplemented
 }
 
 // RegisterName registers a name.
 func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName) (*rt.MsgRegisterNameResponse, error) {
-
-	//rt.MsgRegisterName()
-
 	// account `alice` was initialized during `starport chain serve`
 	accountName := req.Creator
 
@@ -128,8 +87,6 @@ func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName)
 
 	fmt.Println(msg.NameToRegister)
 
-	// // Create a connection to the gRPC server.
-
 	// broadcast a transaction from account accountName with the message to create a post
 	//store response in txResp
 	txResp, err := s.cosmos.BroadcastTx(req.Creator, msg)
@@ -144,11 +101,6 @@ func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName)
 		success = true
 	}
 
-	// fmt.Println("raw:" + txResp.RawLog)
-	// fmt.Println("log: " + txResp.Logs.String())
-	// fmt.Println("data: " + txResp.Data)
-	// fmt.Println("Info: " + txResp.Info)
-
 	bs, err := hex.DecodeString(txResp.Data)
 	fmt.Println("string: " + string(bs) + "\n\n")
 	fmt.Println(bs)
@@ -156,7 +108,6 @@ func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName)
 	// Unmarshalling of a json did document:
 	parsedDIDDoc := did.Document{}
 	err = json.Unmarshal([]byte(bs), &parsedDIDDoc)
-	////////////////////////////////////////////
 
 	var aliases []string
 	aliases = append(aliases, req.NameToRegister+".snr")
@@ -164,7 +115,6 @@ func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName)
 	response := rt.MsgRegisterNameResponse{}
 	response.IsSuccess = success
 	// response.DidDocument = &rt.DidDocument{
-	// 	//Id:          did,
 	// 	AlsoKnownAs: aliases,
 	// }
 
