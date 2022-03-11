@@ -7,7 +7,6 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/kataras/golog v0.1.7
 	github.com/kataras/jwt v0.1.3
-	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
 	github.com/sonr-io/go-did v0.3.1
 	github.com/sonr-io/sonr v0.1.5
 	github.com/spf13/cobra v1.3.0

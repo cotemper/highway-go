@@ -44,8 +44,6 @@ func (s *HighwayStub) CheckName(ctx context.Context, req *hw.MsgCheckName) (*hw.
 	txResp, err := s.cosmos.BroadcastTx(accoutnName, msg)
 	if err != nil {
 		logger.Errorf("Error in broadcastTx: ")
-		fmt.Println(txResp.Logs)
-		fmt.Println(txResp.RawLog)
 		return &hw.MsgCheckNameResponse{}, err
 	}
 
