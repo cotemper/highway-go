@@ -2397,8 +2397,8 @@ go.buf.build/grpc/go/cosmos/cosmos-sdk v1.2.31 h1:x7m7E5uKHlp9GWmpCrlzNum7eRXNj2
 go.buf.build/grpc/go/cosmos/cosmos-sdk v1.2.31/go.mod h1:ty+BfbjoIDpzjV2RswjT0vg/YZB4OQPuwWGn95B6PPc=
 go.buf.build/grpc/go/cosmos/gogo-proto v1.2.1 h1:HLM4G+VQzMyvZbJFIqTRJgUwsOu6mp++tDIycxpryzU=
 go.buf.build/grpc/go/cosmos/gogo-proto v1.2.1/go.mod h1:9iknnyOgW2QcYkzkizZ+MbOPxKfpS0Ozu40vQYClnJc=
-go.buf.build/grpc/go/sonr-io/highway v1.2.22 h1:bJdhNlXoRxaDZqrUz7WYqgAFWkYI7TlymZ9WrV102ho=
-go.buf.build/grpc/go/sonr-io/highway v1.2.22/go.mod h1:9pOajQSpSih7Kh1jLMp8TGyweSbcf7NzWK6HCim5XOw=
+go.buf.build/grpc/go/sonr-io/highway v1.2.23 h1:Ydk6Ws35gVXaXlmP4ZwSmOLplTz4EYkK9/rhaiYlB7A=
+go.buf.build/grpc/go/sonr-io/highway v1.2.23/go.mod h1:9pOajQSpSih7Kh1jLMp8TGyweSbcf7NzWK6HCim5XOw=
 go.buf.build/grpc/go/sonr-io/sonr v1.2.10/go.mod h1:0zOPOLqMdShdNCCzADH67YYN90wKlehSBN+0cByp028=
 go.buf.build/grpc/go/sonr-io/sonr v1.2.14 h1:mCCfSZLMqYXi5TKc/9O75Zcu+Oc6DvTqUvp2BhQbCBg=
 go.buf.build/grpc/go/sonr-io/sonr v1.2.14/go.mod h1:urfinxRydSr39pbyanBA87xx3Aibw2TdlR4Yme90Eus=

@@ -9,12 +9,12 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/kataras/golog"
 	"github.com/kataras/jwt"
-	"github.com/phayes/freeport"
 	"github.com/sonr-io/highway-go/config"
 	"github.com/sonr-io/highway-go/reflection"
 	"github.com/sonr-io/sonr/pkg/p2p"
@@ -107,7 +107,11 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	r.HandleFunc("/", HelloHandler)
 	// file handler
 	r.HandleFunc("/generate/", GenerateJWT).Methods("GET").Schemes("http")
-	go http.ListenAndServe(":8080", r)
+
+	//get http port
+	httpAddr := cnfg.HttpPort
+
+	go http.ListenAndServe(":"+httpAddr, r)
 
 	// Create the main listener.
 	l, err := net.Listen(verifyAddress(cnfg))
@@ -170,12 +174,10 @@ func verifyAddress(cnfg *config.SonrConfig) (string, string) {
 	}
 	logger.Debugf("Network: %s", network)
 
-	// Get free port if set port is 0 or 69420
-	if cnfg.HighwayPort == 0 || cnfg.HighwayPort == 69420 {
-		port, err = freeport.GetFreePort()
-		if err != nil {
-			panic(err)
-		}
+	//set port
+	port, err = strconv.Atoi(cnfg.GrpcPort)
+	if err != nil {
+		return "", err.Error()
 	}
 	logger.Debugf("Using port %d", port)
 

@@ -82,6 +82,18 @@ func Load() (*SonrConfig, error) {
 		return nil, err
 	}
 
+	// viper setup
+	viper.AddConfigPath("./config/")
+	viper.SetConfigName("app")
+	viper.SetConfigType("env")
+	viper.AutomaticEnv()
+
+	err = viper.ReadInConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	//TODO burn it down and fix this later
 	// Create the configuration object.
 	config := &SonrConfig{
 		HomeDir:   hp,
@@ -90,13 +102,15 @@ func Load() (*SonrConfig, error) {
 		WalletDir: wf.String(),
 		DeviceId:  id,
 		//HighwayAddress:  viper.GetString("highway.address"),
-		HighwayAddress:  "127.0.0.1",
-		HighwayPort:     viper.GetInt("highway.port"),
+		HighwayAddress:  viper.GetString("HOST"),
+		GrpcPort:        viper.GetString("GRPC_PORT"),
+		HttpPort:        viper.GetString("HTTP_PORT"),
 		HighwayNetwork:  viper.GetString("highway.network"),
 		LibP2PLowWater:  viper.GetInt("libp2p.lowWater"),
 		LibP2PHighWater: viper.GetInt("libp2p.highWater"),
 		LibP2PRendevouz: viper.GetString("libp2p.rendevouz"),
 	}
+
 	config.Save()
 	instance = config
 	return config, nil

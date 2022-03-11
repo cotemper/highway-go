@@ -22,7 +22,7 @@ message MsgAccessNameResponse {
 
 message MsgCheckNameResponse {
     // boolean response to know if a name has been taken
-    bool tokenAttached = 1;
+    bool nameAvailable = 1;
 }
 
 message MsgGenerateCredsResponse {

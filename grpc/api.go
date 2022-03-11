@@ -26,8 +26,8 @@ func (s *HighwayStub) AccessName(ctx context.Context, req *hw.MsgAccessName) (*h
 
 //Check if name is available
 func (s *HighwayStub) CheckName(ctx context.Context, req *hw.MsgCheckName) (*hw.MsgCheckNameResponse, error) {
-
-	address, err := s.cosmos.Address(req.Creator)
+	accoutnName := req.Creator
+	address, err := s.cosmos.Address(accoutnName)
 	if err != nil {
 		logger.Errorf("Error in cosmos.address: ")
 		return &hw.MsgCheckNameResponse{}, err
@@ -41,9 +41,11 @@ func (s *HighwayStub) CheckName(ctx context.Context, req *hw.MsgCheckName) (*hw.
 
 	// broadcast a transaction from account accountName with the message to create a post
 	//store response in txResp
-	txResp, err := s.cosmos.BroadcastTx(msg.Creator, msg) //TODO see if ducktyping appplies here
+	txResp, err := s.cosmos.BroadcastTx(accoutnName, msg)
 	if err != nil {
 		logger.Errorf("Error in broadcastTx: ")
+		fmt.Println(txResp.Logs)
+		fmt.Println(txResp.RawLog)
 		return &hw.MsgCheckNameResponse{}, err
 	}
 
@@ -77,12 +79,11 @@ func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName)
 	}
 
 	// define a message to create a post
-	fmt.Println(address.String())
 	msg := &types.MsgRegisterName{
 		Creator: address.String(),
 		//DeviceId:       req.DeviceId,
 		NameToRegister: req.NameToRegister,
-		//Jwt:            req.PublicKey, //TODO fix this later
+		//Jwt:            req.PublicKey, //TODO implement new jwt system
 	}
 
 	fmt.Println(msg.NameToRegister)
@@ -95,7 +96,7 @@ func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName)
 		return &rt.MsgRegisterNameResponse{}, err
 	}
 
-	// // do somethign with resp
+	//TODO fix this logic
 	success := false
 	if !txResp.Empty() {
 		success = true

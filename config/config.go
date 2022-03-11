@@ -10,6 +10,12 @@ type SonrConfig struct {
 	// HighwayPort is the port of the Sonr Highway node.
 	HighwayPort int `json:"highway_port"`
 
+	// HighwayPort is the port of the Sonr Highway node for grpc
+	GrpcPort string `json:"grpc_port"`
+
+	// HighwayPort is the port of the Sonr Highway node for http
+	HttpPort string `json:"http_port"`
+
 	// HighwayNetwork is the network of the Sonr Highway node.
 	HighwayNetwork string `json:"highway_network"`
 
