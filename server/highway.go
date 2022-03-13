@@ -66,6 +66,9 @@ type HighwayStub struct {
 func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	r := mux.NewRouter()
 
+	//var db db.MongoClient
+	//db.Connect()
+
 	//httpCtrl := controller.New(DB)
 
 	//get http port
