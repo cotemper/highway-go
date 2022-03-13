@@ -121,7 +121,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 
 	// Check if files exists
 	if fileExists(PEM_CERT_FILE) && fileExists(PEM_KEY_FILE) {
-		logger.Debug("Using TLS")
+		logger.Infof("Using TLS")
 		go http.ListenAndServeTLS(":"+httpAddr, PEM_CERT_FILE, PEM_KEY_FILE, r)
 	} else {
 		logger.Warn("Using insecure HTTP")
@@ -152,7 +152,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	var stub *HighwayStub
 	credentials, err := loadTLSCredentials()
 	if err != nil {
-		logger.Debugf("Error loading TLS credentials: ", err)
+		logger.Infof("Error loading TLS credentials: ", err)
 
 		// If TLS is not enabled, create a new listener.
 		// Create the RPC Service
@@ -208,20 +208,20 @@ func verifyAddress(cnfg *config.SonrConfig) (string, string) {
 	if cnfg.HighwayNetwork != "tcp" {
 		network = "tcp"
 	}
-	logger.Debugf("Network: %s", network)
+	logger.Infof("Network: %s", network)
 
 	//set port
 	port, err = strconv.Atoi(cnfg.GrpcPort)
 	if err != nil {
 		return "", err.Error()
 	}
-	logger.Debugf("Using port %d", port)
+	logger.Infof("Using port %d", port)
 
 	// Set Address
 	if !strings.Contains(cnfg.HighwayAddress, ":") {
 		address = fmt.Sprintf("%s:%d", cnfg.HighwayAddress, port)
 	}
-	logger.Debugf("Address: %s", address)
+	logger.Infof("Address: %s", address)
 
 	return network, address
 }
