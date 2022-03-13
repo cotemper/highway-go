@@ -8,12 +8,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Mongo struct {
+type MongoClient struct {
 	client       *mongo.Client
 	registerColl *mongo.Collection
 }
 
-func Connect(mongoURI string, collection string, mongoName string) (*Mongo, error) {
+func Connect(mongoURI string, collection string, mongoName string) (*MongoClient, error) {
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		//log.Warn().Err(err).Msg("unable to connect to mongo database")
@@ -22,8 +22,12 @@ func Connect(mongoURI string, collection string, mongoName string) (*Mongo, erro
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	client.Connect(ctx)
-	return &Mongo{
+	return &MongoClient{
 		client:       client,
-		registercoll: client.Database(mongoName).Collection(collection),
+		registerColl: client.Database(mongoName).Collection(collection),
 	}, nil
+}
+
+func (db *MongoClient) Disconnect() {
+	db.client.Disconnect(context.Background())
 }

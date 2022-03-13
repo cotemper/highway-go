@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (db *Mongo) StoreRecord(creator string, name string) error {
+func (db *MongoClient) StoreRecord(creator string, name string) error {
 	collection := db.registerColl
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

@@ -3,7 +3,6 @@ package highway
 import (
 	"context"
 	"crypto/tls"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net"
@@ -14,7 +13,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/kataras/golog"
-	"github.com/kataras/jwt"
 	"github.com/sonr-io/highway-go/config"
 	"github.com/sonr-io/highway-go/reflection"
 	"github.com/sonr-io/sonr/pkg/p2p"
@@ -64,57 +62,11 @@ type HighwayStub struct {
 	channels map[string]channel.Channel
 }
 
-// Hello Handler
-func HealthHandler(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(w, "Server still works")
-}
-
-type Jwt struct {
-	Snr        string `json:"snr"`
-	EthAddress string `json: "ethAddress"`
-}
-
-// Keep it secret.
-var sharedKey = os.Getenv("FAKEPASSWORD")
-
-// GenerateJWT generates a JWT for the given SName and PeerID.
-func GenerateJWT(w http.ResponseWriter, req *http.Request) {
-	keys, ok := req.URL.Query()["token"]
-	if !ok || len(keys[0]) < 1 {
-		logger.Warn("Url Param 'key' is missing")
-		return
-	}
-
-	tokenString := keys[0]
-	verifiedToken, err := jwt.Verify(jwt.HS256, sharedKey, []byte(tokenString))
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	result := Jwt{}
-	err = verifiedToken.Claims(&result)
-	if err != nil {
-		logger.Fatalf("JWT Error", err)
-	}
-
-	resp := make(map[string]string)
-	resp["message"] = "Status Created"
-	jsonResp, err := json.Marshal(result)
-	if err != nil {
-		logger.Fatalf("Error happened in JSON marshal. Err: %s", err)
-	}
-
-	w.Write(jsonResp)
-}
-
 // Start starts the RPC Service.
 func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	r := mux.NewRouter()
-	// hello handler
-	r.HandleFunc("/health/", HealthHandler)
-	// file handler
-	r.HandleFunc("/generate/", GenerateJWT).Methods("GET").Schemes("http")
+
+	//httpCtrl := controller.New(DB)
 
 	//get http port
 	httpAddr := cnfg.HttpPort
