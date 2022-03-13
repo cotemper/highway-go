@@ -9,7 +9,7 @@ import (
 	"log"
 
 	"github.com/sonr-io/highway-go/config"
-	highway "github.com/sonr-io/highway-go/grpc"
+	highway "github.com/sonr-io/highway-go/handlers"
 )
 
 func main() {

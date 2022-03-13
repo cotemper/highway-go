@@ -102,12 +102,20 @@ func (s *HighwayStub) RegisterName(ctx context.Context, req *rt.MsgRegisterName)
 	}
 
 	bs, err := hex.DecodeString(txResp.Data)
+	if err != nil {
+		logger.Errorf("Error in hex.DecodeString: ")
+		return &rt.MsgRegisterNameResponse{}, err
+	}
 	fmt.Println("string: " + string(bs) + "\n\n")
 	fmt.Println(bs)
 
 	// Unmarshalling of a json did document:
 	parsedDIDDoc := did.Document{}
 	err = json.Unmarshal([]byte(bs), &parsedDIDDoc)
+	if err != nil {
+		logger.Errorf("Error in json.Unmarshal: ")
+		return &rt.MsgRegisterNameResponse{}, err
+	}
 
 	var aliases []string
 	aliases = append(aliases, req.NameToRegister+".snr")
