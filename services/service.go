@@ -15,13 +15,13 @@ import (
 // TODO expand with some kind of middleware later
 func AddHandlers(r *mux.Router, ctrl *controller.Controller) {
 	// hello handler
-	r.HandleFunc("/health/", HealthHandler(ctrl)).Methods("GET").Schemes("http")
+	r.HandleFunc("/health", HealthHandler(ctrl)).Methods("GET").Schemes("http")
 	// JWT handler
-	r.HandleFunc("/generate/", GenerateJWT(ctrl)).Methods("GET").Schemes("http")
+	r.HandleFunc("/generate", GenerateJWT(ctrl)).Methods("GET").Schemes("http")
 	// check name
-	r.HandleFunc("/check-name/", CheckName(ctrl)).Methods("GET").Schemes("http")
+	r.HandleFunc("/check-name/{name}", CheckName(ctrl)).Methods("GET").Schemes("http")
 	// record registered name
-	r.HandleFunc("/check-name/", RecordName(ctrl)).Methods("POST").Schemes("http")
+	r.HandleFunc("/record-name", RecordName(ctrl)).Methods("POST").Schemes("http")
 }
 
 // Error Definitions //TODO this has been used twice, move it a layer back and call it instead

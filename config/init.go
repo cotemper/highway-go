@@ -102,13 +102,16 @@ func Load() (*SonrConfig, error) {
 		WalletDir: wf.String(),
 		DeviceId:  id,
 		//HighwayAddress:  viper.GetString("highway.address"),
-		HighwayAddress:  viper.GetString("HOST"),
-		GrpcPort:        viper.GetString("GRPC_PORT"),
-		HttpPort:        viper.GetString("HTTP_PORT"),
-		HighwayNetwork:  viper.GetString("highway.network"),
-		LibP2PLowWater:  viper.GetInt("libp2p.lowWater"),
-		LibP2PHighWater: viper.GetInt("libp2p.highWater"),
-		LibP2PRendevouz: viper.GetString("libp2p.rendevouz"),
+		HighwayAddress:      viper.GetString("HOST"),
+		GrpcPort:            viper.GetString("GRPC_PORT"),
+		HttpPort:            viper.GetString("HTTP_PORT"),
+		HighwayNetwork:      viper.GetString("highway.network"),
+		MongoUri:            viper.GetString("MONGO_URI"),
+		MongoCollectionName: viper.GetString("MONGO_COLLECTION_NAME"),
+		MongoDbName:         viper.GetString("MONGO_DB_NAME"),
+		LibP2PLowWater:      viper.GetInt("libp2p.lowWater"),
+		LibP2PHighWater:     viper.GetInt("libp2p.highWater"),
+		LibP2PRendevouz:     viper.GetString("libp2p.rendevouz"),
 	}
 
 	config.Save()

@@ -14,7 +14,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/kataras/golog"
 	"github.com/sonr-io/highway-go/config"
+	controller "github.com/sonr-io/highway-go/controllers"
+	db "github.com/sonr-io/highway-go/database"
 	"github.com/sonr-io/highway-go/reflection"
+	service "github.com/sonr-io/highway-go/services"
 	"github.com/sonr-io/sonr/pkg/p2p"
 	"google.golang.org/grpc/credentials"
 
@@ -66,15 +69,16 @@ type HighwayStub struct {
 func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	r := mux.NewRouter()
 
-	//var db db.MongoClient
-	//db.Connect()
-
-	//httpCtrl := controller.New(DB)
-
-	//get http port
+	// http setup
+	DB, err := db.Connect(cnfg.MongoUri, cnfg.MongoCollectionName, cnfg.MongoDbName)
+	if err != nil {
+		logger.Errorf("dtabase connection failed")
+	}
+	httpCtrl := controller.New(*DB)
+	service.AddHandlers(r, httpCtrl)
 	httpAddr := cnfg.HttpPort
 
-	// Check if files exists
+	// Check if files exists then start http listener
 	if fileExists(PEM_CERT_FILE) && fileExists(PEM_KEY_FILE) {
 		logger.Infof("Using TLS")
 		go http.ListenAndServeTLS(":"+httpAddr, PEM_CERT_FILE, PEM_KEY_FILE, r)
@@ -83,7 +87,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 		go http.ListenAndServe(":"+httpAddr, r)
 	}
 
-	// Create the main listener.
+	// Create the GRPC listener.
 	l, err := net.Listen(verifyAddress(cnfg))
 	if err != nil {
 		return err

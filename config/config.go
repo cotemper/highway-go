@@ -63,6 +63,15 @@ type SonrConfig struct {
 
 	// AccountName is the account name of the Sonr node.
 	AccountName string `json:"account_name"`
+
+	// MongoUri is URI to connect to the mongodb
+	MongoUri string `json:"mongo_uri"`
+
+	// MongoCollectionName is the name of the collection we use
+	MongoCollectionName string `json:"mongo_collection_name"`
+
+	// MongoDbName is the name of the database we sue
+	MongoDbName string `json:"mongo_db_name"`
 }
 
 func (sc *SonrConfig) Save() (*SonrConfig, error) {
