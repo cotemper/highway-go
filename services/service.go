@@ -159,6 +159,16 @@ func RecordName(ctrl *controller.Controller) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
+		available, err := ctrl.CheckName(ctx, recObj.Name)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		if !available {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
 		err = ctrl.InsertRecord(ctx, recObj)
 
 		if err != nil {
