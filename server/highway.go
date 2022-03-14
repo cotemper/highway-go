@@ -37,11 +37,11 @@ const (
 // Error Definitions
 var (
 	logger                 = golog.Default.Child("grpc/highway")
-	ErrEmptyQueue          = errors.New("No items in Transfer Queue.")
-	ErrInvalidQuery        = errors.New("No SName or PeerID provided.")
-	ErrMissingParam        = errors.New("Paramater is missing.")
-	ErrProtocolsNotSet     = errors.New("Node Protocol has not been initialized.")
-	ErrMethodUnimplemented = errors.New("Method is not implemented.")
+	ErrEmptyQueue          = errors.New("no items in Transfer Queue")
+	ErrInvalidQuery        = errors.New("no SName or PeerID provided")
+	ErrMissingParam        = errors.New("paramater is missing")
+	ErrProtocolsNotSet     = errors.New("node Protocol has not been initialized")
+	ErrMethodUnimplemented = errors.New("method is not implemented")
 )
 
 // Start starts the RPC Service.
