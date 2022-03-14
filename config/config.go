@@ -75,6 +75,9 @@ type SonrConfig struct {
 
 	// secret key for jwts
 	SecretKey string `json:"jwt"`
+
+	//dev accoutn name for initial genesis block
+	DevAccount string `json:"dev_account"`
 }
 
 func (sc *SonrConfig) Save() (*SonrConfig, error) {

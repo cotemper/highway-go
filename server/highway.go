@@ -101,6 +101,9 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	}
 
 	httpCtrl, err := controller.New(*DB, cnfg, stub)
+	if err != nil {
+		return nil
+	}
 	service.AddHandlers(r, httpCtrl)
 	httpAddr := cnfg.HttpPort
 
@@ -113,19 +116,6 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 		return http.ListenAndServe(":"+httpAddr, r)
 	}
 }
-
-// // Serve serves the RPC Service on the given port.
-// func (s *HighwayStub) Serve(ctx context.Context, listener net.Listener) {
-// 	logger.Infof("Starting RPC Service on %s", listener.Addr().String())
-// 	for {
-// 		// Stop Serving if context is done
-// 		select {
-// 		case <-ctx.Done():
-// 			// s.node.Close()
-// 			return
-// 		}
-// 	}
-// }
 
 // verifyAddress verifies the address is valid.
 func verifyAddress(cnfg *config.SonrConfig) (string, string) {
