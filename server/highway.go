@@ -16,16 +16,13 @@ import (
 	"github.com/sonr-io/highway-go/config"
 	controller "github.com/sonr-io/highway-go/controllers"
 	db "github.com/sonr-io/highway-go/database"
-	"github.com/sonr-io/highway-go/reflection"
+	"github.com/sonr-io/highway-go/models"
+	"github.com/sonr-io/highway-go/pkg/client"
 	service "github.com/sonr-io/highway-go/services"
-	"github.com/sonr-io/sonr/pkg/p2p"
 	"google.golang.org/grpc/credentials"
 
-	channel "github.com/sonr-io/sonr/x/channel/service"
 	hw "go.buf.build/grpc/go/sonr-io/highway/v1"
 
-	"github.com/sonr-io/highway-go/pkg/client"
-	"github.com/tendermint/starport/starport/pkg/cosmosclient"
 	"google.golang.org/grpc"
 )
 
@@ -47,24 +44,6 @@ var (
 	ErrMethodUnimplemented = errors.New("Method is not implemented.")
 )
 
-// HighwayStub is the RPC Service for the Custodian Node.
-type HighwayStub struct {
-	hw.HighwayServer
-	Host   p2p.HostImpl
-	cosmos cosmosclient.Client
-
-	// Properties
-	ctx      context.Context
-	grpc     *grpc.Server
-	http     *http.Server
-	listener net.Listener
-
-	// Configuration
-
-	// List of Entries
-	channels map[string]channel.Channel
-}
-
 // Start starts the RPC Service.
 func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	r := mux.NewRouter()
@@ -74,25 +53,9 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	if err != nil {
 		logger.Errorf("dtabase connection failed")
 	}
-	httpCtrl := controller.New(*DB, cnfg.SecretKey)
-	service.AddHandlers(r, httpCtrl)
-	httpAddr := cnfg.HttpPort
 
-	// Check if files exists then start http listener
-	if fileExists(PEM_CERT_FILE) && fileExists(PEM_KEY_FILE) {
-		logger.Infof("Using TLS")
-		go http.ListenAndServeTLS(":"+httpAddr, PEM_CERT_FILE, PEM_KEY_FILE, r)
-	} else {
-		logger.Warn("Using insecure HTTP")
-		go http.ListenAndServe(":"+httpAddr, r)
-	}
-
-	// Create the GRPC listener.
+	// Create the cosmos listener.
 	l, err := net.Listen(verifyAddress(cnfg))
-	if err != nil {
-		return err
-	}
-
 	if err != nil {
 		return err
 	}
@@ -100,60 +63,69 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	logger.Infof("Network: " + l.Addr().Network())
 	logger.Infof("Address: " + l.Addr().String())
 
-	// create an instance of cosmosclient
 	cosmos, err := client.NewClient(context.Background(), l.Addr().String(), "test", "unimplemented-password")
 	if err != nil {
-		logger.Fatal("your cosmos is bad") //TODO error better when you're done debugging
 		return err
 	}
 
 	// Get TLS config if TLS is enabled
-	var stub *HighwayStub
+	var stub *models.HighwayStub
 	credentials, err := loadTLSCredentials()
 	if err != nil {
 		logger.Infof("Error loading TLS credentials: ", err)
 
 		// If TLS is not enabled, create a new listener.
 		// Create the RPC Service
-		stub = &HighwayStub{
+		stub = &models.HighwayStub{
 			Host:     nil,
-			ctx:      ctx,
-			grpc:     grpc.NewServer(),
-			cosmos:   cosmos.Client,
-			listener: l,
+			Ctx:      ctx,
+			Grpc:     grpc.NewServer(),
+			Cosmos:   cosmos.Client,
+			Listener: l,
 		}
-		hw.RegisterHighwayServer(stub.grpc, stub)
-		reflection.RegisterReflection(stub.grpc)
+		hw.RegisterHighwayServer(stub.Grpc, stub)
+		//reflection.RegisterReflection(stub.grpc)
 		logger.Infof("Starting RPC Service on %s", l.Addr().String())
-		return stub.grpc.Serve(l)
-	}
-
-	// Create the RPC Service
-	stub = &HighwayStub{
-		Host:     nil,
-		ctx:      ctx,
-		grpc:     grpc.NewServer(grpc.Creds(credentials)),
-		cosmos:   cosmos.Client,
-		listener: l,
-	}
-	hw.RegisterHighwayServer(stub.grpc, stub)
-	reflection.RegisterReflection(stub.grpc)
-	logger.Infof("Starting RPC Service on %s", l.Addr().String())
-	return stub.grpc.Serve(l)
-}
-
-// Serve serves the RPC Service on the given port.
-func (s *HighwayStub) Serve(ctx context.Context, listener net.Listener) {
-	logger.Infof("Starting RPC Service on %s", listener.Addr().String())
-	for {
-		// Stop Serving if context is done
-		select {
-		case <-ctx.Done():
-			// s.node.Close()
-			return
+	} else {
+		// Create the RPC Service
+		stub = &models.HighwayStub{
+			Host:     nil,
+			Ctx:      ctx,
+			Grpc:     grpc.NewServer(grpc.Creds(credentials)),
+			Cosmos:   cosmos.Client,
+			Listener: l,
 		}
+		hw.RegisterHighwayServer(stub.Grpc, stub)
+		//reflection.RegisterReflection(stub.grpc)
+		logger.Infof("Starting RPC Service on %s", l.Addr().String())
+	}
+
+	httpCtrl, err := controller.New(*DB, cnfg, stub)
+	service.AddHandlers(r, httpCtrl)
+	httpAddr := cnfg.HttpPort
+
+	// Check if files exists then start http listener
+	if fileExists(PEM_CERT_FILE) && fileExists(PEM_KEY_FILE) {
+		logger.Infof("Using TLS")
+		return http.ListenAndServeTLS(":"+httpAddr, PEM_CERT_FILE, PEM_KEY_FILE, r)
+	} else {
+		logger.Warn("Using insecure HTTP")
+		return http.ListenAndServe(":"+httpAddr, r)
 	}
 }
+
+// // Serve serves the RPC Service on the given port.
+// func (s *HighwayStub) Serve(ctx context.Context, listener net.Listener) {
+// 	logger.Infof("Starting RPC Service on %s", listener.Addr().String())
+// 	for {
+// 		// Stop Serving if context is done
+// 		select {
+// 		case <-ctx.Done():
+// 			// s.node.Close()
+// 			return
+// 		}
+// 	}
+// }
 
 // verifyAddress verifies the address is valid.
 func verifyAddress(cnfg *config.SonrConfig) (string, string) {

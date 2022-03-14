@@ -15,6 +15,7 @@ import (
 	"github.com/rs/zerolog/log"
 	controller "github.com/sonr-io/highway-go/controllers"
 	db "github.com/sonr-io/highway-go/database"
+	rt "go.buf.build/grpc/go/sonr-io/sonr/registry"
 )
 
 // TODO expand with some kind of middleware later
@@ -24,9 +25,11 @@ func AddHandlers(r *mux.Router, ctrl *controller.Controller) {
 	// JWT handler
 	r.HandleFunc("/generate", GenerateJWT(ctrl)).Methods("GET").Schemes("http")
 	// check name
-	r.HandleFunc("/check-name/{name}", CheckName(ctrl)).Methods("GET").Schemes("http")
+	r.HandleFunc("/check/name/{name}", CheckName(ctrl)).Methods("GET").Schemes("http")
 	// record registered name
-	r.HandleFunc("/record-name", RecordName(ctrl)).Methods("POST").Schemes("http")
+	r.HandleFunc("/record/name", RecordName(ctrl)).Methods("POST").Schemes("http")
+	// Register a name
+	r.HandleFunc("/register/name", RegisterName(ctrl)).Methods("POST").Schemes("http")
 }
 
 // Error Definitions //TODO this has been used twice, move it a layer back and call it instead
@@ -176,5 +179,41 @@ func RecordName(ctrl *controller.Controller) http.HandlerFunc {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func RegisterName(ctrl *controller.Controller) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		//var body *rt.MsgRegisterName
+		ctx := req.Context()
+		var err error
+
+		start := time.Now()
+		e := log.Info()
+		defer func(e *zerolog.Event, start time.Time) {
+			if err != nil {
+				e = log.Error().Stack().Err(err)
+			}
+			e.Str("handler", "RegisterName").AnErr("context", ctx.Err()).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
+		}(e, start)
+
+		body, err := ioutil.ReadAll(req.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+		log.Debug().Str("handler", "RegisterName").Bytes("request_body", body).Send()
+
+		var recObj *rt.MsgRegisterName
+		err = json.Unmarshal(body, &recObj)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+
+		resp, err := ctrl.RegisterName(ctx, recObj)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		fmt.Println(resp)
 	}
 }
