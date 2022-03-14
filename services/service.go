@@ -3,14 +3,12 @@ package service
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/kataras/golog"
-	"github.com/kataras/jwt"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	controller "github.com/sonr-io/highway-go/controllers"
@@ -22,14 +20,21 @@ import (
 func AddHandlers(r *mux.Router, ctrl *controller.Controller) {
 	// hello handler
 	r.HandleFunc("/health", HealthHandler(ctrl)).Methods("GET").Schemes("http")
+
 	// JWT handler
+	// params:
+	// token - encoded jwt
+	// siganture - signature to attach to DID
 	r.HandleFunc("/generate", GenerateJWT(ctrl)).Methods("GET").Schemes("http")
+
 	// check name
 	r.HandleFunc("/check/name/{name}", CheckName(ctrl)).Methods("GET").Schemes("http")
+
 	// record registered name
-	r.HandleFunc("/record/name", RecordName(ctrl)).Methods("POST").Schemes("http")
+	r.HandleFunc("/record/name/{did}", RecordName(ctrl)).Methods("POST").Schemes("http")
+
 	// Register a name
-	r.HandleFunc("/register/name", RegisterName(ctrl)).Methods("POST").Schemes("http")
+	r.HandleFunc("/register/name/{did}", RegisterName(ctrl)).Methods("POST").Schemes("http")
 }
 
 // Error Definitions //TODO this has been used twice, move it a layer back and call it instead
@@ -51,45 +56,33 @@ func HealthHandler(ctrl *controller.Controller) http.HandlerFunc {
 	}
 }
 
-type Jwt struct {
-	Snr        string `json:"snr"`
-	EthAddress string `json: "ethAddress"`
-}
-
+//signature is based on face or finger ID
 // GenerateJWT generates a JWT for the given SName and PeerID.
 func GenerateJWT(ctrl *controller.Controller) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
+		ctx := req.Context()
 		keys, ok := req.URL.Query()["token"]
 		if !ok || len(keys[0]) < 1 {
-			logger.Warn("Url Param 'key' is missing")
+			logger.Warn("Url Param 'token' is missing")
 			return
 		}
-
 		token := keys[0]
 
-		fmt.Println(token)
-
-		verifiedToken, err := jwt.Verify(jwt.HS256, []byte(""), []byte(token))
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+		keys, ok = req.URL.Query()["signature"]
+		if !ok || len(keys[0]) < 1 {
+			logger.Warn("Url Param 'signature' is missing")
 			return
 		}
+		signature := keys[0]
 
-		result := Jwt{}
-		err = verifiedToken.Claims(&result)
+		// call ctrl
+		result, err := ctrl.GenerateDid(ctx, signature, token)
 		if err != nil {
-			logger.Fatalf("JWT Error", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
-		//format response
-		js, err := json.Marshal(result)
-		if err != nil {
-			logger.Fatalf("Error happened in JSON marshal. Err: %s", err)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
+		//w.Header().Set("Content-Type", "application/json")
+		w.Write(result)
 	}
 }
 
@@ -141,6 +134,9 @@ func RecordName(ctrl *controller.Controller) http.HandlerFunc {
 		ctx := req.Context()
 		var err error
 
+		vars := mux.Vars(req)
+		did := vars["did"]
+
 		start := time.Now()
 		e := log.Info()
 		defer func(e *zerolog.Event, start time.Time) {
@@ -172,7 +168,7 @@ func RecordName(ctrl *controller.Controller) http.HandlerFunc {
 			return
 		}
 
-		err = ctrl.InsertRecord(ctx, recObj)
+		err = ctrl.InsertRecord(ctx, recObj, did)
 
 		if err != nil {
 			w.WriteHeader(http.StatusExpectationFailed)

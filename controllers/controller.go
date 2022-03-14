@@ -3,8 +3,9 @@ package controller
 import (
 	"context"
 	"encoding/hex"
-	"fmt"
+	"errors"
 
+	"github.com/kataras/jwt"
 	"github.com/sonr-io/highway-go/config"
 	db "github.com/sonr-io/highway-go/database"
 	"github.com/sonr-io/highway-go/models"
@@ -37,12 +38,37 @@ func (ctrl *Controller) CheckName(ctx context.Context, name string) (bool, error
 	return result, nil
 }
 
-func (ctrl *Controller) InsertRecord(ctx context.Context, recordObj db.RecordNameObj) error {
-	err := ctrl.client.StoreRecord(recordObj)
-	if err != nil {
-		return err
+func (ctrl *Controller) InsertRecord(ctx context.Context, recordObj db.RecordNameObj, did string) error {
+	successful := ctrl.client.StoreRecord(recordObj, did)
+
+	if !successful {
+		return errors.New("mongo error in insert record")
 	}
+
 	return nil
+}
+
+func (ctrl *Controller) GenerateDid(ctx context.Context, signature string, token string) ([]byte, error) {
+	verifiedToken, err := jwt.Verify(jwt.HS256, []byte(signature), []byte(token))
+	if err != nil {
+		return nil, err
+	}
+
+	result := models.Jwt{}
+	err = verifiedToken.Claims(&result)
+	if err != nil {
+		return nil, err
+	}
+
+	//figure out did
+	did := "did:sonr:" + signature
+
+	if ctrl.client.FindDid(did).Did == "" {
+		// no record exist make a new one
+		ctrl.client.AddDid(did, result)
+	}
+
+	return []byte(did), err
 }
 
 func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterName) (*rt.MsgRegisterNameResponse, error) {
@@ -53,7 +79,6 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 	// get account from the keyring by account name and return a bech32 address
 	address, err := ctrl.highwayStub.Cosmos.Address(accountName)
 	if err != nil {
-		fmt.Errorf("Error in cosmos.address: ")
 		return &rt.MsgRegisterNameResponse{}, err
 	}
 
@@ -62,42 +87,43 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 		Creator: address.String(),
 		//DeviceId:       req.DeviceId,
 		NameToRegister: req.NameToRegister,
-		//Jwt:            req.PublicKey, //TODO implement new jwt system
+		//Jwt:            req.PublicKey, //TODO implement new jwk system
 	}
-
-	fmt.Println(msg.NameToRegister)
 
 	// broadcast a transaction from account accountName with the message to create a post
 	//store response in txResp
 	txResp, err := ctrl.highwayStub.Cosmos.BroadcastTx(req.Creator, msg)
 	if err != nil {
-		fmt.Errorf("Error in broadcastTx")
 		return &rt.MsgRegisterNameResponse{}, err
 	}
 
-	//TODO fix this logic
+	//TODO fix this logic, this is awful
 	success := false
 	if !txResp.Empty() {
 		success = true
 	}
 
+	// WTF
+	// responseTest := types.MsgRegisterNameResponse{}
+	// message := txResp.Decode(&responseTest)
+	// fmt.Println(message)
+	// fmt.Println(&message)
+
 	bs, err := hex.DecodeString(txResp.Data)
 	if err != nil {
-		fmt.Errorf("Error in hex.DecodeString")
 		return &rt.MsgRegisterNameResponse{}, err
 	}
 
-	// Unmarshalling of a json did document:
+	//Unmarshalling of a json did document:
 	// parsedDIDDoc := did.Document{}
 	// err = json.Unmarshal([]byte(bs), &parsedDIDDoc)
 	// if err != nil {
-	// 	fmt.Errorf("Error in json.Unmarshal ")
 	// 	return &rt.MsgRegisterNameResponse{}, err
 	// }
 	//TODO unmarshal is not working as intended
 
-	//did := "did:sonr:" + JWT
 	response := rt.MsgRegisterNameResponse{}
+	//did := "did:sonr:" + JWT
 	response.IsSuccess = success
 	response.DidDocumentJson = string(bs)
 	response.DidUrl = txResp.TxHash

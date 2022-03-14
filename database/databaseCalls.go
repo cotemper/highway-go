@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/sonr-io/highway-go/models"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -13,17 +14,50 @@ type RecordNameObj struct {
 	// TimeStamp time.Time
 }
 
-func (db *MongoClient) StoreRecord(recordObj RecordNameObj) error {
+func (db *MongoClient) FindDid(did string) *models.User {
+	collection := db.registerColl
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	record := models.User{}
+	collection.FindOne(ctx, bson.M{"did": did}).Decode(&record)
+	return &record
+}
+
+func (db *MongoClient) AddDid(did string, jwt models.Jwt) error {
 	collection := db.registerColl
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	res, err := collection.InsertOne(ctx, recordObj)
+	record := &models.User{
+		Did: did,
+		Jwt: jwt,
+	}
+
+	res, err := collection.InsertOne(ctx, record)
 	if err != nil || res == nil {
 		log.Print("\nunable to insert entry into DB in database package\n")
 		return err
 	}
 	return nil
+}
+
+func (db *MongoClient) StoreRecord(recordObj RecordNameObj, did string) bool {
+	collection := db.registerColl
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	q1 := bson.M{"did": did}
+	q2 := bson.M{"$addToSet": bson.M{"name": recordObj.Name}}
+
+	record := models.User{}
+	collection.FindOne(ctx, q1).Decode(&record)
+
+	if record.Did == "" {
+		return false
+	}
+
+	collection.FindOneAndUpdate(ctx, q1, q2)
+	return true
 }
 
 // check if name is available, if available return true

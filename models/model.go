@@ -30,3 +30,14 @@ type HighwayStub struct {
 	// List of Entries
 	Channels map[string]channel.Channel
 }
+
+//TODO this needs work, fix this model, wtf are either of these fields???
+type Jwt struct {
+	Snr        string `json:"snr"`
+	EthAddress string `json: "ethAddress"`
+}
+
+type User struct {
+	Did string
+	Jwt Jwt
+}
