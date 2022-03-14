@@ -6,29 +6,19 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (db *MongoClient) StoreRecord(creator string, name string) error {
+type RecordNameObj struct {
+	Name string `json:"name"`
+	// TimeStamp time.Time
+}
+
+func (db *MongoClient) StoreRecord(recordObj RecordNameObj) error {
 	collection := db.registerColl
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	newID := primitive.NewObjectID().Hex()
-
-	newEntry := struct {
-		ID             string
-		Creator        string
-		NameToRegister string
-		TimeStamp      time.Time
-	}{
-		ID:             newID,
-		Creator:        creator,
-		NameToRegister: name,
-		TimeStamp:      time.Now(),
-	}
-
-	res, err := collection.InsertOne(ctx, newEntry)
+	res, err := collection.InsertOne(ctx, recordObj)
 	if err != nil || res == nil {
 		log.Print("\nunable to insert entry into DB in database package\n")
 		return err

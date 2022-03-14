@@ -18,10 +18,17 @@ func New(client db.MongoClient) *Controller {
 }
 
 func (ctrl *Controller) CheckName(ctx context.Context, name string) (bool, error) {
-
 	result, err := ctrl.client.CheckName(name)
 	if err != nil {
 		return false, err
 	}
 	return result, nil
+}
+
+func (ctrl *Controller) InsertRecord(ctx context.Context, recordObj db.RecordNameObj) error {
+	err := ctrl.client.StoreRecord(recordObj)
+	if err != nil {
+		return err
+	}
+	return nil
 }

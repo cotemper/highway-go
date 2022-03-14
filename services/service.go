@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
@@ -13,6 +14,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	controller "github.com/sonr-io/highway-go/controllers"
+	db "github.com/sonr-io/highway-go/database"
 )
 
 // TODO expand with some kind of middleware later
@@ -96,19 +98,18 @@ func CheckName(ctrl *controller.Controller) http.HandlerFunc {
 		ctx := req.Context()
 
 		vars := mux.Vars(req)
-		name := vars["id"]
+		name := vars["name"]
 		var err error
 
 		//TODO add error checking for bad values
 
-		//var err error
 		start := time.Now()
 		e := log.Info()
 		defer func(e *zerolog.Event, start time.Time) {
 			if err != nil {
 				e = log.Error().Stack().Err(err)
 			}
-			e.Str("handler", "getLineItem").AnErr("context", ctx.Err()).Str("name", name).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
+			e.Str("handler", "CheckName").AnErr("context", ctx.Err()).Str("name", name).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
 		}(e, start)
 
 		nameAvailable, err := ctrl.CheckName(ctx, name)
@@ -133,8 +134,36 @@ func CheckName(ctrl *controller.Controller) http.HandlerFunc {
 
 func RecordName(ctrl *controller.Controller) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		// A very simple health check.
+		ctx := req.Context()
+		var err error
+
+		start := time.Now()
+		e := log.Info()
+		defer func(e *zerolog.Event, start time.Time) {
+			if err != nil {
+				e = log.Error().Stack().Err(err)
+			}
+			e.Str("handler", "RecordName").AnErr("context", ctx.Err()).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
+		}(e, start)
+
+		body, err := ioutil.ReadAll(req.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+		log.Debug().Str("handler", "recordName").Bytes("request_body", body).Send()
+
+		var recObj db.RecordNameObj
+		err = json.Unmarshal(body, &recObj)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+
+		err = ctrl.InsertRecord(ctx, recObj)
+
+		if err != nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
 	}
 }
