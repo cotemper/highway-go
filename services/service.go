@@ -25,7 +25,7 @@ func AddHandlers(r *mux.Router, ctrl *controller.Controller) {
 	// params:
 	// token - encoded jwt
 	// siganture - signature to attach to DID
-	r.HandleFunc("/generate", GenerateJWT(ctrl)).Methods("GET").Schemes("http")
+	r.HandleFunc("/generate", GenerateJWT(ctrl)).Methods("POST").Schemes("http")
 
 	// check name
 	r.HandleFunc("/check/name/{name}", CheckName(ctrl)).Methods("GET").Schemes("http")
@@ -184,6 +184,9 @@ func RegisterName(ctrl *controller.Controller) http.HandlerFunc {
 		ctx := req.Context()
 		var err error
 
+		vars := mux.Vars(req)
+		did := vars["did"]
+
 		start := time.Now()
 		e := log.Info()
 		defer func(e *zerolog.Event, start time.Time) {
@@ -205,7 +208,7 @@ func RegisterName(ctrl *controller.Controller) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
-		resp, err := ctrl.RegisterName(ctx, recObj)
+		resp, err := ctrl.RegisterName(ctx, recObj, did)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}

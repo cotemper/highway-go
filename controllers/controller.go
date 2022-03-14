@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"errors"
+	"fmt"
 
 	"github.com/kataras/jwt"
 	"github.com/sonr-io/highway-go/config"
@@ -71,15 +72,22 @@ func (ctrl *Controller) GenerateDid(ctx context.Context, signature string, token
 	return []byte(did), err
 }
 
-func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterName) (*rt.MsgRegisterNameResponse, error) {
+func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterName, did string) (*rt.MsgRegisterNameResponse, error) {
 	// account `alice` was initialized during `starport chain serve`
 	//accountName := req.Creator
-	accountName := ctrl.devAccount
+	accountName := ctrl.devAccount // this i shardcoded to the dev account for now //TODO
 
 	// get account from the keyring by account name and return a bech32 address
 	address, err := ctrl.highwayStub.Cosmos.Address(accountName)
 	if err != nil {
 		return &rt.MsgRegisterNameResponse{}, err
+	}
+
+	// check for did in db
+	fmt.Println(did)
+	user := ctrl.client.FindDid(did)
+	if user.Did == "" {
+		return &rt.MsgRegisterNameResponse{}, errors.New("user does not exist in DB")
 	}
 
 	// define a message to create a post
@@ -89,7 +97,6 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 		NameToRegister: req.NameToRegister,
 		//Jwt:            req.PublicKey, //TODO implement new jwk system
 	}
-
 	// broadcast a transaction from account accountName with the message to create a post
 	//store response in txResp
 	txResp, err := ctrl.highwayStub.Cosmos.BroadcastTx(req.Creator, msg)
@@ -101,6 +108,10 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 	success := false
 	if !txResp.Empty() {
 		success = true
+	}
+
+	if success {
+		ctrl.client.StoreRecord(db.RecordNameObj{Name: req.NameToRegister}, did)
 	}
 
 	// WTF
