@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -33,4 +34,20 @@ func (db *MongoClient) StoreRecord(creator string, name string) error {
 		return err
 	}
 	return nil
+}
+
+// check if name is available, if available return true
+func (db *MongoClient) CheckName(name string) (bool, error) {
+	collection := db.registerColl
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	result, err := collection.CountDocuments(ctx, bson.M{"NameToRegister": name})
+	if err != nil {
+		return false, err
+	}
+
+	if result == 0 {
+		return true, nil
+	}
+	return false, nil
 }

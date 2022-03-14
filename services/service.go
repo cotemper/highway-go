@@ -5,10 +5,13 @@ import (
 	"errors"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/kataras/golog"
 	"github.com/kataras/jwt"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	controller "github.com/sonr-io/highway-go/controllers"
 )
 
@@ -84,11 +87,47 @@ func GenerateJWT(ctrl *controller.Controller) http.HandlerFunc {
 	}
 }
 
+type Response struct {
+	Available bool
+}
+
 func CheckName(ctrl *controller.Controller) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		// A very simple health check.
-		w.WriteHeader(http.StatusOK)
+		ctx := req.Context()
+
+		vars := mux.Vars(req)
+		name := vars["id"]
+		var err error
+
+		//TODO add error checking for bad values
+
+		//var err error
+		start := time.Now()
+		e := log.Info()
+		defer func(e *zerolog.Event, start time.Time) {
+			if err != nil {
+				e = log.Error().Stack().Err(err)
+			}
+			e.Str("handler", "getLineItem").AnErr("context", ctx.Err()).Str("name", name).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
+		}(e, start)
+
+		nameAvailable, err := ctrl.CheckName(ctx, name)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		//format response
+		responseObj := Response{Available: nameAvailable}
+		js, err := json.Marshal(responseObj)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+
 	}
 }
 
