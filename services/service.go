@@ -3,9 +3,9 @@ package service
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -53,9 +53,6 @@ type Jwt struct {
 	EthAddress string `json: "ethAddress"`
 }
 
-// Keep it secret.
-var sharedKey = os.Getenv("FAKEPASSWORD")
-
 // GenerateJWT generates a JWT for the given SName and PeerID.
 func GenerateJWT(ctrl *controller.Controller) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
@@ -65,8 +62,11 @@ func GenerateJWT(ctrl *controller.Controller) http.HandlerFunc {
 			return
 		}
 
-		tokenString := keys[0]
-		verifiedToken, err := jwt.Verify(jwt.HS256, sharedKey, []byte(tokenString))
+		token := keys[0]
+
+		fmt.Println(token)
+
+		verifiedToken, err := jwt.Verify(jwt.HS256, []byte(""), []byte(token))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -78,14 +78,15 @@ func GenerateJWT(ctrl *controller.Controller) http.HandlerFunc {
 			logger.Fatalf("JWT Error", err)
 		}
 
-		resp := make(map[string]string)
-		resp["message"] = "Status Created"
-		jsonResp, err := json.Marshal(result)
+		//format response
+		js, err := json.Marshal(result)
 		if err != nil {
 			logger.Fatalf("Error happened in JSON marshal. Err: %s", err)
+			return
 		}
 
-		w.Write(jsonResp)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	}
 }
 

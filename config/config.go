@@ -72,6 +72,9 @@ type SonrConfig struct {
 
 	// MongoDbName is the name of the database we sue
 	MongoDbName string `json:"mongo_db_name"`
+
+	// secret key for jwts
+	SecretKey string `json:"jwt"`
 }
 
 func (sc *SonrConfig) Save() (*SonrConfig, error) {

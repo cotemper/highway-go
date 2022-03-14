@@ -8,12 +8,14 @@ import (
 
 // any other services required by http server will flow through here
 type Controller struct {
-	client db.MongoClient
+	client     db.MongoClient
+	privateKey string
 }
 
-func New(client db.MongoClient) *Controller {
+func New(client db.MongoClient, key string) *Controller {
 	return &Controller{
-		client: client,
+		client:     client,
+		privateKey: key,
 	}
 }
 

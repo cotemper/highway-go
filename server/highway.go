@@ -74,7 +74,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) error {
 	if err != nil {
 		logger.Errorf("dtabase connection failed")
 	}
-	httpCtrl := controller.New(*DB)
+	httpCtrl := controller.New(*DB, cnfg.SecretKey)
 	service.AddHandlers(r, httpCtrl)
 	httpAddr := cnfg.HttpPort
 

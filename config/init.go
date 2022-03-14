@@ -109,6 +109,7 @@ func Load() (*SonrConfig, error) {
 		MongoUri:            viper.GetString("MONGO_URI"),
 		MongoCollectionName: viper.GetString("MONGO_COLLECTION_NAME"),
 		MongoDbName:         viper.GetString("MONGO_DB_NAME"),
+		SecretKey:           viper.GetString("SECRET_KEY"),
 		LibP2PLowWater:      viper.GetInt("libp2p.lowWater"),
 		LibP2PHighWater:     viper.GetInt("libp2p.highWater"),
 		LibP2PRendevouz:     viper.GetString("libp2p.rendevouz"),
