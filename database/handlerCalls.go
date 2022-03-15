@@ -75,3 +75,16 @@ func (db *MongoClient) CheckName(name string) (bool, error) {
 	}
 	return false, nil
 }
+
+func (db *MongoClient) NewUser(did string, displayName string) *models.User {
+	collection := db.registerColl
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	user := &models.User{
+		Did:         did,
+		DisplayName: displayName,
+	}
+	collection.InsertOne(ctx, user)
+
+	return user
+}

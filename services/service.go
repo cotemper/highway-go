@@ -1,8 +1,11 @@
 package service
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -16,7 +19,6 @@ import (
 	"github.com/rs/zerolog/log"
 	controller "github.com/sonr-io/highway-go/controllers"
 	db "github.com/sonr-io/highway-go/database"
-	"github.com/sonr-io/highway-go/models"
 	rt "go.buf.build/grpc/go/sonr-io/sonr/registry"
 )
 
@@ -29,10 +31,13 @@ func AddHandlers(r *mux.Router, ctrl *controller.Controller) {
 	// params:
 	// token - encoded jwt
 	// siganture - signature to attach to DID
-	r.HandleFunc("/generate/{did}", GenerateJWT(ctrl)).Methods("POST").Schemes("http")
+	r.HandleFunc("/jwt/generate/{did}", GenerateJWT(ctrl)).Methods("POST").Schemes("http")
 
-	// generate a new user
-	r.HandleFunc("/generate/user", GenerateUser(ctrl)).Methods("POST").Schemes("http")
+	// Start a new account registeration
+	r.HandleFunc("/auth/register/begin/{signature}", AuthRegisterBegin(ctrl)).Methods("POST").Schemes("http")
+
+	// Finish an account registeration
+	r.HandleFunc("/auth/register/finish/{signature}", AuthRegisterFinish(ctrl)).Methods("POST").Schemes("http")
 
 	// check name
 	r.HandleFunc("/check/name/{name}", CheckName(ctrl)).Methods("GET").Schemes("http")
@@ -95,16 +100,70 @@ func GenerateJWT(ctrl *controller.Controller) http.HandlerFunc {
 
 var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
-func GenerateUser(ctrl *controller.Controller) http.HandlerFunc {
+func AuthRegisterBegin(ctrl *controller.Controller) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		// create new user
-		user := models.User{}
+		ctx := req.Context()
+		vars := mux.Vars(req)
+		signature, ok := vars["signature"]
+		if !ok {
+			jsonResponse(w, fmt.Errorf("must supply a valid signature from face or touch ID"), http.StatusBadRequest)
+			return
+		}
+
+		did := "did:sonr:" + signature
+		user := ctrl.FindDid(ctx, did)
+		// user doesn't exist, create new user
+		if user.Did == "" {
+			displayName, err := randToken(12)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			user = ctrl.NewUser(ctx, did, displayName)
+		}
+
+		// registerOptions := func(credCreationOpts *protocol.PublicKeyCredentialCreationOptions) {
+		// 	credCreationOpts.CredentialExcludeList = user.CredentialExcludeList()
+		// }
 
 		// Get a session. We're ignoring the error resulted from decoding an
 		// existing session: Get() always returns a session, even if empty.
-		sess, _ := store.Get(req, "session-name")
+		sess, _ := store.Get(req, signature)
 
-		ctrl.WebAuth.StartRegistration(req, w, &user, webauthn.WrapMap(sess.Values))
+		// generate PublicKeyCredentialCreationOptions, session data
+		ctrl.WebAuth.StartRegistration(req, w, user, webauthn.WrapMap(sess.Values))
+
+		// store session data as marshaled JSON
+		err := sess.Save(req, w)
+		if err != nil {
+			jsonResponse(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func AuthRegisterFinish(ctrl *controller.Controller) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		ctx := req.Context()
+		vars := mux.Vars(req)
+		signature := vars["signature"]
+
+		// get user
+		did := "did:sonr:" + signature
+		user := ctrl.FindDid(ctx, did)
+		// user doesn't exist
+		if user.Did == "" {
+			jsonResponse(w, fmt.Errorf("must supply a valid signature for account"), http.StatusBadRequest)
+			return
+		}
+
+		// load the session data
+		sess, err := store.Get(req, signature)
+		if err != nil {
+			jsonResponse(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		ctrl.WebAuth.FinishRegistration(req, w, user, sess)
 	}
 }
 
@@ -245,4 +304,25 @@ func RegisterName(ctrl *controller.Controller) http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}
+}
+
+// from: https://github.com/duo-labs/webauthn.io/blob/3f03b482d21476f6b9fb82b2bf1458ff61a61d41/server/response.go#L15
+// TODO switch all repsonses like this
+func jsonResponse(w http.ResponseWriter, d interface{}, c int) {
+	dj, err := json.Marshal(d)
+	if err != nil {
+		http.Error(w, "Error creating JSON response", http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(c)
+	fmt.Fprintf(w, "%s", dj)
+}
+
+// randToken generates a random hex value.
+func randToken(n int) (string, error) {
+	bytes := make([]byte, n)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
 }

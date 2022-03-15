@@ -52,6 +52,18 @@ func (ctrl *Controller) InsertRecord(ctx context.Context, recordObj db.RecordNam
 	return nil
 }
 
+func (ctrl *Controller) NewUser(ctx context.Context, did string, displayName string) *models.User {
+	return ctrl.client.NewUser(did, displayName)
+}
+
+func (ctrl *Controller) FindDid(ctx context.Context, did string) *models.User {
+	return ctrl.client.FindDid(did)
+}
+
+func (ctrl *Controller) AddCreds(ctx context.Context, user webauthn.User, authenticator webauthn.Authenticator) error {
+	return ctrl.client.AddAuthenticator(user, authenticator)
+}
+
 func (ctrl *Controller) GenerateDid(ctx context.Context, signature string, token string) ([]byte, error) {
 	verifiedToken, err := jwt.Verify(jwt.HS256, []byte(signature), []byte(token))
 	if err != nil {

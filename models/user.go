@@ -1,13 +1,15 @@
 package models
 
-import "github.com/koesie10/webauthn/webauthn"
+import (
+	"github.com/koesie10/webauthn/webauthn"
+)
 
 type User struct {
 	Did         string
 	Jwt         Jwt
 	Auths       []webauthn.Authenticator
 	webAuthName string
-	displayName string
+	DisplayName string
 }
 
 // WebAuthID should return the ID of the user. This could for example be the binary encoding of an int.
@@ -22,5 +24,5 @@ func (user *User) WebAuthName() string {
 
 // WebAuthDisplayName should return the display name of the user.
 func (user *User) WebAuthDisplayName() string {
-	return user.displayName
+	return user.DisplayName
 }
