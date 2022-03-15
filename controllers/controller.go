@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/kataras/jwt"
+	"github.com/koesie10/webauthn/webauthn"
 	"github.com/sonr-io/highway-go/config"
 	db "github.com/sonr-io/highway-go/database"
 	"github.com/sonr-io/highway-go/models"
@@ -19,14 +20,16 @@ type Controller struct {
 	client      db.MongoClient
 	privateKey  string
 	devAccount  string
+	WebAuth     *webauthn.WebAuthn
 	highwayStub *models.HighwayStub
 }
 
-func New(mongoClient db.MongoClient, cnfg *config.SonrConfig, stub *models.HighwayStub) (*Controller, error) {
+func New(mongoClient db.MongoClient, cnfg *config.SonrConfig, stub *models.HighwayStub, auth *webauthn.WebAuthn) (*Controller, error) {
 	return &Controller{
 		client:      mongoClient,
 		privateKey:  cnfg.SecretKey,
 		devAccount:  cnfg.DevAccount,
+		WebAuth:     auth,
 		highwayStub: stub,
 	}, nil
 }

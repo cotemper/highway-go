@@ -5,14 +5,18 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/kataras/golog"
+	"github.com/koesie10/webauthn/webauthn"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	controller "github.com/sonr-io/highway-go/controllers"
 	db "github.com/sonr-io/highway-go/database"
+	"github.com/sonr-io/highway-go/models"
 	rt "go.buf.build/grpc/go/sonr-io/sonr/registry"
 )
 
@@ -21,11 +25,14 @@ func AddHandlers(r *mux.Router, ctrl *controller.Controller) {
 	// hello handler
 	r.HandleFunc("/health", HealthHandler(ctrl)).Methods("GET").Schemes("http")
 
-	// JWT handler
+	// JWT handler - DEPRECATED
 	// params:
 	// token - encoded jwt
 	// siganture - signature to attach to DID
-	r.HandleFunc("/generate", GenerateJWT(ctrl)).Methods("POST").Schemes("http")
+	r.HandleFunc("/generate/{did}", GenerateJWT(ctrl)).Methods("POST").Schemes("http")
+
+	// generate a new user
+	r.HandleFunc("/generate/user", GenerateUser(ctrl)).Methods("POST").Schemes("http")
 
 	// check name
 	r.HandleFunc("/check/name/{name}", CheckName(ctrl)).Methods("GET").Schemes("http")
@@ -83,6 +90,21 @@ func GenerateJWT(ctrl *controller.Controller) http.HandlerFunc {
 
 		//w.Header().Set("Content-Type", "application/json")
 		w.Write(result)
+	}
+}
+
+var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+
+func GenerateUser(ctrl *controller.Controller) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		// create new user
+		user := models.User{}
+
+		// Get a session. We're ignoring the error resulted from decoding an
+		// existing session: Get() always returns a session, even if empty.
+		sess, _ := store.Get(req, "session-name")
+
+		ctrl.WebAuth.StartRegistration(req, w, &user, webauthn.WrapMap(sess.Values))
 	}
 }
 
