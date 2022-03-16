@@ -102,6 +102,11 @@ func (ctrl *Controller) AttachDid(ctx context.Context, placeHolderDid string, ne
 	return ctrl.client.AttachDid(placeHolderDid, newDid)
 }
 
+func (ctrl *Controller) GiveUserCred(user *models.User, cred *models.Credential) error {
+	ctrl.client.GiveUserCred(user, cred)
+	return nil
+}
+
 // func (ctrl *Controller) AddCreds(ctx context.Context, user webauthn.User, authenticator webauthn.Authenticator) error {
 // 	return ctrl.client.AddAuthenticator(user, authenticator)
 // }

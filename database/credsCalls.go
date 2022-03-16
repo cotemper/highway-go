@@ -69,3 +69,14 @@ func (db *MongoClient) DeleteCredentialByID(credentialID string) error {
 	collection.FindOneAndDelete(ctx, bson.M{"id": credentialID})
 	return nil
 }
+
+// GetCredentialForUser retrieves a specific credential for a user.
+func (db *MongoClient) GiveUserCred(user *models.User, cred *models.Credential) error {
+	collection := db.users
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	user.Credentials = append(user.Credentials, *cred)
+	collection.FindOneAndUpdate(ctx, bson.M{"id": user.ID}, user).Decode(user)
+
+	return nil
+}
