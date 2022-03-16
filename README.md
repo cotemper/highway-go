@@ -1,82 +1,83 @@
-# Sonr Highway Node
+<p align="center">
+<img src="https://github.com/sonr-io/webauthn.io/blob/master/static/dist/images/header-illi.png?raw=true" height="400"/>
+</p>
 
-`highway-go` is a the golang implementation for the custodial node on the **Sonr Network**. It is responsible for managing blockchain transactions, and complex interactions between Motor nodes and services.
+## About
 
-## About The Project
+This is the source code for [webauthn.io](https://webauthn.io), a demonstration of the Web Authentication specification, or WebAuthn.
 
-Sonr is building the most immersive DWeb experience for both Users and Developers alike. We believe the best way to onboard the next billion users is to create a cohesive end-to-end platform that’s composable and interoperable with all existing protocols.
+This server provides a simple reference implementation of how to add WebAuthn to an application using the [`duo-labs/webauthn`](https://github.com/duo-labs/webauthn) Go library.
 
-For this we built our Networking layer in [Libp2p](“https://libp2p.io”) and our Layer 1 Blockchain with [Starport](“https://starport.com”). Our network comprises of two separate nodes: [Highway](“https://github.com/sonr-io/highway”) and [Motor](“https://github.com/sonr-io/motor”), which each have a specific use case on the network. In order to maximize the onboarding experience, we developed our own [Wallet](“https://github.com/sonr-io/wallet) which has value out of the gate!
+## Installation
 
-### Documentation
+### Using Docker
 
-All documentation inluding API Reference, Guides, and Recipes are available on the [Sonr Docs](“https://docs.sonr.io”) website.
+The easiest way to start a local instance of webauthn.io is to use the image on Docker Hub:
 
-<!-- GETTING STARTED -->
-
-## Getting Started
-
-To get a local copy up and running follow these simple steps.
-
-### Requirements
-
-- [Go](https://golang.org/doc/install)
-- [Docker](https://docs.docker.com/docker-for-mac/install/mac/)
-- [Taskfile](https://taskfile.dev)
-  - `brew install go-task/tap/go-task`
-
-### Installation
-
-1. Download the `sonr-io/sonr` blockchain node.
-
-  ```shell
-  // For Non M1 Systems
-  curl https://sonr.ws/sonr! | sudo bash
-
-  // For M1 Systems
-  curl https://sonr.ws/sonr | bash # Install
-  sudo mv sonr /usr/local/bin/ # Move to Directory
-  ```
-
-2. Run the Sonr Blockchain Node
-
-  ```sh
-  sonrd start
-  ```
-
-3. Run the `sonr-io/highway-go` server with `task run`.
-
-
-### Structure
-
-This project is a pseudo-monorepo, meaning it has a single root directory and all of its packages are in subdirectories. The structure is as follows:
-
-```text
-/cmd             ->        CLI commands for the project
-/grpc            ->        Highway Service gRPC implementation
-/pkg             ->        Protocol Services for Sonr Core
-  └─ acccount    ->        +   Service and Account Management
-  └─ client      ->        +   Blockchain Client
-/proto           ->        Highway API Schema and Protobuf Definitions
-/remix           ->        Remix frontend
+```
+docker run --rm -p 9005:9005 duolabs/webauthn.io
 ```
 
-## Contributing
+To run a local instance of webauthn.io in a Docker container, start by building the container image:
 
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+```
+docker build -t webauthn.io .
+```
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Then, run the container, exposing port 9005:
 
-## License
+```
+docker run --rm -p 9005:9005 webauthn.io
+```
 
-This project facilitated under **Sonr Inc.** is distributed under the **GPLv3 License**. See `LICENSE.md` for more information.
+After the container launches, you can navigate to localhost:9005 to see the application.
 
-## Acknowledgements
+### Building from Source
 
-- [Libp2p](https://libp2p.io/)
-- [Textile](https://www.textile.io/)
-- [Handshake](https://handshake.org/)
+To get started using a local instance of webauthn.io, first download the source code using:
+
+```
+go get github.com/sonr-io/webauthn.io
+```
+
+Then, edit `config.json` as needed.
+
+Finally, build and run the application with `go build; ./webauthn.io`)
+
+## More Information
+
+For more information on how WebAuthn works, we recommend checking out [webauthn.guide](https://webauthn.guide).
+
+### License
+
+```
+BSD 3-Clause License
+
+Copyright (c) 2019, Duo Labs
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```

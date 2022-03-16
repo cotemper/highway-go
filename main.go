@@ -1,37 +1,44 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package main
 
 import (
-	"context"
-	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/sonr-io/highway-go/config"
-	highway "github.com/sonr-io/highway-go/server"
+	"github.com/sonr-io/webauthn.io/config"
+	log "github.com/sonr-io/webauthn.io/logger"
+	"github.com/sonr-io/webauthn.io/models"
+	"github.com/sonr-io/webauthn.io/server"
 )
 
 func main() {
-
-	var err error = nil
+	config, err := config.LoadConfig("config.json")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// This loads the information from the configuration file into a struct
-	cnfg, err := config.Load()
+	err = models.Setup(config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// This is starting the Highway based Node utilizing the configuration
-	err = highway.Start(context.Background(), cnfg)
+	err = log.Setup(config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// This is bad practice however this is being used to block the code
-	// from completing execution
-	//select {}
+	server, err := server.NewServer(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	go server.Start()
+
+	// Handle graceful shutdown
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGTERM)
+	signal.Notify(c, syscall.SIGINT)
+
+	<-c
+	log.Info("Shutting down...")
+	server.Shutdown()
 }

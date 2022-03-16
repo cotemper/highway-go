@@ -36,8 +36,3 @@ type Jwt struct {
 	Snr        string `json:"snr"`
 	EthAddress string `json: "ethAddress"`
 }
-
-type User struct {
-	Did string
-	Jwt Jwt
-}
