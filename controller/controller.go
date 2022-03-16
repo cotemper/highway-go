@@ -187,6 +187,7 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 	if err != nil {
 		return &rt.MsgRegisterNameResponse{}, err
 	}
+	fmt.Println(bs)
 	//Unmarshalling of a json did document:
 	// parsedDIDDoc := did.Document{}
 	// err = json.Unmarshal([]byte(bs), &parsedDIDDoc)
