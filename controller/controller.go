@@ -39,8 +39,8 @@ func (ctrl *Controller) CheckName(ctx context.Context, name string) (bool, error
 	return result, nil
 }
 
-func (ctrl *Controller) InsertRecord(ctx context.Context, recordObj db.RecordNameObj, did string) error {
-	successful := ctrl.client.StoreRecord(recordObj, did)
+func (ctrl *Controller) InsertRecord(ctx context.Context, name string, did string) error {
+	successful := ctrl.client.StoreRecord(name, did)
 
 	if !successful {
 		return errors.New("mongo error in insert record")
@@ -48,6 +48,26 @@ func (ctrl *Controller) InsertRecord(ctx context.Context, recordObj db.RecordNam
 
 	return nil
 }
+
+func (ctrl *Controller) NewUser(ctx context.Context, user models.MgoUser) error {
+	return ctrl.client.NewUser(user)
+}
+
+func (ctrl *Controller) FindUserByName(ctx context.Context, name string) *models.MgoUser {
+	return ctrl.client.FindUserByName(name)
+}
+
+func (ctrl *Controller) FindDid(ctx context.Context, did string) *models.MgoUser {
+	return ctrl.client.FindDid(did)
+}
+
+func (ctrl *Controller) AttachDid(ctx context.Context, placeHolderDid string, newDid string) error {
+	return ctrl.client.AttachDid(placeHolderDid, newDid)
+}
+
+// func (ctrl *Controller) AddCreds(ctx context.Context, user webauthn.User, authenticator webauthn.Authenticator) error {
+// 	return ctrl.client.AddAuthenticator(user, authenticator)
+// }
 
 func (ctrl *Controller) GenerateDid(ctx context.Context, signature string, token string) ([]byte, error) {
 	verifiedToken, err := jwt.Verify(jwt.HS256, []byte(signature), []byte(token))
@@ -83,10 +103,12 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 		return &rt.MsgRegisterNameResponse{}, err
 	}
 
-	// check for did in db
+	//TODO check for credential
+
+	// check for name in db
 	fmt.Println(did)
-	user := ctrl.client.FindDid(did)
-	if user.Did == "" {
+	user := ctrl.client.FindUserByName(req.NameToRegister)
+	if user.DisplayName == "" {
 		return &rt.MsgRegisterNameResponse{}, errors.New("user does not exist in DB")
 	}
 
@@ -111,7 +133,7 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 	}
 
 	if success {
-		ctrl.client.StoreRecord(db.RecordNameObj{Name: req.NameToRegister}, did)
+		ctrl.client.StoreRecord(req.NameToRegister, did)
 	}
 
 	// WTF

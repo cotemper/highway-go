@@ -24,7 +24,7 @@ func (ss *ServerSuite) SetupSuite() {
 	err := models.Setup(ss.config)
 	ss.Nil(err)
 
-	ss.server, err = NewServer(ss.config)
+	ss.server, err = NewServer(nil, ss.config)
 	ss.Nil(err)
 }
 

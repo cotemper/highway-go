@@ -16,6 +16,15 @@ const PlaceholderUsername = "testuser"
 // PlaceholderUserIcon is the default user icon used when creating a new user
 const PlaceholderUserIcon = "example.icon.duo.com/123/avatar.png"
 
+type MgoUser struct {
+	Did string
+	Jwt Jwt
+	//Auths       []webauthn.Authenticator
+	webAuthName string
+	DisplayName string
+	Names       []string
+}
+
 // User represents the user model.
 type User struct {
 	gorm.Model

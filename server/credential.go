@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -19,6 +20,8 @@ import (
 // RequestNewCredential begins a Credential Registration Request, returning a
 // PublicKeyCredentialCreationOptions object
 func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	vars := mux.Vars(r)
 	username := vars["name"]
 
@@ -40,6 +43,7 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 
 	testEx := protocol.AuthenticationExtensions(map[string]interface{}{"txAuthSimple": testExtension})
 
+	//SQL lite check
 	user, err := models.GetUserByUsername(username)
 	if err != nil {
 		user = models.User{
@@ -51,6 +55,24 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 			jsonResponse(w, "Error creating new user", http.StatusInternalServerError)
 			return
 		}
+	}
+
+	//secondary mongo check
+	mgoUser := ws.Ctrl.FindUserByName(ctx, username)
+	// user doesn't exist, create new user
+	if mgoUser.DisplayName == "" {
+		available, _ := ws.Ctrl.CheckName(ctx, username)
+		if !available {
+			jsonResponse(w, fmt.Errorf("username is not availabel to use"), http.StatusAlreadyReported)
+			return
+		}
+		var names []string
+		names = append(names, username)
+		did := "did:sonr:temp" + username
+		mgoUser.DisplayName = username
+		mgoUser.Names = names
+		mgoUser.Did = did
+		ws.Ctrl.NewUser(ctx, *mgoUser)
 	}
 
 	credentialOptions, sessionData, err := ws.webauthn.BeginRegistration(user,
@@ -82,6 +104,7 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 
 // MakeNewCredential attempts to make a new credential given an authenticator's response
 func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	// Load the session data
 	sessionData, err := ws.store.GetWebauthnSession("registration", r)
 	if err != nil {
@@ -94,6 +117,13 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	//get mongo user
+	mgoUser := ws.Ctrl.FindUserByName(ctx, user.DisplayName)
+	if mgoUser.DisplayName == "" {
+		jsonResponse(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	// Verify that the challenge succeeded
 	cred, err := ws.webauthn.FinishRegistration(user, sessionData, r)
 	if err != nil {
@@ -128,6 +158,12 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	//store public key on did
+	ws.Ctrl.AttachDid(ctx, "did:sonr:temp"+mgoUser.DisplayName, "did:sonr:temp"+credentialID)
+
+	//TODO store cred under user
+
 	jsonResponse(w, http.StatusText(http.StatusCreated), http.StatusCreated)
 }
 
