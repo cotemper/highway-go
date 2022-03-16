@@ -100,7 +100,7 @@ func (ws *Server) registerRoutes() {
 	router.HandleFunc("/health", ws.HealthHandler).Methods("GET")
 
 	// Authenticated handlers for viewing credentials after logging in
-	router.HandleFunc("/dashboard", ws.LoginRequired(ws.Index)) //TODO should probably remove in prod, more for debugging
+	router.HandleFunc("/dashboard", ws.LoginRequired(ws.Index))
 	router.HandleFunc("/register/name/{did}", ws.LoginRequired(ws.RegisterName)).Methods("POST")
 
 	// Static file serving
