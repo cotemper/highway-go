@@ -116,15 +116,14 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("%+v\n", sessionData)
-
 	// Get the user associated with the credential
 	user, err := ws.Ctrl.GetUser(models.BytesToID(sessionData.UserID))
+
+	fmt.Println(user.ID)
 	if err != nil {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(222)
 
 	// Verify that the challenge succeeded
 	cred, err := ws.webauthn.FinishRegistration(user, sessionData, r)

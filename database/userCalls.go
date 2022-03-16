@@ -108,7 +108,7 @@ func (db *MongoClient) GetUser(id uint) *models.User {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	user := &models.User{}
-	collection.FindOne(ctx, bson.M{"id": id}).Decode(user)
+	collection.FindOne(ctx, bson.M{"model.id": id}).Decode(user)
 	return user
 }
 
