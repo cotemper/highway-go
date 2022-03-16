@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"strings"
 
@@ -72,6 +73,9 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 		user.DisplayName = username
 		user.Names = names
 		user.Did = did
+		user.ID = uint(rand.Uint32())
+		user.Username = username + "@sonr"
+		user.DisplayName = username
 		ws.Ctrl.NewUser(ctx, *user)
 	}
 
@@ -104,25 +108,23 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 
 // MakeNewCredential attempts to make a new credential given an authenticator's response
 func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	//ctx := r.Context()
 	// Load the session data
 	sessionData, err := ws.store.GetWebauthnSession("registration", r)
 	if err != nil {
 		jsonResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	fmt.Printf("%+v\n", sessionData)
+
 	// Get the user associated with the credential
 	user, err := ws.Ctrl.GetUser(models.BytesToID(sessionData.UserID))
 	if err != nil {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//get mongo user
-	mgoUser := ws.Ctrl.FindUserByName(ctx, user.DisplayName)
-	if mgoUser.DisplayName == "" {
-		jsonResponse(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	fmt.Println(222)
 
 	// Verify that the challenge succeeded
 	cred, err := ws.webauthn.FinishRegistration(user, sessionData, r)
@@ -130,6 +132,8 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	fmt.Println(333)
 	// If needed, you can perform additional checks here to ensure the
 	// authenticator and generated credential conform to your requirements.
 
@@ -141,6 +145,8 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	fmt.Println(444)
 	// For our use case, we're encoding the raw credential ID as URL-safe
 	// base64 since we anticipate rendering it in templates. If you choose to
 	// do this, make sure to decode the credential ID before passing it back to
@@ -153,14 +159,18 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 		PublicKey:       cred.PublicKey,
 		CredentialID:    credentialID,
 	}
+	fmt.Println(555)
+
 	err = ws.Ctrl.CreateCredential(c)
 	if err != nil {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	fmt.Println(666)
+
 	//store public key on did
-	ws.Ctrl.AttachDid(ctx, "did:sonr:temp"+mgoUser.DisplayName, "did:sonr:temp"+credentialID)
+	//ws.Ctrl.AttachDid(ctx, "did:sonr:temp"+mgoUser.DisplayName, "did:sonr:temp"+credentialID)
 
 	//TODO store cred under user in mgo
 

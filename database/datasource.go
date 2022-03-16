@@ -9,11 +9,10 @@ import (
 )
 
 type MongoClient struct {
-	client       *mongo.Client
-	registerColl *mongo.Collection
-	users        *mongo.Collection
-	auths        *mongo.Collection
-	creds        *mongo.Collection
+	client *mongo.Client
+	users  *mongo.Collection
+	auths  *mongo.Collection
+	creds  *mongo.Collection
 }
 
 func Connect(mongoURI string, collection string, mongoName string) (*MongoClient, error) {
@@ -26,11 +25,10 @@ func Connect(mongoURI string, collection string, mongoName string) (*MongoClient
 	defer cancel()
 	client.Connect(ctx)
 	return &MongoClient{
-		client:       client,
-		registerColl: client.Database(mongoName).Collection("registerColl"),
-		users:        client.Database(mongoName).Collection("users"),
-		auths:        client.Database(mongoName).Collection("auths"),
-		creds:        client.Database(mongoName).Collection("creds"),
+		client: client,
+		users:  client.Database(mongoName).Collection("users"),
+		auths:  client.Database(mongoName).Collection("auths"),
+		creds:  client.Database(mongoName).Collection("creds"),
 	}, nil
 }
 
