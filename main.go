@@ -31,6 +31,7 @@ func main() {
 		DBName:       highwayConfig.SqlName,
 		DBPath:       highwayConfig.SqlPath,
 		RelyingParty: highwayConfig.RelyingParty,
+		RPOrigin:     highwayConfig.RPOrigin,
 	}
 
 	err = log.Setup(authConfig)

@@ -16,6 +16,8 @@ type Config struct {
 	HostPort     string `json:"host_port"`     // HostPort is the port to listen on.
 	LogFile      string `json:"log_file"`      // LogFile is an optional file to log messages to.
 	RelyingParty string `json:"relying_party"` // RelyingParty is the name of the WebAuthn relying party.
+	RPID         string
+	RPOrigin     string
 }
 
 // LoadConfig loads a configuration at the provided filepath, returning the
@@ -112,6 +114,7 @@ type SonrConfig struct {
 	SqlName      string `json:"sql_name"`
 	SqlPath      string `json:"sql_path"`
 	RelyingParty string `json:"relying_party"`
+	RPOrigin     string `json:"rp_origin"`
 }
 
 func (sc *SonrConfig) Save() (*SonrConfig, error) {

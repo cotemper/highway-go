@@ -48,6 +48,7 @@ func NewServer(ctrl *controller.Controller, config *config.Config, opts ...Optio
 	defaultWebAuthn, _ := webauthn.New(&webauthn.Config{
 		RPDisplayName: config.RelyingParty,
 		RPID:          config.RelyingParty,
+		RPOrigin:      config.RPOrigin + ":" + config.HostPort,
 	})
 	ws := &Server{
 		config:   config,
