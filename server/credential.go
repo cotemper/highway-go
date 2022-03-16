@@ -157,6 +157,8 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 		CredentialID:    credentialID,
 	}
 
+	user.Credentials = append(user.Credentials, *c)
+
 	err = ws.Ctrl.CreateCredential(c)
 	if err != nil {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
@@ -167,9 +169,7 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 	ws.Ctrl.AttachDid(ctx, "did:sonr:temp"+user.DisplayName, "did:sonr:"+credentialID)
 
 	//store cred under user in mgo
-	fmt.Println(c.ID)
-	fmt.Println(c.Authenticator)
-	ws.Ctrl.GiveUserCred(user, c)
+	ws.Ctrl.PutUser(user)
 
 	jsonResponse(w, http.StatusText(http.StatusCreated), http.StatusCreated)
 }
