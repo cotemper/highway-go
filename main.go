@@ -18,9 +18,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	authConfig, err := config.LoadConfig("config.json")
-	if err != nil {
-		log.Fatal(err)
+	// authConfig, err := config.LoadConfig("config.json")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	authConfig := &config.Config{
+		HostAddress:  highwayConfig.HighwayAddress,
+		HostPort:     highwayConfig.HttpPort,
+		DBName:       highwayConfig.SqlName,
+		DBPath:       highwayConfig.SqlPath,
+		RelyingParty: highwayConfig.RelyingParty,
 	}
 
 	err = models.Setup(authConfig)

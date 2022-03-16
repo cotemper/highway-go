@@ -108,6 +108,10 @@ type SonrConfig struct {
 
 	//dev accoutn name for initial genesis block
 	DevAccount string `json:"dev_account"`
+
+	SqlName      string `json:"sql_name"`
+	SqlPath      string `json:"sql_path"`
+	RelyingParty string `json:"relying_party"`
 }
 
 func (sc *SonrConfig) Save() (*SonrConfig, error) {

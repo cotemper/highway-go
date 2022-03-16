@@ -162,7 +162,7 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 	//store public key on did
 	ws.Ctrl.AttachDid(ctx, "did:sonr:temp"+mgoUser.DisplayName, "did:sonr:temp"+credentialID)
 
-	//TODO store cred under user
+	//TODO store cred under user in mgo
 
 	jsonResponse(w, http.StatusText(http.StatusCreated), http.StatusCreated)
 }
