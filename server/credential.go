@@ -11,7 +11,6 @@ import (
 	"github.com/duo-labs/webauthn/protocol"
 	"github.com/duo-labs/webauthn/webauthn"
 	"github.com/gorilla/mux"
-	"github.com/sonr-io/webauthn.io/controller"
 	log "github.com/sonr-io/webauthn.io/logger"
 	"github.com/sonr-io/webauthn.io/models"
 	rt "go.buf.build/grpc/go/sonr-io/sonr/registry"
@@ -210,87 +209,82 @@ type Response struct {
 	Available bool
 }
 
-func (ws *Server) CheckName(ctrl *controller.Controller) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		ctx := req.Context()
+func (ws *Server) CheckName(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
 
-		vars := mux.Vars(req)
-		name := vars["name"]
-		var err error
+	vars := mux.Vars(req)
+	name := vars["name"]
+	var err error
 
-		// start := time.Now()
-		// e := log.Info()
-		// defer func(e *zerolog.Event, start time.Time) {
-		// 	if err != nil {
-		// 		e = log.Error().Stack().Err(err)
-		// 	}
-		// 	e.Str("handler", "CheckName").AnErr("context", ctx.Err()).Str("name", name).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
-		// }(e, start)
+	// start := time.Now()
+	// e := log.Info()
+	// defer func(e *zerolog.Event, start time.Time) {
+	// 	if err != nil {
+	// 		e = log.Error().Stack().Err(err)
+	// 	}
+	// 	e.Str("handler", "CheckName").AnErr("context", ctx.Err()).Str("name", name).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
+	// }(e, start)
 
-		nameAvailable, err := ctrl.CheckName(ctx, name)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		//format response
-		responseObj := Response{Available: nameAvailable}
-		js, err := json.Marshal(responseObj)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-
+	nameAvailable, err := ws.Ctrl.CheckName(ctx, name)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+
+	//format response
+	responseObj := Response{Available: nameAvailable}
+	js, err := json.Marshal(responseObj)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
 }
 
 //TODO clean up to match other calls
-func (ws *Server) RegisterName(ctrl *controller.Controller) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		//var body *rt.MsgRegisterName
-		ctx := req.Context()
-		var err error
+func (ws *Server) RegisterName(w http.ResponseWriter, req *http.Request) {
+	//var body *rt.MsgRegisterName
+	ctx := req.Context()
+	var err error
 
-		vars := mux.Vars(req)
-		did := vars["did"]
+	vars := mux.Vars(req)
+	did := vars["did"]
 
-		// start := time.Now()
-		// e := log.Info()
-		// defer func(e *zerolog.Event, start time.Time) {
-		// 	if err != nil {
-		// 		e = log.Error().Stack().Err(err)
-		// 	}
-		// 	e.Str("handler", "RegisterName").AnErr("context", ctx.Err()).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
-		// }(e, start)
+	// start := time.Now()
+	// e := log.Info()
+	// defer func(e *zerolog.Event, start time.Time) {
+	// 	if err != nil {
+	// 		e = log.Error().Stack().Err(err)
+	// 	}
+	// 	e.Str("handler", "RegisterName").AnErr("context", ctx.Err()).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
+	// }(e, start)
 
-		body, err := ioutil.ReadAll(req.Body)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-		//log.Debug().Str("handler", "RegisterName").Bytes("request_body", body).Send()
-
-		var recObj *rt.MsgRegisterName
-		err = json.Unmarshal(body, &recObj)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-
-		resp, err := ctrl.RegisterName(ctx, recObj, did)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-
-		//format response
-		js, err := json.Marshal(resp)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
+	//log.Debug().Str("handler", "RegisterName").Bytes("request_body", body).Send()
+
+	var recObj *rt.MsgRegisterName
+	err = json.Unmarshal(body, &recObj)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	resp, err := ws.Ctrl.RegisterName(ctx, recObj, did)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	//format response
+	js, err := json.Marshal(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
 }
