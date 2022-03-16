@@ -16,11 +16,11 @@ type RecordNameObj struct {
 	// TimeStamp time.Time
 }
 
-func (db *MongoClient) FindDid(did string) *models.MgoUser {
+func (db *MongoClient) FindDid(did string) *models.User {
 	collection := db.registerColl
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	record := models.MgoUser{}
+	record := models.User{}
 	collection.FindOne(ctx, bson.M{"did": did}).Decode(&record)
 	return &record
 }
@@ -30,7 +30,7 @@ func (db *MongoClient) AddDid(did string, jwt models.Jwt) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	record := &models.MgoUser{
+	record := &models.User{
 		Did: did,
 		Jwt: jwt,
 	}
@@ -51,7 +51,7 @@ func (db *MongoClient) StoreRecord(nameToRecord string, did string) bool {
 	q1 := bson.M{"did": did}
 	q2 := bson.M{"$addToSet": bson.M{"names": nameToRecord}}
 
-	record := models.MgoUser{}
+	record := models.User{}
 	collection.FindOne(ctx, q1).Decode(&record)
 
 	if record.Did == "" {
@@ -78,7 +78,7 @@ func (db *MongoClient) CheckName(name string) (bool, error) {
 	return result == 0, nil
 }
 
-func (db *MongoClient) NewUser(user models.MgoUser) error {
+func (db *MongoClient) NewUser(user models.User) error {
 	collection := db.registerColl
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -86,13 +86,12 @@ func (db *MongoClient) NewUser(user models.MgoUser) error {
 	return nil
 }
 
-func (db *MongoClient) FindUserByName(name string) *models.MgoUser {
+func (db *MongoClient) FindUserByName(name string) *models.User {
 	collection := db.registerColl
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	user := &models.MgoUser{}
+	user := &models.User{}
 	collection.FindOne(ctx, bson.M{"names": name}).Decode(user)
-
 	return user
 }
 
@@ -100,7 +99,33 @@ func (db *MongoClient) AttachDid(placeHolderDid string, newDid string) error {
 	collection := db.registerColl
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	user := models.MgoUser{}
+	user := models.User{}
 	collection.FindOneAndUpdate(ctx, bson.M{"did": placeHolderDid}, bson.M{"$set": bson.M{"did": newDid}}).Decode(user)
 	return nil
+}
+
+func (db *MongoClient) GetUser(id uint) *models.User {
+	collection := db.registerColl
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	user := &models.User{}
+	collection.FindOne(ctx, bson.M{"id": id}).Decode(user)
+	return user
+}
+
+func (db *MongoClient) GetUserByUsername(username string) *models.User {
+	collection := db.registerColl
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	user := &models.User{}
+	collection.FindOne(ctx, bson.M{"username": username}).Decode(user)
+	return user
+}
+
+func (db *MongoClient) PutUser(u *models.User) *models.User {
+	collection := db.registerColl
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	collection.FindOneAndUpdate(ctx, bson.M{"id": u.ID}, u).Decode(u)
+	return u
 }

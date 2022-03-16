@@ -21,7 +21,7 @@ func (ws *Server) CreateUser(w http.ResponseWriter, r *http.Request) {
 		jsonResponse(w, "No email specified", http.StatusBadRequest)
 		return
 	}
-	user, err := models.GetUserByUsername(email)
+	user, err := ws.Ctrl.GetUserByUsername(email)
 	if err != gorm.ErrRecordNotFound {
 		log.Errorf("user already exists: %s", email)
 		jsonResponse(w, user, http.StatusOK)
@@ -32,7 +32,7 @@ func (ws *Server) CreateUser(w http.ResponseWriter, r *http.Request) {
 		DisplayName: username,
 		Icon:        models.PlaceholderUserIcon,
 	}
-	err = models.PutUser(&u)
+	err = ws.Ctrl.PutUser(&u)
 	if err != nil {
 		jsonResponse(w, "Error Creating User", http.StatusInternalServerError)
 		return
@@ -47,7 +47,7 @@ func (ws *Server) UserExists(w http.ResponseWriter, r *http.Request) {
 	}
 	vars := mux.Vars(r)
 	username := vars["name"]
-	_, err := models.GetUserByUsername(username)
+	_, err := ws.Ctrl.GetUserByUsername(username)
 	if err != nil {
 		log.Errorf("user not found: %s: %s", username, err)
 		jsonResponse(w, existsResponse{Exists: false}, http.StatusNotFound)

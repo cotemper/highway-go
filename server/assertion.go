@@ -35,7 +35,7 @@ func (ws *Server) GetAssertion(w http.ResponseWriter, r *http.Request) {
 
 	testExtension := protocol.AuthenticationExtensions(map[string]interface{}{"txAuthSimple": txAuthExtension})
 
-	user, err := models.GetUserByUsername(username)
+	user, err := ws.Ctrl.GetUserByUsername(username)
 	if err == gorm.ErrRecordNotFound {
 		log.Errorf("error creating assertion: user doesn't exist: %s", username)
 		jsonResponse(w, "User doesn't exist", http.StatusBadRequest)
@@ -72,7 +72,7 @@ func (ws *Server) MakeAssertion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Get the user associated with the credential
-	user, err := models.GetUser(models.BytesToID(sessionData.UserID))
+	user, err := ws.Ctrl.GetUser(models.BytesToID(sessionData.UserID))
 	if err != nil {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -102,13 +102,13 @@ func (ws *Server) MakeAssertion(w http.ResponseWriter, r *http.Request) {
 	// field, but for our purposes we'll just get the stored credential and
 	// use that to find the authenticator we need to update.
 	credentialID := base64.URLEncoding.EncodeToString(cred.ID)
-	storedCredential, err := models.GetCredentialForUser(&user, credentialID)
+	storedCredential, err := ws.Ctrl.GetCredentialForUser(*user, credentialID)
 	if err != nil {
 		log.Errorf("error getting credentials for user: %s", err)
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = models.UpdateAuthenticatorSignCount(storedCredential.AuthenticatorID, cred.Authenticator.SignCount)
+	err = ws.Ctrl.UpdateAuthenticatorSignCount(storedCredential.AuthenticatorID, cred.Authenticator.SignCount)
 	if err != nil {
 		log.Errorf("error updating sign count: %s", err)
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)

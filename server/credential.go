@@ -43,23 +43,23 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 	testEx := protocol.AuthenticationExtensions(map[string]interface{}{"txAuthSimple": testExtension})
 
 	//SQL lite check
-	user, err := models.GetUserByUsername(username)
-	if err != nil {
-		user = models.User{
-			DisplayName: strings.Split(username, "@")[0],
-			Username:    username,
-		}
-		err = models.PutUser(&user)
-		if err != nil {
-			jsonResponse(w, "Error creating new user", http.StatusInternalServerError)
-			return
-		}
-	}
+	// user, err := models.GetUserByUsername(username)
+	// if err != nil {
+	// 	user = models.User{
+	// 		DisplayName: strings.Split(username, "@")[0],
+	// 		Username:    username,
+	// 	}
+	// 	err = models.PutUser(&user)
+	// 	if err != nil {
+	// 		jsonResponse(w, "Error creating new user", http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// }
 
 	//secondary mongo check
-	mgoUser := ws.Ctrl.FindUserByName(ctx, username)
+	user := ws.Ctrl.FindUserByName(ctx, username)
 	// user doesn't exist, create new user
-	if mgoUser.DisplayName == "" {
+	if user.DisplayName == "" {
 		available, _ := ws.Ctrl.CheckName(ctx, username)
 		if !available {
 			jsonResponse(w, fmt.Errorf("username is not availabel to use"), http.StatusAlreadyReported)
@@ -68,10 +68,10 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 		var names []string
 		names = append(names, username)
 		did := "did:sonr:temp" + username
-		mgoUser.DisplayName = username
-		mgoUser.Names = names
-		mgoUser.Did = did
-		ws.Ctrl.NewUser(ctx, *mgoUser)
+		user.DisplayName = username
+		user.Names = names
+		user.Did = did
+		ws.Ctrl.NewUser(ctx, *user)
 	}
 
 	credentialOptions, sessionData, err := ws.webauthn.BeginRegistration(user,
@@ -111,7 +111,7 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Get the user associated with the credential
-	user, err := models.GetUser(models.BytesToID(sessionData.UserID))
+	user, err := ws.Ctrl.GetUser(models.BytesToID(sessionData.UserID))
 	if err != nil {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -134,7 +134,7 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 
 	// Finally, save the credential and authenticator to the
 	// database
-	authenticator, err := models.CreateAuthenticator(cred.Authenticator)
+	authenticator, err := ws.Ctrl.CreateAuthenticator(cred.Authenticator)
 	if err != nil {
 		log.Errorf("error creating authenticator: %v", err)
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
@@ -152,7 +152,7 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 		PublicKey:       cred.PublicKey,
 		CredentialID:    credentialID,
 	}
-	err = models.CreateCredential(c)
+	err = ws.Ctrl.CreateCredential(c)
 	if err != nil {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -170,13 +170,13 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 func (ws *Server) GetCredentials(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	username := vars["name"]
-	u, err := models.GetUserByUsername(username)
+	u, err := ws.Ctrl.GetUserByUsername(username)
 	if err != nil {
 		log.Errorf("user not found: %s: %s", username, err)
 		jsonResponse(w, "User not found", http.StatusNotFound)
 		return
 	}
-	cs, err := models.GetCredentialsForUser(&u)
+	cs, err := ws.Ctrl.GetCredentialsForUser(u)
 	if err != nil {
 		log.Error(err)
 		jsonResponse(w, "Credentials not found", http.StatusNotFound)
@@ -189,7 +189,7 @@ func (ws *Server) GetCredentials(w http.ResponseWriter, r *http.Request) {
 func (ws *Server) DeleteCredential(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	credID := vars["id"]
-	err := models.DeleteCredentialByID(credID)
+	err := ws.Ctrl.DeleteCredentialByID(credID)
 	log.Infof("deleting credential: %s", credID)
 	if err != nil {
 		log.Errorf("error deleting credential: %s", err)
@@ -272,6 +272,10 @@ func (ws *Server) RegisterName(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
+
+	//TODO checkname
+
+	// TODO record name in mongo
 
 	resp, err := ws.Ctrl.RegisterName(ctx, recObj, did)
 	if err != nil {

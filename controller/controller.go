@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/duo-labs/webauthn/webauthn"
 	"github.com/kataras/jwt"
 	"github.com/sonr-io/sonr/x/registry/types"
 	"github.com/sonr-io/webauthn.io/config"
@@ -49,15 +50,51 @@ func (ctrl *Controller) InsertRecord(ctx context.Context, name string, did strin
 	return nil
 }
 
-func (ctrl *Controller) NewUser(ctx context.Context, user models.MgoUser) error {
+func (ctrl *Controller) NewUser(ctx context.Context, user models.User) error {
 	return ctrl.client.NewUser(user)
 }
 
-func (ctrl *Controller) FindUserByName(ctx context.Context, name string) *models.MgoUser {
+func (ctrl *Controller) GetUser(id uint) (*models.User, error) {
+	return ctrl.client.GetUser(id), nil
+}
+
+func (ctrl *Controller) FindUserByName(ctx context.Context, name string) *models.User {
 	return ctrl.client.FindUserByName(name)
 }
 
-func (ctrl *Controller) FindDid(ctx context.Context, did string) *models.MgoUser {
+func (ctrl *Controller) GetUserByUsername(name string) (*models.User, error) {
+	return ctrl.client.GetUserByUsername(name), nil
+}
+
+func (ctrl *Controller) PutUser(u *models.User) error {
+	ctrl.client.PutUser(u)
+	return nil
+}
+
+func (ctrl *Controller) GetCredentialsForUser(user *models.User) ([]models.Credential, error) {
+	return ctrl.client.GetCredentialsForUser(user)
+}
+
+func (ctrl *Controller) CreateAuthenticator(auth webauthn.Authenticator) (models.Authenticator, error) {
+	return *ctrl.client.CreateAuthenticator(auth), nil
+}
+
+func (ctrl *Controller) CreateCredential(c *models.Credential) error {
+	return ctrl.client.CreateCredential(c)
+}
+
+func (ctrl *Controller) DeleteCredentialByID(id string) error {
+	return ctrl.client.DeleteCredentialByID(id)
+}
+
+func (ctrl *Controller) GetCredentialForUser(user models.User, credentialID string) (models.Credential, error) {
+	return ctrl.client.GetCredentialForUser(&user, credentialID)
+}
+func (ctrl *Controller) UpdateAuthenticatorSignCount(id uint, count uint32) error {
+	return ctrl.client.UpdateAuthenticatorSignCount(id, count)
+}
+
+func (ctrl *Controller) FindDid(ctx context.Context, did string) *models.User {
 	return ctrl.client.FindDid(did)
 }
 

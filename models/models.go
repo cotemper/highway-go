@@ -6,15 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
-	"time"
 
-	"github.com/sonr-io/webauthn.io/config"
-	log "github.com/sonr-io/webauthn.io/logger"
-
-	_ "github.com/go-sql-driver/mysql" // Blank import needed to import mysql
 	"github.com/jinzhu/gorm"
-	_ "github.com/mattn/go-sqlite3" // Blank import needed to import sqlite3
 )
 
 var db *gorm.DB
@@ -39,51 +32,51 @@ func BytesToID(buf []byte) uint {
 	return uint(id)
 }
 
-// Setup initializes the Conn object
-// It also populates the Config object
-func Setup(config *config.Config) error {
-	createDb := false
-	if _, err = os.Stat(config.DBPath); err != nil || config.DBPath == ":memory:" {
-		createDb = true
-	}
-	// Open our database connection
-	db, err = gorm.Open(config.DBName, config.DBPath)
-	if err != nil {
-		return err
-	}
-	db.LogMode(false)
-	db.SetLogger(log.Logger)
-	db.DB().SetMaxOpenConns(1)
-	if err != nil {
-		return err
-	}
-	// Migrate up to the latest version
-	//If the database didn't exist, we need to create the admin user
-	err := db.AutoMigrate(
-		&User{},
-		&Credential{},
-		&Authenticator{},
-	).Error
+// // Setup initializes the Conn object
+// // It also populates the Config object
+// func Setup(config *config.Config) error {
+// 	createDb := false
+// 	if _, err = os.Stat(config.DBPath); err != nil || config.DBPath == ":memory:" {
+// 		createDb = true
+// 	}
+// 	// Open our database connection
+// 	db, err = gorm.Open(config.DBName, config.DBPath)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	db.LogMode(false)
+// 	db.SetLogger(log.Logger)
+// 	db.DB().SetMaxOpenConns(1)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	// Migrate up to the latest version
+// 	//If the database didn't exist, we need to create the admin user
+// 	err := db.AutoMigrate(
+// 		&User{},
+// 		&Credential{},
+// 		&Authenticator{},
+// 	).Error
 
-	if err != nil {
-		return err
-	}
+// 	if err != nil {
+// 		return err
+// 	}
 
-	gorm.NowFunc = func() time.Time {
-		return time.Now().UTC()
-	}
+// 	gorm.NowFunc = func() time.Time {
+// 		return time.Now().UTC()
+// 	}
 
-	if createDb {
-		// Create the default user
-		initUser := User{
-			Username:    "admin",
-			DisplayName: "Example Admin",
-		}
-		err = db.Save(&initUser).Error
-		if err != nil {
-			log.Infof("error creating initial user: %s", err)
-			return err
-		}
-	}
-	return nil
-}
+// 	if createDb {
+// 		// Create the default user
+// 		initUser := User{
+// 			Username:    "admin",
+// 			DisplayName: "Example Admin",
+// 		}
+// 		err = db.Save(&initUser).Error
+// 		if err != nil {
+// 			log.Infof("error creating initial user: %s", err)
+// 			return err
+// 		}
+// 	}
+// 	return nil
+// }

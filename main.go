@@ -9,7 +9,6 @@ import (
 	"github.com/sonr-io/webauthn.io/config"
 	highway "github.com/sonr-io/webauthn.io/highway"
 	log "github.com/sonr-io/webauthn.io/logger"
-	"github.com/sonr-io/webauthn.io/models"
 	"github.com/sonr-io/webauthn.io/server"
 )
 
@@ -31,10 +30,11 @@ func main() {
 		RelyingParty: highwayConfig.RelyingParty,
 	}
 
-	err = models.Setup(authConfig)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// SQLite
+	// err = models.Setup(authConfig)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	err = log.Setup(authConfig)
 	if err != nil {

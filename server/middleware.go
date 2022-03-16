@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/sonr-io/webauthn.io/models"
 	"github.com/sonr-io/webauthn.io/session"
 )
 
@@ -15,7 +14,7 @@ func (ws *Server) LoginRequired(next http.HandlerFunc) http.HandlerFunc {
 		session, _ := ws.store.Get(r, session.WebauthnSession)
 		// Load the user from the database and store it in the request context
 		if id, ok := session.Values["user_id"]; ok {
-			u, err := models.GetUser(id.(uint))
+			u, err := ws.Ctrl.GetUser(id.(uint))
 			if err != nil {
 				r = r.WithContext(context.WithValue(r.Context(), "user", nil))
 			} else {

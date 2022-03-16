@@ -11,7 +11,7 @@ import (
 // user.
 func (ws *Server) Index(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(models.User)
-	credentials, err := models.GetCredentialsForUser(&user)
+	credentials, err := ws.Ctrl.GetCredentialsForUser(&user)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
