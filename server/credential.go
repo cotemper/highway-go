@@ -200,6 +200,7 @@ func (ws *Server) DeleteCredential(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(w, "Success", http.StatusOK)
 }
 
+//TODO clean up to match other calls
 func (ws *Server) RegisterName(ctrl *controller.Controller) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		//var body *rt.MsgRegisterName

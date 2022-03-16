@@ -93,10 +93,10 @@ func (ws *Server) registerRoutes() {
 	router.HandleFunc("/assertion", ws.MakeAssertion).Methods("POST")
 	router.HandleFunc("/user/{name}/exists", ws.UserExists).Methods("GET")
 	router.HandleFunc("/user/{name}/credentials", ws.GetCredentials).Methods("GET")
-	router.HandleFunc("/register/name/{did}", ws.RegisterName(ws.Ctrl)).Methods("POST")
 
 	// Authenticated handlers for viewing credentials after logging in
 	router.HandleFunc("/dashboard", ws.LoginRequired(ws.Index))
+	router.HandleFunc("/register/name/{did}", ws.LoginRequired(ws.RegisterName(ws.Ctrl))).Methods("POST")
 
 	// Static file serving
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
