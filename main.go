@@ -7,7 +7,10 @@ import (
 	"syscall"
 
 	"github.com/sonr-io/webauthn.io/config"
+	"github.com/sonr-io/webauthn.io/controller"
+	db "github.com/sonr-io/webauthn.io/database"
 	highway "github.com/sonr-io/webauthn.io/highway"
+	"github.com/sonr-io/webauthn.io/logger"
 	log "github.com/sonr-io/webauthn.io/logger"
 	"github.com/sonr-io/webauthn.io/server"
 )
@@ -30,19 +33,22 @@ func main() {
 		RelyingParty: highwayConfig.RelyingParty,
 	}
 
-	// SQLite
-	// err = models.Setup(authConfig)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	err = log.Setup(authConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//get ctrl for highway
-	ctrl, err := highway.Start(context.Background(), highwayConfig)
+	stub := highway.Start(context.Background(), highwayConfig)
+	DB, err := db.Connect(highwayConfig.MongoUri, highwayConfig.MongoCollectionName, highwayConfig.MongoDbName)
+	if err != nil {
+		logger.Errorf("database connection failed")
+	}
+
+	ctrl, err := controller.New(DB, highwayConfig, stub)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// start server
 	server, err := server.NewServer(ctrl, authConfig)

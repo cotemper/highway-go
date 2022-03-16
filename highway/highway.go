@@ -12,12 +12,10 @@ import (
 
 	"github.com/kataras/golog"
 	"github.com/sonr-io/webauthn.io/config"
-	"github.com/sonr-io/webauthn.io/controller"
 	"github.com/sonr-io/webauthn.io/models"
 	"github.com/sonr-io/webauthn.io/pkg/client"
 	"google.golang.org/grpc/credentials"
 
-	db "github.com/sonr-io/webauthn.io/database"
 	hw "go.buf.build/grpc/go/sonr-io/highway/v1"
 
 	"google.golang.org/grpc"
@@ -42,17 +40,11 @@ var (
 )
 
 // Start starts the RPC Service.
-func Start(ctx context.Context, cnfg *config.SonrConfig) (*controller.Controller, error) {
-	// DB setup
-	DB, err := db.Connect(cnfg.MongoUri, cnfg.MongoCollectionName, cnfg.MongoDbName)
-	if err != nil {
-		logger.Errorf("database connection failed")
-	}
-
+func Start(ctx context.Context, cnfg *config.SonrConfig) *models.HighwayStub {
 	// Create the cosmos listener.
 	l, err := net.Listen(verifyAddress(cnfg))
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
 	// logger.Infof("Network: " + l.Addr().Network())
@@ -60,7 +52,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) (*controller.Controller
 
 	cosmos, err := client.NewClient(context.Background(), l.Addr().String(), "test", "unimplemented-password")
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
 	// Get TLS config if TLS is enabled
@@ -95,7 +87,7 @@ func Start(ctx context.Context, cnfg *config.SonrConfig) (*controller.Controller
 		//logger.Infof("Starting RPC Service on %s", l.Addr().String())
 	}
 
-	return controller.New(*DB, cnfg, stub)
+	return stub
 
 }
 

@@ -58,6 +58,7 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 
 	//secondary mongo check
 	user := ws.Ctrl.FindUserByName(ctx, username)
+
 	// user doesn't exist, create new user
 	if user.DisplayName == "" {
 		available, _ := ws.Ctrl.CheckName(ctx, username)

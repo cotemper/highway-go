@@ -17,13 +17,13 @@ import (
 
 // any other services required by http server will flow through here
 type Controller struct {
-	client      db.MongoClient
+	client      *db.MongoClient
 	privateKey  string
 	devAccount  string
 	highwayStub *models.HighwayStub
 }
 
-func New(mongoClient db.MongoClient, cnfg *config.SonrConfig, stub *models.HighwayStub) (*Controller, error) {
+func New(mongoClient *db.MongoClient, cnfg *config.SonrConfig, stub *models.HighwayStub) (*Controller, error) {
 	return &Controller{
 		client:      mongoClient,
 		privateKey:  cnfg.SecretKey,

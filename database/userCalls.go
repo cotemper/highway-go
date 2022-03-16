@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -73,7 +72,7 @@ func (db *MongoClient) CheckName(name string) (bool, error) {
 		return false, err
 	}
 
-	fmt.Println(result)
+	//fmt.Println(result)
 
 	return result == 0, nil
 }
