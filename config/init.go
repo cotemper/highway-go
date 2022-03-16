@@ -118,6 +118,7 @@ func Load() (*SonrConfig, error) {
 
 	config.Save()
 	instance = config
+
 	return config, nil
 }
 

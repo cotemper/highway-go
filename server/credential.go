@@ -2,14 +2,18 @@ package server
 
 import (
 	"encoding/base64"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
 	"github.com/duo-labs/webauthn/protocol"
 	"github.com/duo-labs/webauthn/webauthn"
 	"github.com/gorilla/mux"
+	"github.com/sonr-io/webauthn.io/controller"
 	log "github.com/sonr-io/webauthn.io/logger"
 	"github.com/sonr-io/webauthn.io/models"
+	rt "go.buf.build/grpc/go/sonr-io/sonr/registry"
 )
 
 // RequestNewCredential begins a Credential Registration Request, returning a
@@ -158,4 +162,51 @@ func (ws *Server) DeleteCredential(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonResponse(w, "Success", http.StatusOK)
+}
+
+func (ws *Server) RegisterName(ctrl *controller.Controller) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		//var body *rt.MsgRegisterName
+		ctx := req.Context()
+		var err error
+
+		vars := mux.Vars(req)
+		did := vars["did"]
+
+		// start := time.Now()
+		// e := log.Info()
+		// defer func(e *zerolog.Event, start time.Time) {
+		// 	if err != nil {
+		// 		e = log.Error().Stack().Err(err)
+		// 	}
+		// 	e.Str("handler", "RegisterName").AnErr("context", ctx.Err()).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
+		// }(e, start)
+
+		body, err := ioutil.ReadAll(req.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+		//log.Debug().Str("handler", "RegisterName").Bytes("request_body", body).Send()
+
+		var recObj *rt.MsgRegisterName
+		err = json.Unmarshal(body, &recObj)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+
+		resp, err := ctrl.RegisterName(ctx, recObj, did)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		//format response
+		js, err := json.Marshal(resp)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
 }

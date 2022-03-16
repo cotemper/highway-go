@@ -11,6 +11,7 @@ import (
 	"github.com/duo-labs/webauthn/webauthn"
 	"github.com/gorilla/mux"
 	"github.com/sonr-io/webauthn.io/config"
+	"github.com/sonr-io/webauthn.io/controller"
 	"github.com/sonr-io/webauthn.io/session"
 )
 
@@ -28,11 +29,12 @@ type Server struct {
 	config   *config.Config
 	webauthn *webauthn.WebAuthn
 	store    *session.Store
+	Ctrl     *controller.Controller
 }
 
 // NewServer returns a new instance of a Server configured with the provided
 // configuration
-func NewServer(config *config.Config, opts ...Option) (*Server, error) {
+func NewServer(ctrl *controller.Controller, config *config.Config, opts ...Option) (*Server, error) {
 	addr := net.JoinHostPort(config.HostAddress, config.HostPort)
 	defaultServer := &http.Server{
 		Addr:         addr,
@@ -52,6 +54,7 @@ func NewServer(config *config.Config, opts ...Option) (*Server, error) {
 		server:   defaultServer,
 		store:    defaultStore,
 		webauthn: defaultWebAuthn,
+		Ctrl:     ctrl,
 	}
 	for _, opt := range opts {
 		opt(ws)
@@ -90,6 +93,7 @@ func (ws *Server) registerRoutes() {
 	router.HandleFunc("/assertion", ws.MakeAssertion).Methods("POST")
 	router.HandleFunc("/user/{name}/exists", ws.UserExists).Methods("GET")
 	router.HandleFunc("/user/{name}/credentials", ws.GetCredentials).Methods("GET")
+	router.HandleFunc("/register/name/{did}", ws.RegisterName(ws.Ctrl)).Methods("POST")
 
 	// Authenticated handlers for viewing credentials after logging in
 	router.HandleFunc("/dashboard", ws.LoginRequired(ws.Index))
