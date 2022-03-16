@@ -139,12 +139,14 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 	//accountName := req.Creator
 	accountName := ctrl.devAccount // this i shardcoded to the dev account for now //TODO
 
+	fmt.Println("account: " + accountName)
+
 	// get account from the keyring by account name and return a bech32 address
 	address, err := ctrl.highwayStub.Cosmos.Address(accountName)
 	if err != nil {
+		fmt.Println(err.Error())
 		return &rt.MsgRegisterNameResponse{}, err
 	}
-
 	//TODO check for credential
 
 	// check for name in db
@@ -153,7 +155,6 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 	if user.DisplayName == "" {
 		return &rt.MsgRegisterNameResponse{}, errors.New("user does not exist in DB")
 	}
-
 	// define a message to create a post
 	msg := &types.MsgRegisterName{
 		Creator: address.String(),
@@ -163,17 +164,16 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 	}
 	// broadcast a transaction from account accountName with the message to create a post
 	//store response in txResp
-	txResp, err := ctrl.highwayStub.Cosmos.BroadcastTx(req.Creator, msg)
+	txResp, err := ctrl.highwayStub.Cosmos.BroadcastTx(accountName, msg)
 	if err != nil {
+		fmt.Println(err.Error())
 		return &rt.MsgRegisterNameResponse{}, err
 	}
-
 	//TODO fix this logic, this is awful
 	success := false
 	if !txResp.Empty() {
 		success = true
 	}
-
 	if success {
 		ctrl.client.StoreRecord(req.NameToRegister, did)
 	}
@@ -183,12 +183,10 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 	// message := txResp.Decode(&responseTest)
 	// fmt.Println(message)
 	// fmt.Println(&message)
-
 	bs, err := hex.DecodeString(txResp.Data)
 	if err != nil {
 		return &rt.MsgRegisterNameResponse{}, err
 	}
-
 	//Unmarshalling of a json did document:
 	// parsedDIDDoc := did.Document{}
 	// err = json.Unmarshal([]byte(bs), &parsedDIDDoc)
@@ -205,7 +203,6 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 	// response.DidDocument = &rt.DidDocument{
 	// 	AlsoKnownAs: aliases,
 	// }
-
 	//return &response, nil
 	return &response, nil
 }

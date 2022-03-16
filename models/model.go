@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"net"
 	"net/http"
 
 	"github.com/sonr-io/sonr/pkg/p2p"
@@ -20,10 +19,9 @@ type HighwayStub struct {
 	Cosmos cosmosclient.Client
 
 	// Properties
-	Ctx      context.Context
-	Grpc     *grpc.Server
-	Http     *http.Server
-	Listener net.Listener
+	Ctx  context.Context
+	Grpc *grpc.Server
+	Http *http.Server
 
 	// Configuration
 

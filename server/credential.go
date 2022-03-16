@@ -74,7 +74,7 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 		user.Names = names
 		user.Did = did
 		user.ID = uint(rand.Uint32())
-		user.Username = username + "@sonr"
+		user.Username = username
 		user.DisplayName = username
 		ws.Ctrl.NewUser(ctx, *user)
 	}
@@ -157,7 +157,8 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 		CredentialID:    credentialID,
 	}
 
-	user.Credentials = append(user.Credentials, *c)
+	fmt.Println(c.CredentialID)
+	fmt.Println(c.UserID)
 
 	err = ws.Ctrl.CreateCredential(c)
 	if err != nil {
@@ -166,10 +167,19 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//store public key on did
-	ws.Ctrl.AttachDid(ctx, "did:sonr:temp"+user.DisplayName, "did:sonr:"+credentialID)
+	did := "did:sonr:" + credentialID
+	regName := &rt.MsgRegisterName{Creator: "", NameToRegister: user.Username}
+	ws.Ctrl.AttachDid(ctx, "did:sonr:temp"+user.DisplayName, did)
+
+	//register name on chain
+
+	fmt.Println(did)
+	fmt.Println(regName)
+
+	ws.Ctrl.RegisterName(ctx, regName, did)
 
 	//store cred under user in mgo
-	ws.Ctrl.PutUser(user)
+	ws.Ctrl.GiveUserCred(user, c)
 
 	jsonResponse(w, http.StatusText(http.StatusCreated), http.StatusCreated)
 }
