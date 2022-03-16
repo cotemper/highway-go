@@ -200,6 +200,53 @@ func (ws *Server) DeleteCredential(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(w, "Success", http.StatusOK)
 }
 
+func (ws *Server) HealthHandler(w http.ResponseWriter, req *http.Request) {
+	// A very simple health check.
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+type Response struct {
+	Available bool
+}
+
+func (ws *Server) CheckName(ctrl *controller.Controller) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		ctx := req.Context()
+
+		vars := mux.Vars(req)
+		name := vars["name"]
+		var err error
+
+		// start := time.Now()
+		// e := log.Info()
+		// defer func(e *zerolog.Event, start time.Time) {
+		// 	if err != nil {
+		// 		e = log.Error().Stack().Err(err)
+		// 	}
+		// 	e.Str("handler", "CheckName").AnErr("context", ctx.Err()).Str("name", name).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
+		// }(e, start)
+
+		nameAvailable, err := ctrl.CheckName(ctx, name)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		//format response
+		responseObj := Response{Available: nameAvailable}
+		js, err := json.Marshal(responseObj)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+
+	}
+}
+
 //TODO clean up to match other calls
 func (ws *Server) RegisterName(ctrl *controller.Controller) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
