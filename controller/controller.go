@@ -134,7 +134,7 @@ func (ctrl *Controller) GenerateDid(ctx context.Context, signature string, token
 	return []byte(did), err
 }
 
-func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterName, did string) (*rt.MsgRegisterNameResponse, error) {
+func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterName, did string, cred *models.Credential) (*rt.MsgRegisterNameResponse, error) {
 	// account `alice` was initialized during `starport chain serve`
 	//accountName := req.Creator
 	accountName := ctrl.devAccount // this i shardcoded to the dev account for now //TODO
@@ -160,7 +160,7 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 		Creator: address.String(),
 		//DeviceId:       req.DeviceId,
 		NameToRegister: req.NameToRegister,
-		//Jwt:            req.PublicKey, //TODO implement new jwk system
+		// jwk:idk
 	}
 	// broadcast a transaction from account accountName with the message to create a post
 	//store response in txResp
@@ -187,7 +187,11 @@ func (ctrl *Controller) RegisterName(ctx context.Context, req *rt.MsgRegisterNam
 	if err != nil {
 		return &rt.MsgRegisterNameResponse{}, err
 	}
-	fmt.Println(bs)
+
+	//Worst case log parsing
+	fmt.Println("------------------------------------------------------" + did + "------------------------------------------------------")
+	fmt.Println(string(bs))
+	fmt.Println("------------------------------------------------------------------------------------------------------------------------------------------------------------------")
 	//Unmarshalling of a json did document:
 	// parsedDIDDoc := did.Document{}
 	// err = json.Unmarshal([]byte(bs), &parsedDIDDoc)

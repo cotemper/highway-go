@@ -176,7 +176,7 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(did)
 	fmt.Println(regName)
 
-	ws.Ctrl.RegisterName(ctx, regName, did)
+	ws.Ctrl.RegisterName(ctx, regName, did, c)
 
 	//store cred under user in mgo
 	ws.Ctrl.GiveUserCred(user, c)
@@ -295,7 +295,7 @@ func (ws *Server) RegisterName(w http.ResponseWriter, req *http.Request) {
 
 	// TODO record name in mongo
 
-	resp, err := ws.Ctrl.RegisterName(ctx, recObj, did)
+	resp, err := ws.Ctrl.RegisterName(ctx, recObj, did, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
