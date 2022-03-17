@@ -75,6 +75,8 @@ function getCredentials() {
         });
 }
 
+
+
 function makeCredential() {
     hideErrorAlert();
     console.log("Fetching options for new credential");
@@ -116,12 +118,8 @@ function makeCredential() {
                 console.log(newCredential);
                 state.createResponse = newCredential;
                 registerNewCredential(newCredential);
-
-            }).
-            then(window.location.href = 'info.html')
-                .catch(function(err) {
-                    console.info(err);
-                });
+                window.location = "https://buy.stripe.com/00g7wgbf92oA2088wx";
+            })
         });
 }
 
@@ -231,7 +229,7 @@ function verifyAssertion(assertedCredential) {
         }),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function (response) {
+        success: function(response) {
             window.location = "/dashboard";
             console.log(response)
         }
