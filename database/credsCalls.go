@@ -71,7 +71,7 @@ func (db *MongoClient) DeleteCredentialByID(credentialID string) error {
 }
 
 // GetCredentialForUser retrieves a specific credential for a user.
-func (db *MongoClient) GiveUserCred(user *models.User, cred *models.Credential) error {
+func (db *MongoClient) GiveUserCred(username string, cred *models.Credential) error {
 	collection := db.users
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -83,6 +83,7 @@ func (db *MongoClient) GiveUserCred(user *models.User, cred *models.Credential) 
 		AuthenticatorID: cred.AuthenticatorID,
 		PublicKey:       cred.PublicKey,
 	}
-	collection.FindOneAndUpdate(ctx, bson.M{"id": user.ID}, bson.M{"$push": bson.M{"credentials": &newCred}})
+
+	collection.FindOneAndUpdate(ctx, bson.M{"username": username}, bson.M{"$push": bson.M{"credentials": newCred}})
 	return nil
 }

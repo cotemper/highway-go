@@ -190,7 +190,7 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 	ws.Ctrl.RegisterName(ctx, regName, did, c)
 
 	//store cred under user in mgo
-	ws.Ctrl.GiveUserCred(user, c)
+	ws.Ctrl.GiveUserCred(user.Username, c)
 
 	jsonResponse(w, http.StatusText(http.StatusCreated), http.StatusCreated)
 }

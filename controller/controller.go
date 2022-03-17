@@ -102,8 +102,8 @@ func (ctrl *Controller) AttachDid(ctx context.Context, placeHolderDid string, ne
 	return ctrl.client.AttachDid(placeHolderDid, newDid)
 }
 
-func (ctrl *Controller) GiveUserCred(user *models.User, cred *models.Credential) error {
-	ctrl.client.GiveUserCred(user, cred)
+func (ctrl *Controller) GiveUserCred(username string, cred *models.Credential) error {
+	ctrl.client.GiveUserCred(username, cred)
 	return nil
 }
 
