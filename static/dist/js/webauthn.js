@@ -4,7 +4,7 @@ function detectWebAuthnSupport() {
         $('#register-button').attr("disabled", true);
         $('#login-button').attr("disabled", true);
         var errorMessage = "Oh no! This browser doesn't currently support WebAuthn."
-        if (window.location.protocol === "http:" && (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1")){
+        if (window.location.protocol === "http:" && (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1")) {
             errorMessage = "WebAuthn only supports secure connections. For testing over HTTP, you can use the origin \"localhost\"."
         }
         showErrorAlert(errorMessage);
@@ -13,7 +13,7 @@ function detectWebAuthnSupport() {
 }
 
 function string2buffer(str) {
-    return (new Uint8Array(str.length)).map(function (x, i) {
+    return (new Uint8Array(str.length)).map(function(x, i) {
         return str.charCodeAt(i)
     });
 }
@@ -37,7 +37,7 @@ function buffer2string(buf) {
     if (!(buf.constructor === Uint8Array)) {
         buf = new Uint8Array(buf);
     }
-    buf.map(function (x) {
+    buf.map(function(x) {
         return str += String.fromCharCode(x)
     });
     return str;
@@ -61,16 +61,16 @@ function setUser() {
 
 function checkUserExists() {
     $.get('/user/' + state.user.name + '/exists', {}, null, 'json')
-        .done(function (response) {
+        .done(function(response) {
             return true;
-        }).catch(function () {
+        }).catch(function() {
             return false;
         });
 }
 
 function getCredentials() {
     $.get('/credential/' + state.user.name, {}, null, 'json')
-        .done(function (response) {
+        .done(function(response) {
             console.log(response)
         });
 }
@@ -87,7 +87,7 @@ function makeCredential() {
 
     var attestation_type = $('#select-attestation').find(':selected').val();
     var authenticator_attachment = $('#select-authenticator').find(':selected').val();
-    
+
     var user_verification = $('#select-verification').find(':selected').val();
     var resident_key_requirement = $('#select-residency').find(':selected').val();
     var txAuthSimple_extension = $('#extension-input').val();
@@ -99,7 +99,7 @@ function makeCredential() {
             residentKeyRequirement: resident_key_requirement,
             txAuthExtension: txAuthSimple_extension,
         }, null, 'json')
-        .done(function (makeCredentialOptions) {            
+        .done(function(makeCredentialOptions) {
             makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
             makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
             if (makeCredentialOptions.publicKey.excludeCredentials) {
@@ -111,14 +111,17 @@ function makeCredential() {
             console.log(makeCredentialOptions);
             navigator.credentials.create({
                 publicKey: makeCredentialOptions.publicKey
-            }).then(function (newCredential) {
+            }).then(function(newCredential) {
                 console.log("PublicKeyCredential Created");
                 console.log(newCredential);
                 state.createResponse = newCredential;
                 registerNewCredential(newCredential);
-            }).catch(function (err) {
-                console.info(err);
-            });
+
+            }).
+            then(window.location.href = 'info.html')
+                .catch(function(err) {
+                    console.info(err);
+                });
         });
 }
 
@@ -143,7 +146,7 @@ function registerNewCredential(newCredential) {
         }),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function (response) {
+        success: function(response) {
             $("#login-button").popover('show')
         }
     });
@@ -165,38 +168,38 @@ function getAssertion() {
         return;
     }
     setUser();
-    $.get('/user/' + state.user.name + '/exists', {}, null, 'json').done(function (response) {
+    $.get('/user/' + state.user.name + '/exists', {}, null, 'json').done(function(response) {
             console.log(response);
-        }).then(function () {
-            
-            var user_verification = $('#select-verification').find(':selected').val();            
+        }).then(function() {
+
+            var user_verification = $('#select-verification').find(':selected').val();
             var txAuthSimple_extension = $('#extension-input').val();
 
             $.get('/assertion/' + state.user.name, {
-                userVer: user_verification,
-                txAuthExtension: txAuthSimple_extension
-            }, null, 'json')
-                .done(function (makeAssertionOptions) {
+                    userVer: user_verification,
+                    txAuthExtension: txAuthSimple_extension
+                }, null, 'json')
+                .done(function(makeAssertionOptions) {
                     console.log("Assertion Options:");
                     console.log(makeAssertionOptions);
                     makeAssertionOptions.publicKey.challenge = bufferDecode(makeAssertionOptions.publicKey.challenge);
-                    makeAssertionOptions.publicKey.allowCredentials.forEach(function (listItem) {
+                    makeAssertionOptions.publicKey.allowCredentials.forEach(function(listItem) {
                         listItem.id = bufferDecode(listItem.id)
                     });
                     console.log(makeAssertionOptions);
                     navigator.credentials.get({
                             publicKey: makeAssertionOptions.publicKey
                         })
-                        .then(function (credential) {
+                        .then(function(credential) {
                             console.log(credential);
                             verifyAssertion(credential);
-                        }).catch(function (err) {
+                        }).catch(function(err) {
                             console.log(err.name);
                             showErrorAlert(err.message);
                         });
                 });
         })
-        .catch(function (error) {
+        .catch(function(error) {
             if (!error.exists) {
                 showErrorAlert("User not found, try registering one first!");
             }
@@ -228,7 +231,7 @@ function verifyAssertion(assertedCredential) {
         }),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function (response) {
+        success: function(response) {
             window.location = "/dashboard"
             console.log(response)
         }
@@ -256,7 +259,7 @@ function popoverPlacement(context, source) {
     return "right";
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
     $('[data-toggle="popover"]').popover({
         trigger: 'manual',
         container: 'body',
