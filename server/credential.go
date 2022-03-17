@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/duo-labs/webauthn/protocol"
@@ -25,13 +26,27 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 
 	var takenNames = []string{"api", "tx", "app", "arianagrande", "azamsharp", "barrybonds", "barrysanders", "billgates", "britneyspears", "cdixon", "cristiano", "drake", "elon", "eminem", "flotus", "iamsrk", "imap", "index", "jack", "jbbernstein", "jeffbezos", "jimmyfallon", "joynerlucas", "jtimberlake", "justinbieber", "katyperry", "kimkardashian", "kingjames", "ladygaga", "larrypage", "launchhouse", "logic", "mail", "main", "markzuckerburg", "meekmill", "naval", "neymarjr", "oprah", "patrickbetdavid", "pop", "potus", "prad", "rihanna", "root", "satyanadella", "sc", "selenagomez", "sergeibrin", "shakira", "shl", "smartrick", "srbachchan", "stephencurry", "sundarpichai", "taylorswift", "tombrady", "vitalik", "michael", "prad2", "papa", "ikj", "ian", "shadowysupercoder", "ianperez", "perez", "0x0", "zac", "smartrick", "holwerda", "zholwerda", "NFT", "classof.o7", "goat", "nsfw", "nick", "ntindle", "nicktindle", "cloud", "devops", "engineer", "ntt", "grace", "get", "gtindle", "0xDEADBEEF", "static", "d0x", "null", "exposure", "zach", "joshLong145", "beanPole", "undefined", "Peyton", "gopher", "cosmic", "lauren", "sonr", "prad", "letsgobrandon", "snr", "erin", "jamey", "monica", "Space", "timmy", "creaton", "Warriors", "BestButt", "Mfers", "Beast", "mary", "david"}
 
-	//The trimmer
 	username := vars["name"]
-	if username[len(username)-4:] == ".snr" {
+	//check length restrictions
+	if len(username) < 2 {
+		jsonResponse(w, errors.New("name too short"), http.StatusInternalServerError)
+		return
+	}
+
+	//alphanumeric restrictions
+	re := regexp.MustCompile("^[a-zA-Z0-9_]*$")
+	if !re.MatchString(username) {
+		jsonResponse(w, errors.New("name not alphanumeric"), http.StatusInternalServerError)
+		return
+	}
+
+	//The trimmer
+	if len(username) > 4 || username[len(username)-4:] == ".snr" {
 		username = username[:len(username)-4]
 	}
 	available, err := ws.Ctrl.CheckName(ctx, username)
 
+	// if reserved
 	for _, x := range takenNames {
 		if x == username {
 			available = false
