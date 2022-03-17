@@ -229,7 +229,7 @@ function verifyAssertion(assertedCredential) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (response) {
-            window.location = "/dashboard"
+            window.location = "/dashboard";
             console.log(response)
         }
     });
