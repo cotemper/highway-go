@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -24,6 +25,16 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	username := vars["name"]
+
+	available, err := ws.Ctrl.CheckName(ctx, username)
+
+	if err != nil {
+		jsonResponse(w, err.Error(), http.StatusInternalServerError)
+		return
+	} else if !available {
+		jsonResponse(w, errors.New("name already taken"), http.StatusInternalServerError)
+		return
+	}
 
 	// Most times relying parties will choose these.
 	attType := r.FormValue("attType")
