@@ -130,7 +130,6 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 
 	// Get the user associated with the credential
 	user, err := ws.Ctrl.GetUser(models.BytesToID(sessionData.UserID))
-
 	if err != nil {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
 		return
