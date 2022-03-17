@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"strings"
@@ -299,7 +298,7 @@ func (ws *Server) RegisterName(w http.ResponseWriter, req *http.Request) {
 	var err error
 
 	vars := mux.Vars(req)
-	did := vars["did"]
+	name := vars["name"]
 
 	// start := time.Now()
 	// e := log.Info()
@@ -310,23 +309,28 @@ func (ws *Server) RegisterName(w http.ResponseWriter, req *http.Request) {
 	// 	e.Str("handler", "RegisterName").AnErr("context", ctx.Err()).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
 	// }(e, start)
 
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
+	// body, err := ioutil.ReadAll(req.Body)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// }
 	//log.Debug().Str("handler", "RegisterName").Bytes("request_body", body).Send()
 
-	var recObj *rt.MsgRegisterName
-	err = json.Unmarshal(body, &recObj)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
+	// var recObj *rt.MsgRegisterName
+	// err = json.Unmarshal(body, &recObj)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// }
 
 	//TODO checkname
+	user := ws.Ctrl.FindUserByName(ctx, name)
+	if user.Username == "" {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-	// TODO record name in mongo
+	did := user.Did
 
-	resp, err := ws.Ctrl.RegisterName(ctx, recObj, did, nil)
+	resp, err := ws.Ctrl.RegisterName(ctx, &rt.MsgRegisterName{NameToRegister: name}, did, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

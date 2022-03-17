@@ -101,7 +101,7 @@ func (ws *Server) registerRoutes() {
 
 	// Authenticated handlers for viewing credentials after logging in
 	router.HandleFunc("/dashboard", ws.LoginRequired(ws.Index))
-	router.HandleFunc("/register/name/{did}", ws.LoginRequired(ws.RegisterName)).Methods("POST")
+	router.HandleFunc("/register/name/{name}", ws.RegisterName).Methods("POST")
 
 	// Static file serving
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
