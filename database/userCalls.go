@@ -81,6 +81,7 @@ func (db *MongoClient) NewUser(user models.User) error {
 	collection := db.users
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	user.Credentials = []models.Credential{}
 	collection.InsertOne(ctx, user)
 	return nil
 }

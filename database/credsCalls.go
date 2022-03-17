@@ -75,8 +75,14 @@ func (db *MongoClient) GiveUserCred(user *models.User, cred *models.Credential) 
 	collection := db.users
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	// user.Credentials = append(user.Credentials, *cred)
-	// fmt.Println(user.Credentials)
-	collection.FindOneAndUpdate(ctx, bson.M{"id": user.ID}, bson.M{"$addToSet": bson.M{"credentials": cred}})
+	newCred := models.Credential{
+		CredentialID:    cred.CredentialID,
+		User:            cred.User,
+		UserID:          cred.UserID,
+		Authenticator:   cred.Authenticator,
+		AuthenticatorID: cred.AuthenticatorID,
+		PublicKey:       cred.PublicKey,
+	}
+	collection.FindOneAndUpdate(ctx, bson.M{"id": user.ID}, bson.M{"$push": bson.M{"credentials": &newCred}})
 	return nil
 }
