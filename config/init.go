@@ -115,6 +115,7 @@ func Load() (*SonrConfig, error) {
 		SqlPath:             viper.GetString("SQL_PATH"),
 		RelyingParty:        viper.GetString("RELYING_PARTY"),
 		RPOrigin:            viper.GetString("RP_ORIGIN"),
+		RPPort:              viper.GetString("RP_PORT"),
 		LibP2PLowWater:      viper.GetInt("libp2p.lowWater"),
 		LibP2PHighWater:     viper.GetInt("libp2p.highWater"),
 		LibP2PRendevouz:     viper.GetString("libp2p.rendevouz"),

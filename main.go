@@ -63,7 +63,7 @@ func main() {
 		DBName:       highwayConfig.SqlName,
 		DBPath:       highwayConfig.SqlPath,
 		RelyingParty: highwayConfig.RelyingParty,
-		RPOrigin:     highwayConfig.RPOrigin,
+		RPOrigin:     highwayConfig.RPOrigin + highwayConfig.RPPort,
 	}
 
 	err = log.Setup(authConfig)

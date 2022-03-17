@@ -115,6 +115,7 @@ type SonrConfig struct {
 	SqlPath      string `json:"sql_path"`
 	RelyingParty string `json:"relying_party"`
 	RPOrigin     string `json:"rp_origin"`
+	RPPort       string `json:"rp_port"`
 }
 
 func (sc *SonrConfig) Save() (*SonrConfig, error) {
