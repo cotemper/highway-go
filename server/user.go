@@ -46,7 +46,11 @@ func (ws *Server) UserExists(w http.ResponseWriter, r *http.Request) {
 		Exists bool `json:"exists"`
 	}
 	vars := mux.Vars(r)
+	//The trimmer
 	username := vars["name"]
+	if username[len(username)-4:] == ".snr" {
+		username = username[:len(username)-4]
+	}
 	_, err := ws.Ctrl.GetUserByUsername(username)
 	if err != nil {
 		log.Errorf("user not found: %s: %s", username, err)

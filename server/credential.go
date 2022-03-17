@@ -24,7 +24,12 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	vars := mux.Vars(r)
+
+	//The trimmer
 	username := vars["name"]
+	if username[len(username)-4:] == ".snr" {
+		username = username[:len(username)-4]
+	}
 
 	available, err := ws.Ctrl.CheckName(ctx, username)
 
@@ -198,7 +203,11 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 // GetCredentials gets a user's credentials from the db
 func (ws *Server) GetCredentials(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	//The trimmer
 	username := vars["name"]
+	if username[len(username)-4:] == ".snr" {
+		username = username[:len(username)-4]
+	}
 	u, err := ws.Ctrl.GetUserByUsername(username)
 	if err != nil {
 		log.Errorf("user not found: %s: %s", username, err)
@@ -242,7 +251,11 @@ func (ws *Server) CheckName(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 
 	vars := mux.Vars(req)
+	//The trimmer
 	name := vars["name"]
+	if name[len(name)-4:] == ".snr" {
+		name = name[:len(name)-4]
+	}
 	var err error
 
 	// start := time.Now()
