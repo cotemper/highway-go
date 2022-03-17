@@ -22,8 +22,9 @@ import (
 // PublicKeyCredentialCreationOptions object
 func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-
 	vars := mux.Vars(r)
+
+	var takenNames = []string{"facebook", "twitter", "instagram"}
 
 	//The trimmer
 	username := vars["name"]
@@ -32,6 +33,13 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 	}
 
 	available, err := ws.Ctrl.CheckName(ctx, username)
+
+	for _, x := range takenNames {
+		if x == username {
+			available = false
+			break
+		}
+	}
 
 	if err != nil {
 		jsonResponse(w, err.Error(), http.StatusInternalServerError)
