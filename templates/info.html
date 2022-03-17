@@ -86,9 +86,97 @@
 
 </div>
 
-<div class="flex flex-row">
 
+<div class="flex flex-row">
+    <!-- <style>
+        .container {
+            width: 600px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .box {
+            background: rgb(18, 19, 18);
+            width: 100px;
+            height: 100px;
+            margin: 0 15px;
+        }
+
+        h3 {
+            text-align: center;
+            padding-top: 2px;
+            color: blanchedalmond;
+
+        }
+
+        .box h1 {
+            font-size: 50px;
+            text-align: center;
+            font-family: sans-serif;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: blanchedalmond;
+        }
+
+        .alert {
+            display: none;
+        } -->
+    <!-- </style> -->
+
+    <div class="container">
+        <div class="box">
+            <h3 id="hourstxt">Hours</h2>
+                <h1 id="hours">00</h1>
+        </div>
+        <div class="box">
+            <h3 id="minutestxt">Minutes</h2>
+                <h1 id="minutes">00</h1>
+        </div>
+        <div class="box">
+            <h3 id="secondstxt">Seconds</h2>
+                <h1 id="seconds">00</h1>
+        </div>
+    </div>
+
+    <div style="background: rgb(204, 24, 24);" class="alert">
+        <h1 style="padding: 50px 80px;color: white;">Go Register a .snr/</h1>
+    </div>
 </div>
+<script>
+    const finaleDate = new Date("March 17, 2022 14:30:00").getTime();
+
+    const timer = () => {
+        const now = new Date().getTime();
+        let diff = finaleDate - now;
+        if (diff < 0) {
+            document.querySelector('.alert').style.display = 'block';
+            document.querySelector('.container').style.display = 'none';
+        }
+
+        let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        let hours = Math.floor(diff % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
+        let minutes = Math.floor(diff % (1000 * 60 * 60) / (1000 * 60));
+        let seconds = Math.floor(diff % (1000 * 60) / 1000);
+
+        days <= 99 ? days = `0${days}` : days;
+        days <= 9 ? days = `00${days}` : days;
+        hours <= 9 ? hours = `0${hours}` : hours;
+        minutes <= 9 ? minutes = `0${minutes}` : minutes;
+        seconds <= 9 ? seconds = `0${seconds}` : seconds;
+
+        document.querySelector('#hours').textContent = hours;
+        document.querySelector('#minutes').textContent = minutes;
+        document.querySelector('#seconds').textContent = seconds;
+
+    }
+    timer();
+    setInterval(timer, 1000);
+
+</script>
+
+
 <center>
     <div class="col-lg-12 items-center pb-20">
         <p>
