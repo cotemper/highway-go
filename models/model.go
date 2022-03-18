@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"net"
 	"net/http"
 
 	"github.com/sonr-io/sonr/pkg/p2p"
@@ -20,10 +19,9 @@ type HighwayStub struct {
 	Cosmos cosmosclient.Client
 
 	// Properties
-	Ctx      context.Context
-	Grpc     *grpc.Server
-	Http     *http.Server
-	Listener net.Listener
+	Ctx  context.Context
+	Grpc *grpc.Server
+	Http *http.Server
 
 	// Configuration
 
@@ -41,6 +39,7 @@ type HighwayStub struct {
 type Jwt struct {
 	Snr        string `json:"snr"`
 	EthAddress string `json: "ethAddress"`
+<<<<<<< HEAD
 
 	// publickey.challenge.userID
 	// user: {
@@ -54,4 +53,6 @@ type Jwt struct {
 	//         authenticatorAttachment: "cross-platform",
 	//     },
 
+=======
+>>>>>>> 9ce0b9c53cf9b63af806fcb90bd2962ecbb0245d
 }

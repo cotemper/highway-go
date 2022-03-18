@@ -1,0 +1,342 @@
+{{define "home"}}
+<link rel="stylesheet" href="/dist/css/custom.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<div id="loading">
+    <div class="load-circle"><span class="one"></span></div>
+</div>
+<div class="site-wrapper overflow-hidden dark-theme">
+    <!-- Header Area -->
+    <header class="site-header bg--conflower-blue sticky-header header-3">
+        <div class="container">
+            <nav class="navbar site-navbar offcanvas-active navbar-expand-lg navbar-light">
+                <!-- Brand Logo-->
+                <div class="brand-logo mr--30 order-1">
+                    <a href="javascript:"><img src="./image/png/logo-white.png" alt="" /></a>
+                </div>
+                <div class="collapse navbar-collapse order-lg-2" id="mobile-menu">
+                    <div class="navbar-nav mx-auto">
+                        <button class="btn-close navbar-toggler" type="button" data-toggle="collapse" data-target="#mobile-menu" aria-controls="mobile-menu" aria-expanded="true" aria-label="Toggle navigation">
+                  <i class="icon icon-simple-remove"></i>
+                </button>
+                    </div>
+                    <div class="header-btn order-2 ml-auto mr--10 mr-lg--0 order-lg-3 d-lg-none">
+                        <a href="https://sonr.fyi" class="btn--primary btn-header">Visit Old Site</a
+                >
+              </div>
+            </div>
+            <button
+              class="navbar-toggler btn-close-off-canvas order-3 order-lg-2"
+              type="button"
+              data-toggle="collapse"
+              data-target="#mobile-menu"
+              aria-controls="mobile-menu"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <i class="icon icon-simple-remove icon-close"></i>
+              <i class="icon icon-menu-34 icon-burger"></i>
+            </button>
+            <div
+              class="header-btn order-2 ml-auto mr--10 mr-lg--0 order-lg-3 d-lg-block d-none"
+            >
+              <a href="https://sonr.fyi" class="btn--primary btn-header"
+                >Visit Old Site</a
+              >
+            </div>
+          </nav>
+        </div>
+      </header>
+      <!-- Hero Area -->
+      <div class="omga-03__hero-area pt-lg--200 section-padding shape-holder">
+        <div class="omga-03__hero-section-shape d-none d-md-block">
+          <img src="./image/png/hero-shape-yellow.png" alt="" />
+        </div>
+        <div class="container">
+          <div class="row">
+            <div
+              class="col-md-10 col-xl-7 col-lg-8"
+              data-aos="fade-right"
+              data-aos-duration="500"
+              data-aos-once="true"
+            >
+              <div class="omga-03__hero-content py--50">
+                <h1 class="title">
+                  The Drivers License <br class="d-none d-sm-block" />for the
+                  New Internet.
+                </h1>
+                <p>
+                  Take back your data with the .snr/ domain name — totally
+                  decentralized. We’re not kidding.
+                </p>
+              </div>
+            </div>
+            <div class="col-xl-5 col-lg-4">
+              <form action="./" class="omga-03__form-shape-holder">
+                <div class="omga-03__form-shape d-none d-sm-block">
+                  <img src="./image/png/hero-shape-combined.png" alt="" />
+                </div>
+                <div class="omga-03__hero-form">
+                  <div class="form-group from-group--with-label">
+                    <input type="text" class="form-control" id="inputEmail1" />
+                    <label
+                      for="selectSize"
+                      class="form-label"
+                      id="form-placeholder"
+                      >.snr/ Name</label
+                    >
+                  </div>
+                  <div class="hero-btn">
+                    <button
+                      type="submit"
+                      class="btn--primary hvr-bounce-to-left"
+                    >
+                      Register Name
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Feature section -->
+      <div class="omga-03__feature-section section-padding z-index-1">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-xl-6 col-lg-7 col-md-8">
+              <div class="section-title text-center pb--70">
+                <h2 class="title">Decentralized identity (DID)</h2>
+                <a
+                  href="https://www.youtube.com/watch?v=Ew-_F-OtDFI"
+                  class="video-link"
+                  data-fancybox
+                >
+                  <p>
+                    Your .snr/ domain resolves to your decentralized identity in
+                    the Sonr ecosystem, allowing you to securely control access
+                    to your personal data. Watch this 3 min video by Microsoft
+                    to learn more about decentralized identity.
+                  </p>
+                </a>
+                    </div>
+                </div>
+        </div>
+        <div class="video-image">
+            <iframe width="1120" height="630" src="https://www.youtube.com/embed/Ew-_F-OtDFI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-5 col-sm-6 mt-lg--100 mt--60">
+                <div class="feature-widget--3">
+                    <div class="widget-icon bg-blue">
+                        <i class="icon icon-sidebar-2"></i>
+                    </div>
+                    <div class="widget-text">
+                        <h3 class="title">Decentralized</h3>
+                        <p>Identity owned by you instead of a central authority.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5 col-sm-6 mt-lg--100 mt--60">
+                <div class="feature-widget--3">
+                    <div class="widget-icon bg-red">
+                        <i class="icon icon-layout-11"></i>
+                    </div>
+                    <div class="widget-text">
+                        <h3 class="title">Cross-Chain</h3>
+                        <p>
+                            Interoperability with blockchains within the
+                            <a href="https://cosmos.network/">Cosmos ecosystem</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5 col-sm-6 mt-lg--100 mt--60">
+                <div class="feature-widget--3">
+                    <div class="widget-icon bg-blue">
+                        <i class="icon icon-airplane-2"></i>
+                    </div>
+                    <div class="widget-text">
+                        <h3 class="title">Built-in Resolver</h3>
+                        <p>
+                            Automatic resolution from .snr/ domain to on-chain decentralized identity.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5 col-sm-6 mt-lg--100 mt--60">
+                <div class="feature-widget--3">
+                    <div class="widget-icon bg-red">
+                        <i class="icon icon-voice-recognition-2"></i>
+                    </div>
+                    <div class="widget-text">
+                        <h3 class="title">Universal</h3>
+                        <p>
+                            Universally recognized domain for all on-chain identity management.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5 col-sm-6 mt-lg--100 mt--60">
+                <div class="feature-widget--3">
+                    <div class="widget-icon bg-yellow">
+                        <i class="icon icon-bookmark-2-2"></i>
+                    </div>
+                    <div class="widget-text">
+                        <h3 class="title">Communication</h3>
+                        <p>
+                            Protected communication with peers and decentralized applications.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5 col-sm-6 mt-lg--100 mt--60">
+                <div class="feature-widget--3">
+                    <div class="widget-icon bg-blue">
+                        <i class="icon icon-infinite"></i>
+                    </div>
+                    <div class="widget-text">
+                        <h3 class="title">Single Sign On</h3>
+                        <p>
+                            Easy of authentication using across Sonr compatible sites and services.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+  </div>
+</div>
+<!-- Content section 1 -->
+
+<!-- Content section 2 -->
+
+<!-- Content section 3 -->
+
+<!-- FAQ section -->
+<div class="omga-03__faq-section section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-7 col-lg-8 col-md-9">
+                <div class="section-title text-center">
+                    <h2 class="title">
+                        Frequently<br class="d-none d-sm-block" /> Asked Questions
+                    </h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mt--50">
+                <div class="single-faq">
+                    <h3 class="title">What is Sonr?</h3>
+                    <p>
+                        Sonr is an ecosystem of decentralized peer-to-peer applications built on top of an identity-based blockchain, which leverages the
+                        <a href="https://cosmos.network/"> Cosmos infrastructure</a>. The ecosystem includes tools to empower developers to build decentralized applications.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-6 mt--50">
+                <div class="single-faq">
+                    <h3 class="title">How can I get involved?</h3>
+                    <p>
+                        If you’re a developer, check out
+                        <a href="http://sonr.dev ">sonr.dev </a>for information on our available tools, grant programs, hackathons, and bounty opportunity. You can also join our
+                        <a href="https://discord.com/invite/tjWMfvQZ7b">Discord</a> and follow us on
+                        <a href="https://twitter.com/sonr_io"> Twitter</a>.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-6 mt--50">
+                <div class="single-faq">
+                    <h3 class="title">Why should I care?</h3>
+                    <p>
+                        Our interactions and experiences in the newly evolving internet paradigm will be governed by decentralized mechanisms. Sonr equips users for this by putting identity at the core of the ecosystem.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-6 mt--50">
+                <div class="single-faq">
+                    <h3 class="title">What is in the team’s upcoming roadmap?</h3>
+                    <p>
+                        We aim to have our mainnet launched and TGE by July. In parallel the team will build out additional developer tools and work with external developers to build decentralized applications in the ecosystem.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-12">
+                <div class="faq-link">
+                    <p>
+                        Didn’t find your answer?
+                        <a href="mailto:team@sonr.io">Contact us here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- CTA section -->
+<div class="omga-03__cta-section bg-black-2">
+    <div class="cta-shape cta-shape-1">
+        <img src="./image/png/cta-border-shape.png" alt="" />
+    </div>
+    <div class="cta-shape cta-shape-2">
+        <img src="./image/png/cta-shape.png" alt="" />
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9 col-md-8">
+                <div class="section-title cta-text">
+                    <h2 class="title">
+                        Save tons of time. <br class="d-none d-sm-block" /> Get new landing page.
+                    </h2>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 d-flex align-items-center justify-content-lg-end mt--25 mt-md--0">
+                <div class="cta-btn">
+                    <a href="" class="btn--primary hvr-bounce-to-left">Get Beta Access</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Footer section -->
+      <div class="footer-section footer-3">
+        <div class="container">
+          <div class="footer-top">
+            <div class="row justify-content-center">
+              <div class="col-lg-2 col-md-4 mb--30 text-lg-left text-center">
+                <div class="pr-lg--50">
+                  <div class="footer-logo">
+                    <img src="./image/png/logo-white.png" alt="" />
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 text-center mb--30">
+                <ul class="footer-list list-inline">
+                  <li><a href="">Support</a></li>
+                    <li><a href="">Privacy Policy</a></li>
+                    <li><a href="">Terms and Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 text-center text-lg-right mb--30">
+                    <p class="copyright-text">
+                        &copy; 2022 SONR, All Rights Reserved
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Vendor Scripts -->
+<script src="plugins/jquery/jquery.min.js"></script>
+<script src="plugins/jquery/jquery-migrate.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Plugin's Scripts -->
+<script src="plugins/fancybox/jquery.fancybox.min.js"></script>
+<script src="plugins/nice-select/jquery.nice-select.min.js"></script>
+<script src="plugins/aos/aos.min.js"></script>
+<script src="plugins/slick/slick.min.js"></script>
+<!-- Activation Script -->
+<script src="js/custom.js"></script>
+
+{{end}}

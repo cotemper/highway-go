@@ -109,7 +109,6 @@ web_modules/
 out
 
 # Distribution Builds
-dist
 buf.lock
 
 # vuepress build output
@@ -186,7 +185,6 @@ env_gen.txt
 .pub-cache/
 .pub/
 build/
-dist/
 **/gc_keys.json
 # Android related
 **/android/**/gradle-wrapper.jar
@@ -241,5 +239,3 @@ dist/
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 node_modules
-
-dist/

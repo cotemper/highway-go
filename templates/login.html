@@ -1,0 +1,70 @@
+{{define "content"}}
+<div class="hero section">
+    <div class="container">
+        <div class="row pt-20">
+            <div class="main-content col-md-12 pt-10">
+                <div class="row">
+                    <div class="hero-left order-2 col-lg-6 order-lg-1">
+                        <h2 class="text-4xl font-semibold">Welcome To The New Internet</h2>
+                        <span id="timer" class="text-3xl font-light"></span>
+                        <h5 class="text-3xl font-light">Secure your .snr/ name here</h5>
+                        <div class="pt-2 hero-form">
+                            <div class="form-group">
+                                <input type="email" class="form-control form-control-lg" id="input-email" placeholder="Enter your preferred name, followed by .snr/">
+                            </div>
+                            <div class="input-group mb-3">
+                                <button onclick="makeCredential()" id="register-button" class="btn btn-lg btn-primary">
+                                    Register
+                                </button>
+                            </div>
+                            <div class="input-group">
+                                <div id="alert">
+                                    <img class="warning-icon" src="/dist/images/warning.svg" />
+                                    <span id="alert-msg"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-right order-1 col-lg-6 order-lg-2 items-center">
+                        <img role="presentation" class="main" alt="" src="/dist/images/Logomark.png">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    (function countdown() {
+        // Set the date we're counting down to
+        var countDownDate = new Date('Mar 17, 2022 15:00:00').getTime();
+
+        // Update the count down every 1 second
+        var x = setInterval(function() {
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor(
+                (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+            );
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            document.getElementById(
+                'timer'
+            ).innerHTML = `Going live in ${hours}h ${minutes}m ${seconds}s!`;
+
+            // If the count down is finished, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById('timer').innerHTML = 'WE ARE LIVE';
+            }
+        }, 1000);
+    })();
+</script>
+{{end}}

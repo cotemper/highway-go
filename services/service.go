@@ -1,328 +1,226 @@
 package service
 
-import (
-	"crypto/rand"
-	"encoding/hex"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"time"
+// import (
+// 	"encoding/json"
+// 	"errors"
+// 	"io/ioutil"
+// 	"net/http"
+// 	"time"
 
-	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
-	"github.com/kataras/golog"
-	"github.com/koesie10/webauthn/webauthn"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
-	controller "github.com/sonr-io/highway-go/controllers"
-	db "github.com/sonr-io/highway-go/database"
-	rt "go.buf.build/grpc/go/sonr-io/sonr/registry"
-)
+// 	"github.com/gorilla/mux"
+// 	"github.com/kataras/golog"
+// 	"github.com/rs/zerolog"
+// 	"github.com/rs/zerolog/log"
+// 	controller "github.com/sonr-io/webauthn.io/controllers"
+// 	db "github.com/sonr-io/webauthn.io/database"
+// 	rt "go.buf.build/grpc/go/sonr-io/sonr/registry"
+// )
 
-// TODO expand with some kind of middleware later
-func AddHandlers(r *mux.Router, ctrl *controller.Controller) {
-	// hello handler
-	r.HandleFunc("/health", HealthHandler(ctrl)).Methods("GET").Schemes("http")
+// // TODO expand with some kind of middleware later
+// func AddHandlers(r *mux.Router, ctrl *controller.Controller) {
+// 	// hello handler
+// 	r.HandleFunc("/health", HealthHandler(ctrl)).Methods("GET").Schemes("http")
 
-	// JWT handler - DEPRECATED
-	// params:
-	// token - encoded jwt
-	// siganture - signature to attach to DID
-	r.HandleFunc("/jwt/generate/{did}", GenerateJWT(ctrl)).Methods("POST").Schemes("http")
+// 	// JWT handler
+// 	// params:
+// 	// token - encoded jwt
+// 	// siganture - signature to attach to DID
+// 	r.HandleFunc("/generate", GenerateJWT(ctrl)).Methods("POST").Schemes("http")
 
-	// Start a new account registeration
-	r.HandleFunc("/auth/register/begin/{signature}", AuthRegisterBegin(ctrl)).Methods("POST").Schemes("http")
+// 	// check name
+// 	r.HandleFunc("/check/name/{name}", CheckName(ctrl)).Methods("GET").Schemes("http")
 
-	// Finish an account registeration
-	r.HandleFunc("/auth/register/finish/{signature}", AuthRegisterFinish(ctrl)).Methods("POST").Schemes("http")
+// 	// record registered name
+// 	r.HandleFunc("/record/name/{did}", RecordName(ctrl)).Methods("POST").Schemes("http")
 
-	// check name
-	r.HandleFunc("/check/name/{name}", CheckName(ctrl)).Methods("GET").Schemes("http")
+// 	// Register a name
+// 	r.HandleFunc("/register/name/{did}", RegisterName(ctrl)).Methods("POST").Schemes("http")
+// }
 
-	// record registered name
-	r.HandleFunc("/record/name/{did}", RecordName(ctrl)).Methods("POST").Schemes("http")
+// // Error Definitions //TODO this has been used twice, move it a layer back and call it instead
+// var (
+// 	logger                 = golog.Default.Child("grpc/highway")
+// 	ErrEmptyQueue          = errors.New("no items in Transfer Queue")
+// 	ErrInvalidQuery        = errors.New("no SName or PeerID provided")
+// 	ErrMissingParam        = errors.New("paramater is missing")
+// 	ErrProtocolsNotSet     = errors.New("node Protocol has not been initialized")
+// 	ErrMethodUnimplemented = errors.New("method is not implemented")
+// )
 
-	// Register a name
-	r.HandleFunc("/register/name/{did}", RegisterName(ctrl)).Methods("POST").Schemes("http")
-}
+// // Hello Handler
+// func HealthHandler(ctrl *controller.Controller) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, req *http.Request) {
+// 		// A very simple health check.
+// 		w.WriteHeader(http.StatusOK)
+// 		w.Header().Set("Content-Type", "application/json")
+// 	}
+// }
 
-// Error Definitions //TODO this has been used twice, move it a layer back and call it instead
-var (
-	logger                 = golog.Default.Child("grpc/highway")
-	ErrEmptyQueue          = errors.New("no items in Transfer Queue")
-	ErrInvalidQuery        = errors.New("no SName or PeerID provided")
-	ErrMissingParam        = errors.New("paramater is missing")
-	ErrProtocolsNotSet     = errors.New("node Protocol has not been initialized")
-	ErrMethodUnimplemented = errors.New("method is not implemented")
-)
+// //signature is based on face or finger ID
+// // GenerateJWT generates a JWT for the given SName and PeerID.
+// func GenerateJWT(ctrl *controller.Controller) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, req *http.Request) {
+// 		ctx := req.Context()
+// 		keys, ok := req.URL.Query()["token"]
+// 		if !ok || len(keys[0]) < 1 {
+// 			logger.Warn("Url Param 'token' is missing")
+// 			return
+// 		}
+// 		token := keys[0]
 
-// Hello Handler
-func HealthHandler(ctrl *controller.Controller) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		// A very simple health check.
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
-	}
-}
+// 		keys, ok = req.URL.Query()["signature"]
+// 		if !ok || len(keys[0]) < 1 {
+// 			logger.Warn("Url Param 'signature' is missing")
+// 			return
+// 		}
+// 		signature := keys[0]
 
-//signature is based on face or finger ID
-// GenerateJWT generates a JWT for the given SName and PeerID.
-func GenerateJWT(ctrl *controller.Controller) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		ctx := req.Context()
-		keys, ok := req.URL.Query()["token"]
-		if !ok || len(keys[0]) < 1 {
-			logger.Warn("Url Param 'token' is missing")
-			return
-		}
-		token := keys[0]
+// 		// call ctrl
+// 		result, err := ctrl.GenerateDid(ctx, signature, token)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		}
 
-		keys, ok = req.URL.Query()["signature"]
-		if !ok || len(keys[0]) < 1 {
-			logger.Warn("Url Param 'signature' is missing")
-			return
-		}
-		signature := keys[0]
+// 		//w.Header().Set("Content-Type", "application/json")
+// 		w.Write(result)
+// 	}
+// }
 
-		// call ctrl
-		result, err := ctrl.GenerateDid(ctx, signature, token)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+// type Response struct {
+// 	Available bool
+// }
 
-		//w.Header().Set("Content-Type", "application/json")
-		w.Write(result)
-	}
-}
+// func CheckName(ctrl *controller.Controller) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, req *http.Request) {
+// 		ctx := req.Context()
 
-var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+// 		vars := mux.Vars(req)
+// 		name := vars["name"]
+// 		var err error
 
-func AuthRegisterBegin(ctrl *controller.Controller) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		ctx := req.Context()
-		vars := mux.Vars(req)
-		signature, ok := vars["signature"]
-		if !ok {
-			jsonResponse(w, fmt.Errorf("must supply a valid signature from face or touch ID"), http.StatusBadRequest)
-			return
-		}
+// 		//TODO add error checking for bad values
 
-		did := "did:sonr:" + signature
-		user := ctrl.FindDid(ctx, did)
-		// user doesn't exist, create new user
-		if user.Did == "" {
-			displayName, err := randToken(12)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-			}
-			user = ctrl.NewUser(ctx, did, displayName)
-		}
+// 		start := time.Now()
+// 		e := log.Info()
+// 		defer func(e *zerolog.Event, start time.Time) {
+// 			if err != nil {
+// 				e = log.Error().Stack().Err(err)
+// 			}
+// 			e.Str("handler", "CheckName").AnErr("context", ctx.Err()).Str("name", name).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
+// 		}(e, start)
 
-		// registerOptions := func(credCreationOpts *protocol.PublicKeyCredentialCreationOptions) {
-		// 	credCreationOpts.CredentialExcludeList = user.CredentialExcludeList()
-		// }
+// 		nameAvailable, err := ctrl.CheckName(ctx, name)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
+// 			return
+// 		}
 
-		// Get a session. We're ignoring the error resulted from decoding an
-		// existing session: Get() always returns a session, even if empty.
-		sess, _ := store.Get(req, signature)
+// 		//format response
+// 		responseObj := Response{Available: nameAvailable}
+// 		js, err := json.Marshal(responseObj)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
+// 			return
+// 		}
 
-		// generate PublicKeyCredentialCreationOptions, session data
-		ctrl.WebAuth.StartRegistration(req, w, user, webauthn.WrapMap(sess.Values))
+// 		w.Header().Set("Content-Type", "application/json")
+// 		w.Write(js)
 
-		// store session data as marshaled JSON
-		err := sess.Save(req, w)
-		if err != nil {
-			jsonResponse(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	}
-}
+// 	}
+// }
 
-func AuthRegisterFinish(ctrl *controller.Controller) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		ctx := req.Context()
-		vars := mux.Vars(req)
-		signature := vars["signature"]
+// func RecordName(ctrl *controller.Controller) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, req *http.Request) {
+// 		ctx := req.Context()
+// 		var err error
 
-		// get user
-		did := "did:sonr:" + signature
-		user := ctrl.FindDid(ctx, did)
-		// user doesn't exist
-		if user.Did == "" {
-			jsonResponse(w, fmt.Errorf("must supply a valid signature for account"), http.StatusBadRequest)
-			return
-		}
+// 		vars := mux.Vars(req)
+// 		did := vars["did"]
 
-		// load the session data
-		sess, err := store.Get(req, signature)
-		if err != nil {
-			jsonResponse(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+// 		start := time.Now()
+// 		e := log.Info()
+// 		defer func(e *zerolog.Event, start time.Time) {
+// 			if err != nil {
+// 				e = log.Error().Stack().Err(err)
+// 			}
+// 			e.Str("handler", "RecordName").AnErr("context", ctx.Err()).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
+// 		}(e, start)
 
-		ctrl.WebAuth.FinishRegistration(req, w, user, sess)
-	}
-}
+// 		body, err := ioutil.ReadAll(req.Body)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusBadRequest)
+// 		}
+// 		log.Debug().Str("handler", "recordName").Bytes("request_body", body).Send()
 
-type Response struct {
-	Available bool
-}
+// 		var recObj db.RecordNameObj
+// 		err = json.Unmarshal(body, &recObj)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusBadRequest)
+// 		}
 
-func CheckName(ctrl *controller.Controller) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		ctx := req.Context()
+// 		available, err := ctrl.CheckName(ctx, recObj.Name)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		}
 
-		vars := mux.Vars(req)
-		name := vars["name"]
-		var err error
+// 		if !available {
+// 			http.Error(w, err.Error(), http.StatusBadRequest)
+// 			return
+// 		}
 
-		//TODO add error checking for bad values
+// 		err = ctrl.InsertRecord(ctx, recObj, did)
 
-		start := time.Now()
-		e := log.Info()
-		defer func(e *zerolog.Event, start time.Time) {
-			if err != nil {
-				e = log.Error().Stack().Err(err)
-			}
-			e.Str("handler", "CheckName").AnErr("context", ctx.Err()).Str("name", name).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
-		}(e, start)
+// 		if err != nil {
+// 			w.WriteHeader(http.StatusExpectationFailed)
+// 			return
+// 		}
+// 		w.WriteHeader(http.StatusOK)
+// 	}
+// }
 
-		nameAvailable, err := ctrl.CheckName(ctx, name)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+// func RegisterName(ctrl *controller.Controller) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, req *http.Request) {
+// 		//var body *rt.MsgRegisterName
+// 		ctx := req.Context()
+// 		var err error
 
-		//format response
-		responseObj := Response{Available: nameAvailable}
-		js, err := json.Marshal(responseObj)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+// 		vars := mux.Vars(req)
+// 		did := vars["did"]
 
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
+// 		start := time.Now()
+// 		e := log.Info()
+// 		defer func(e *zerolog.Event, start time.Time) {
+// 			if err != nil {
+// 				e = log.Error().Stack().Err(err)
+// 			}
+// 			e.Str("handler", "RegisterName").AnErr("context", ctx.Err()).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
+// 		}(e, start)
 
-	}
-}
+// 		body, err := ioutil.ReadAll(req.Body)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusBadRequest)
+// 		}
+// 		log.Debug().Str("handler", "RegisterName").Bytes("request_body", body).Send()
 
-func RecordName(ctrl *controller.Controller) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		ctx := req.Context()
-		var err error
+// 		var recObj *rt.MsgRegisterName
+// 		err = json.Unmarshal(body, &recObj)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusBadRequest)
+// 		}
 
-		vars := mux.Vars(req)
-		did := vars["did"]
+// 		resp, err := ctrl.RegisterName(ctx, recObj, did)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		}
 
-		start := time.Now()
-		e := log.Info()
-		defer func(e *zerolog.Event, start time.Time) {
-			if err != nil {
-				e = log.Error().Stack().Err(err)
-			}
-			e.Str("handler", "RecordName").AnErr("context", ctx.Err()).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
-		}(e, start)
+// 		//format response
+// 		js, err := json.Marshal(resp)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
+// 			return
+// 		}
 
-		body, err := ioutil.ReadAll(req.Body)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-		log.Debug().Str("handler", "recordName").Bytes("request_body", body).Send()
-
-		var recObj db.RecordNameObj
-		err = json.Unmarshal(body, &recObj)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-
-		available, err := ctrl.CheckName(ctx, recObj.Name)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-
-		if !available {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		err = ctrl.InsertRecord(ctx, recObj, did)
-
-		if err != nil {
-			w.WriteHeader(http.StatusExpectationFailed)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-	}
-}
-
-func RegisterName(ctrl *controller.Controller) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		//var body *rt.MsgRegisterName
-		ctx := req.Context()
-		var err error
-
-		vars := mux.Vars(req)
-		did := vars["did"]
-
-		start := time.Now()
-		e := log.Info()
-		defer func(e *zerolog.Event, start time.Time) {
-			if err != nil {
-				e = log.Error().Stack().Err(err)
-			}
-			e.Str("handler", "RegisterName").AnErr("context", ctx.Err()).Int64("resp_time", time.Now().Sub(start).Milliseconds()).Send()
-		}(e, start)
-
-		body, err := ioutil.ReadAll(req.Body)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-		log.Debug().Str("handler", "RegisterName").Bytes("request_body", body).Send()
-
-		var recObj *rt.MsgRegisterName
-		err = json.Unmarshal(body, &recObj)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-
-		resp, err := ctrl.RegisterName(ctx, recObj, did)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-
-		//format response
-		js, err := json.Marshal(resp)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
-}
-
-// from: https://github.com/duo-labs/webauthn.io/blob/3f03b482d21476f6b9fb82b2bf1458ff61a61d41/server/response.go#L15
-// TODO switch all repsonses like this
-func jsonResponse(w http.ResponseWriter, d interface{}, c int) {
-	dj, err := json.Marshal(d)
-	if err != nil {
-		http.Error(w, "Error creating JSON response", http.StatusInternalServerError)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(c)
-	fmt.Fprintf(w, "%s", dj)
-}
-
-// randToken generates a random hex value.
-func randToken(n int) (string, error) {
-	bytes := make([]byte, n)
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(bytes), nil
-}
+// 		w.Header().Set("Content-Type", "application/json")
+// 		w.Write(js)
+// 	}
+// }

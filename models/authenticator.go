@@ -1,37 +1,14 @@
 package models
 
-import "github.com/koesie10/webauthn/webauthn"
+import (
+	"github.com/duo-labs/webauthn/webauthn"
+	"github.com/jinzhu/gorm"
+)
 
+// Authenticator is a struct representing a WebAuthn authenticator, which is
+// responsible for generating Credentials. For this demo, we map a single
+// credential to a single authenticator.
 type Authenticator struct {
-	webAuthID           []byte
-	webAuthCredentialID []byte
-	webAuthPublicKey    []byte
-	webAuthAAGUID       []byte
-	webAuthSignCount    uint32
-}
-
-func NewWebAuth(authenticator webauthn.Authenticator) Authenticator {
-	return Authenticator{
-		webAuthID:           authenticator.WebAuthID(),
-		webAuthCredentialID: authenticator.WebAuthCredentialID(),
-		webAuthPublicKey:    authenticator.WebAuthPublicKey(),
-		webAuthAAGUID:       authenticator.WebAuthAAGUID(),
-		webAuthSignCount:    authenticator.WebAuthSignCount(),
-	}
-}
-
-func (auth *Authenticator) WebAuthID() []byte {
-	return auth.webAuthID
-}
-func (auth *Authenticator) WebAuthCredentialID() []byte {
-	return auth.webAuthCredentialID
-}
-func (auth *Authenticator) WebAuthPublicKey() []byte {
-	return auth.webAuthPublicKey
-}
-func (auth *Authenticator) WebAuthAAGUID() []byte {
-	return auth.webAuthAAGUID
-}
-func (auth *Authenticator) WebAuthSignCount() uint32 {
-	return auth.webAuthSignCount
+	gorm.Model
+	webauthn.Authenticator
 }
