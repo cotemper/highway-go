@@ -8,10 +8,10 @@ import (
 
 	"github.com/kataras/jwt"
 	"github.com/koesie10/webauthn/webauthn"
-	"github.com/sonr-io/highway-go/config"
-	db "github.com/sonr-io/highway-go/database"
-	"github.com/sonr-io/highway-go/models"
 	"github.com/sonr-io/sonr/x/registry/types"
+	"github.com/sonr-io/webauthn.io/config"
+	db "github.com/sonr-io/webauthn.io/database"
+	"github.com/sonr-io/webauthn.io/models"
 	rt "go.buf.build/grpc/go/sonr-io/sonr/registry"
 )
 

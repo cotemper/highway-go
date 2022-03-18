@@ -39,20 +39,4 @@ type HighwayStub struct {
 type Jwt struct {
 	Snr        string `json:"snr"`
 	EthAddress string `json: "ethAddress"`
-<<<<<<< HEAD
-
-	// publickey.challenge.userID
-	// user: {
-	//         id: Uint8Array.from(
-	//             "UZSL85T9AFC", c => c.charCodeAt(0)),
-	//         name: "lee@webauthn.guide",
-	//         displayName: "Lee",
-	//     },
-	//     pubKeyCredParams: [{alg: -7, type: "public-key"}],
-	//     authenticatorSelection: {
-	//         authenticatorAttachment: "cross-platform",
-	//     },
-
-=======
->>>>>>> 9ce0b9c53cf9b63af806fcb90bd2962ecbb0245d
 }
