@@ -116,6 +116,7 @@ type SonrConfig struct {
 	RelyingParty string `json:"relying_party"`
 	RPOrigin     string `json:"rp_origin"`
 	RPPort       string `json:"rp_port"`
+	StripeKey    string `json:"stripe_key"`
 }
 
 func (sc *SonrConfig) Save() (*SonrConfig, error) {

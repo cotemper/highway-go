@@ -12,6 +12,8 @@ import (
 	"github.com/sonr-io/webauthn.io/config"
 	db "github.com/sonr-io/webauthn.io/database"
 	"github.com/sonr-io/webauthn.io/models"
+	"github.com/stripe/stripe-go/v72"
+	"github.com/stripe/stripe-go/v72/paymentintent"
 	rt "go.buf.build/grpc/go/sonr-io/sonr/registry"
 )
 
@@ -20,6 +22,7 @@ type Controller struct {
 	client      *db.MongoClient
 	privateKey  string
 	devAccount  string
+	stripeKey   string
 	highwayStub *models.HighwayStub
 }
 
@@ -29,6 +32,7 @@ func New(mongoClient *db.MongoClient, cnfg *config.SonrConfig, stub *models.High
 		privateKey:  cnfg.SecretKey,
 		devAccount:  cnfg.DevAccount,
 		highwayStub: stub,
+		stripeKey:   cnfg.StripeKey,
 	}, nil
 }
 
@@ -110,6 +114,28 @@ func (ctrl *Controller) GiveUserCred(username string, cred *models.Credential) e
 // func (ctrl *Controller) AddCreds(ctx context.Context, user webauthn.User, authenticator webauthn.Authenticator) error {
 // 	return ctrl.client.AddAuthenticator(user, authenticator)
 // }
+
+func (ctrl *Controller) StripeIntent(item models.SnrItem) (*stripe.PaymentIntent, error) {
+	stripe.Key = ctrl.stripeKey
+
+	// Create a PaymentIntent with amount and currency
+	params := &stripe.PaymentIntentParams{
+		Amount:   stripe.Int64(calculateOrderAmount(item)),
+		Currency: stripe.String(string(stripe.CurrencyUSD)),
+		AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
+			Enabled: stripe.Bool(true),
+		},
+	}
+
+	return paymentintent.New(params)
+}
+
+func calculateOrderAmount(item models.SnrItem) int64 {
+	// Replace this constant with a calculation of the order's amount
+	// Calculate the order total on the server to prevent
+	// people from directly manipulating the amount on the client
+	return 50
+}
 
 func (ctrl *Controller) GenerateDid(ctx context.Context, signature string, token string) ([]byte, error) {
 	verifiedToken, err := jwt.Verify(jwt.HS256, []byte(signature), []byte(token))

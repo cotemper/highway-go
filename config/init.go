@@ -116,6 +116,7 @@ func Load() (*SonrConfig, error) {
 		RelyingParty:        viper.GetString("RELYING_PARTY"),
 		RPOrigin:            viper.GetString("RP_ORIGIN"),
 		RPPort:              viper.GetString("RP_PORT"),
+		StripeKey:           viper.GetString("STRIPE_KEY"),
 		LibP2PLowWater:      viper.GetInt("libp2p.lowWater"),
 		LibP2PHighWater:     viper.GetInt("libp2p.highWater"),
 		LibP2PRendevouz:     viper.GetString("libp2p.rendevouz"),

@@ -94,6 +94,7 @@ func (ws *Server) registerRoutes() {
 	router.HandleFunc("/assertion", ws.MakeAssertion).Methods("POST")
 	router.HandleFunc("/user/{name}/exists", ws.UserExists).Methods("GET")
 	router.HandleFunc("/user/{name}/credentials", ws.GetCredentials).Methods("GET")
+	router.HandleFunc("/create/payment/intent", ws.CreatePaymentIntent).Methods("POST")
 
 	//helper handlers
 	router.HandleFunc("/check/name/{name}", ws.CheckName).Methods("GET")
