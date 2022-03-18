@@ -55,8 +55,12 @@ var state = {
 
 function setUser() {
     username = $("#input-email").val();
+    console.log(username);
     state.user.name = username.toLowerCase().replace(/\s/g, '');
     state.user.displayName = username.toLowerCase();
+
+    console.log(state.user.name);
+    console.log(state.user.displayName);
 }
 
 function checkUserExists() {
@@ -118,7 +122,7 @@ function makeCredential() {
                 console.log(newCredential);
                 state.createResponse = newCredential;
                 registerNewCredential(newCredential);
-                window.location = "https://buy.stripe.com/00g7wgbf92oA2088wx";
+                window.location = "/payment";
             })
         });
 }

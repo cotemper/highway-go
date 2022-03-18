@@ -25,6 +25,10 @@ func (ws *Server) Index(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "index.html", templateData)
 }
 
+func (ws *Server) PaymentPage(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "payment.html", nil)
+}
+
 // Login renders the login/registration page.
 func (ws *Server) Login(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "login.html", nil)
