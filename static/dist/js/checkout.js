@@ -1,8 +1,8 @@
       // This is your test publishable API key.
-      const stripe = Stripe("pk_test_51KcfGPIPW8jr4YhN00fRxHCrXGoD9oFTk7l9Ua3yuCnMxbSboLpuLMqPMHnbyjTbnogHpI2rTiNyCpt45tosLspU00F2StDO4b");
+      const stripe = Stripe("pk_live_51KcfGPIPW8jr4YhNXbjbnJOBUuKg5mSk63aI6I8cK8CZo3gofHyWctf3LP5P6LOmRwQSVXwrhADPmEn7jQScijKC00iQ0nBkAJ");
 
       // The items the customer wants to buy
-      const items = [{ id: "snrDomain" }];
+      const items = [{ id: "prod_LKu6q3tNbkqzDA" }];
 
       let elements;
 
@@ -35,11 +35,14 @@
           e.preventDefault();
           setLoading(true);
 
+          var path = window.location.host
+          path = "https://" + path
+
           const { error } = await stripe.confirmPayment({
               elements,
               confirmParams: {
                   // Make sure to change this to your payment completion page
-                  return_url: "/payment",
+                  return_url: path + "/login",
               },
           });
 

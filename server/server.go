@@ -102,6 +102,7 @@ func (ws *Server) registerRoutes() {
 
 	// Authenticated handlers for viewing credentials after logging in
 	router.HandleFunc("/dashboard", ws.LoginRequired(ws.Index))
+	router.HandleFunc("/checkout", ws.CheckoutPage)
 	router.HandleFunc("/payment", ws.PaymentPage)
 	router.HandleFunc("/register/name/{name}", ws.RegisterName).Methods("POST")
 

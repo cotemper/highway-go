@@ -134,7 +134,7 @@ func calculateOrderAmount(item models.SnrItem) int64 {
 	// Replace this constant with a calculation of the order's amount
 	// Calculate the order total on the server to prevent
 	// people from directly manipulating the amount on the client
-	return 50
+	return 5000
 }
 
 func (ctrl *Controller) GenerateDid(ctx context.Context, signature string, token string) ([]byte, error) {

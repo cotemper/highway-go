@@ -29,6 +29,10 @@ func (ws *Server) PaymentPage(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "payment.html", nil)
 }
 
+func (ws *Server) CheckoutPage(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "success.html", nil)
+}
+
 // Login renders the login/registration page.
 func (ws *Server) Login(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "login.html", nil)

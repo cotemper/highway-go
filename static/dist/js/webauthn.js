@@ -58,9 +58,11 @@ function setUser() {
     console.log(username);
     state.user.name = username.toLowerCase().replace(/\s/g, '');
     state.user.displayName = username.toLowerCase();
-
     console.log(state.user.name);
     console.log(state.user.displayName);
+    // Store
+    localStorage.setItem("username", username);
+    // document.cookie(username);
 }
 
 function checkUserExists() {
@@ -68,6 +70,7 @@ function checkUserExists() {
         .done(function(response) {
             return true;
         }).catch(function() {
+            showErrorAlert("Name has been taken.");
             return false;
         });
 }
@@ -85,12 +88,11 @@ function makeCredential() {
     hideErrorAlert();
     console.log("Fetching options for new credential");
     if ($("#input-email").val() === "") {
-        showErrorAlert("Please enter a username");
+        showErrorAlert("Please enter a valid SNR DID.");
         return;
     }
     setUser();
     var credential = null;
-
     var attestation_type = $('#select-attestation').find(':selected').val();
     var authenticator_attachment = $('#select-authenticator').find(':selected').val();
 
@@ -114,12 +116,9 @@ function makeCredential() {
                 }
             }
             console.log("Credential Creation Options");
-            console.log(makeCredentialOptions);
             navigator.credentials.create({
                 publicKey: makeCredentialOptions.publicKey
             }).then(function(newCredential) {
-                console.log("PublicKeyCredential Created");
-                console.log(newCredential);
                 state.createResponse = newCredential;
                 registerNewCredential(newCredential);
                 window.location = "/payment";
@@ -156,9 +155,9 @@ function registerNewCredential(newCredential) {
 
 function addUserErrorMsg(msg) {
     if (msg === "username") {
-        msg = 'Please add username';
+        msg = 'Please correct your SNR name.';
     } else {
-        msg = 'Please add email';
+        msg = 'Please remove .snr/';
     }
     document.getElementById("user-create-error").innerHTML = msg;
 }
@@ -166,7 +165,7 @@ function addUserErrorMsg(msg) {
 function getAssertion() {
     hideErrorAlert();
     if ($("#input-email").val() === "") {
-        showErrorAlert("Please enter a username");
+        showErrorAlert("Please correct your SNR name.");
         return;
     }
     setUser();
