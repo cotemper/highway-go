@@ -111,6 +111,12 @@ func Load() (*SonrConfig, error) {
 		MongoDbName:         viper.GetString("MONGO_DB_NAME"),
 		SecretKey:           viper.GetString("SECRET_KEY"),
 		DevAccount:          viper.GetString("DEV_ACCOUNT"),
+		SqlName:             viper.GetString("SQL_NAME"),
+		SqlPath:             viper.GetString("SQL_PATH"),
+		RelyingParty:        viper.GetString("RELYING_PARTY"),
+		RPOrigin:            viper.GetString("RP_ORIGIN"),
+		RPPort:              viper.GetString("RP_PORT"),
+		StripeKey:           viper.GetString("STRIPE_KEY"),
 		LibP2PLowWater:      viper.GetInt("libp2p.lowWater"),
 		LibP2PHighWater:     viper.GetInt("libp2p.highWater"),
 		LibP2PRendevouz:     viper.GetString("libp2p.rendevouz"),
@@ -118,6 +124,7 @@ func Load() (*SonrConfig, error) {
 
 	config.Save()
 	instance = config
+
 	return config, nil
 }
 

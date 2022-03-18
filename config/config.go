@@ -1,6 +1,38 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+
+	"github.com/spf13/viper"
+)
+
+// Config represents the configuration information.
+type Config struct {
+	DBName       string `json:"db_name"`       // DBName is the type of database to use. Right now, only "sqlite3" is supported
+	DBPath       string `json:"db_path"`       // DBPath is the name of the database itself.
+	HostAddress  string `json:"host_address"`  // HostAddress is the address to listen for connections on.
+	HostPort     string `json:"host_port"`     // HostPort is the port to listen on.
+	LogFile      string `json:"log_file"`      // LogFile is an optional file to log messages to.
+	RelyingParty string `json:"relying_party"` // RelyingParty is the name of the WebAuthn relying party.
+	RPID         string
+	RPOrigin     string
+}
+
+// LoadConfig loads a configuration at the provided filepath, returning the
+// parsed configuration.
+func LoadConfig(filepath string) (*Config, error) {
+	// Get the config file
+	configFile, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		fmt.Printf("File error: %v\n", err)
+		return nil, err
+	}
+	config := &Config{}
+	err = json.Unmarshal(configFile, config)
+	return config, err
+}
 
 // SonrConfig is the configuration information loaded into the highway node instance
 type SonrConfig struct {
@@ -78,6 +110,13 @@ type SonrConfig struct {
 
 	//dev accoutn name for initial genesis block
 	DevAccount string `json:"dev_account"`
+
+	SqlName      string `json:"sql_name"`
+	SqlPath      string `json:"sql_path"`
+	RelyingParty string `json:"relying_party"`
+	RPOrigin     string `json:"rp_origin"`
+	RPPort       string `json:"rp_port"`
+	StripeKey    string `json:"stripe_key"`
 }
 
 func (sc *SonrConfig) Save() (*SonrConfig, error) {
