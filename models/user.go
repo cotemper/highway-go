@@ -24,6 +24,8 @@ type User struct {
 	DisplayName string       `json:"display_name"`
 	Icon        string       `json:"icon,omitempty"`
 	Credentials []Credential `json:"credentials,omitempty"`
+	Paid        bool         `json:"paid"`
+	PiID        string       `json:"piid"`
 }
 
 // WebAuthnID returns the user ID as a byte slice

@@ -11,13 +11,22 @@ import (
 func (ws *Server) CheckName(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 
+	var takenNames = []string{"api", "tx", "app", "arianagrande", "azamsharp", "barrybonds", "barrysanders", "billgates", "britneyspears", "cdixon", "cristiano", "drake", "elon", "eminem", "flotus", "iamsrk", "imap", "index", "jack", "jbbernstein", "jeffbezos", "jimmyfallon", "joynerlucas", "jtimberlake", "justinbieber", "katyperry", "kimkardashian", "kingjames", "ladygaga", "larrypage", "launchhouse", "logic", "mail", "main", "markzuckerburg", "meekmill", "naval", "neymarjr", "oprah", "patrickbetdavid", "pop", "potus", "prad", "rihanna", "root", "satyanadella", "sc", "selenagomez", "sergeibrin", "shakira", "shl", "smartrick", "srbachchan", "stephencurry", "sundarpichai", "taylorswift", "tombrady", "vitalik", "michael", "prad2", "papa", "ikj", "ian", "shadowysupercoder", "ianperez", "perez", "0x0", "zac", "smartrick", "holwerda", "zholwerda", "NFT", "classof.o7", "goat", "nsfw", "nick", "ntindle", "nicktindle", "cloud", "devops", "engineer", "ntt", "grace", "get", "gtindle", "0xDEADBEEF", "static", "d0x", "null", "exposure", "zach", "joshLong145", "beanPole", "undefined", "Peyton", "gopher", "cosmic", "lauren", "sonr", "prad", "letsgobrandon", "snr", "erin", "jamey", "monica", "Space", "timmy", "creaton", "Warriors", "BestButt", "Mfers", "Beast", "mary", "david", "RX", "NT", "0X", "OK", "NO", "SN", "GB", "GT", "IP", "AH", "PT", "JL", "AF", "0F", "0p", "00", "C0", "80"}
 	vars := mux.Vars(req)
-	//The trimmer
 	name := vars["name"]
+	//The trimmer
 	if name[len(name)-4:] == ".snr" {
 		name = name[:len(name)-4]
 	}
 	var err error
+
+	// if reserved
+	for _, x := range takenNames {
+		if x == name {
+			//TODO return error
+			return
+		}
+	}
 
 	// start := time.Now()
 	// e := log.Info()

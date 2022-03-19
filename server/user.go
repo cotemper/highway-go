@@ -30,6 +30,7 @@ func (ws *Server) CreateUser(w http.ResponseWriter, r *http.Request) {
 	u := models.User{
 		Username:    email,
 		DisplayName: username,
+		Paid:        false,
 		Icon:        models.PlaceholderUserIcon,
 	}
 	err = ws.Ctrl.PutUser(&u)

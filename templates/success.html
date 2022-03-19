@@ -1,0 +1,43 @@
+{{define "content"}}
+<main>
+    <div class="h-[100vh] flex flex-col justify-center align-middle text-center">
+        <h1 class="text-[72px] text-blue-500 font-extrabold">
+            Welcome to The New Internet
+            <script>
+                document.write(localStorage.getItem("username"))
+            </script>
+        </h1>
+        <h2 class="text-2xl max-w-2xl font-light mx-auto">
+            You're in. Thank you and congratulations on securing your .snr/ domain name. Check your email for purchase confirmation.
+        </h2>
+        <h3>
+
+            <a href="/" class="hover:text-blue-500 cursor-pointer">
+           
+            Click here to return to Sonr
+          </a>
+        </h3>
+    </div>
+</main>
+<div class="h-[5vh] py-10 bg-gray-100 text-black font-normal align-middle b-0">
+    <div class="float-left ml-10">Sonr Inc, 2022</div>
+    <div class="float-right mr-10 flex flex-row">
+        <a href="https://twitter.com/sonr_io" class="mr-10 hover:underline">
+            Twitter
+          </a>
+        <a href="https://discord.com/invite/tjWMfvQZ7b" class="mr-10 hover:underline">
+          Discord
+        </a>
+        <a href="https://www.instagram.com/sonr.protocol/" class="mr-10 hover:underline">
+          Instagram
+        </a>
+        <a href="https://www.linkedin.com/company/sonr-io/" class="mr-10 hover:underline">
+          LinkedIn
+        </a>
+
+        <a href="mailto:info@sonr.io" class="hover:underline">
+          Contact
+        </a>
+    </div>
+</div>
+{{end}}
