@@ -54,7 +54,7 @@ var state = {
 }
 
 function setUser() {
-    username = $("#input-email").val();
+    username = $("#input-snr-name").val();
     console.log(username);
     state.user.name = username.toLowerCase().replace(/\s/g, '');
     state.user.displayName = username.toLowerCase();
@@ -84,7 +84,7 @@ function getCredentials() {
 function makeCredential() {
     hideErrorAlert();
     console.log("Fetching options for new credential");
-    if ($("#input-email").val() === "") {
+    if ($("#input-snr-name").val() === "") {
         showErrorAlert("Please enter a valid SNR DID.");
         return;
     }
@@ -161,7 +161,7 @@ function addUserErrorMsg(msg) {
 
 function getAssertion() {
     hideErrorAlert();
-    if ($("#input-email").val() === "") {
+    if ($("#input-snr-name").val() === "") {
         showErrorAlert("Please correct your SNR name.");
         return;
     }

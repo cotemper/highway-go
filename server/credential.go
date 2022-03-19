@@ -212,7 +212,8 @@ func (ws *Server) MakeNewCredential(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(did)
 	fmt.Println(regName)
 
-	ws.Ctrl.RegisterName(ctx, regName, did, c)
+	//TODO fix async issue on stripe and no need for cron job
+	//ws.Ctrl.RegisterName(ctx, regName, did, c)
 
 	//store cred under user in mgo
 	ws.Ctrl.GiveUserCred(user.Username, c)

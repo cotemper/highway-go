@@ -1,0 +1,135 @@
+{{define "content"}}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Document</title>
+
+    <link href="/index.css" rel="stylesheet" />
+
+    <!-- Outfit Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind <3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        shades: {
+                            black: '#1b1d23',
+                            white: '#f8f8f9',
+                        },
+                        neutrals: {
+                            0: '#fcfcfd',
+                            100: '#f4f5f6',
+                            200: '#e6e8ec',
+                            300: '#b1b5c3',
+                            400: '#777e90',
+                            500: '#353945',
+                            600: '#23262f',
+                            700: '#1a1a1a',
+                        },
+                        primary: {
+                            green: '#14b69a',
+                            red: '#DE4F41',
+                            pink: '#ff2866',
+                            purple: '#9665fd',
+                            blue: {
+                                light: '#1792ff',
+                                dark: '#046de8',
+                            },
+                        },
+                        secondary: {
+                            purple: '#cdb4db',
+                            yellow: '#ffd166',
+                            tan: '#e4d7cf',
+                            blue: '#4bc9f0',
+                        },
+                    },
+                    fontFamily: {
+                        outfit: 'Outfit',
+                    },
+                },
+            },
+        };
+    </script>
+</head>
+
+<body>
+    <div>
+        <!-- Root Div -->
+        <div class="flex justify-center bg-neutrals-700 root min-h-screen">
+
+            <!-- ========================================= -->
+            <!-- =============== SECTION 1 =============== -->
+            <!-- ========================================= -->
+            <div class="pt-32 pb-16 px-4 flex flex-col justify-between">
+                <h1 class="text-5xl font-bold text-white mb-8">Roadmap</h1>
+                <ol class="relative border-l border-gray-200 dark:border-gray-700">
+                    <li class="mb-10 ml-4">
+                        <div class="absolute w-3 h-3 bg-gray-200 rounded-full -left-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                        <time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">April 19, 2022</time
+                >
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  Application UI code in Tailwind CSS
+                </h3>
+                <p
+                  class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400"
+                >
+                  Get access to over 20+ pages including a dashboard layout,
+                  charts, kanban board, calendar, and pre-order E-commerce &
+                  Marketing pages.
+                </p>
+              </li>
+              <li class="mb-10 ml-4">
+                <div
+                  class="absolute w-3 h-3 bg-gray-200 rounded-full -left-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"
+                ></div>
+                <time
+                  class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500"
+                  >May 24, 2022</time
+                >
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  Marketing UI design in Figma
+                </h3>
+                <p
+                  class="text-base font-normal text-gray-500 dark:text-gray-400"
+                >
+                  All of the pages and components are first designed in Figma
+                  and we keep a parity between the two versions even as we
+                  update the project.
+                </p>
+              </li>
+              <li class="ml-4">
+                <div
+                  class="absolute w-3 h-3 bg-gray-200 rounded-full -left-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"
+                ></div>
+                <time
+                  class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500"
+                  >June 30, 2022</time
+                >
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  E-Commerce UI code in Tailwind CSS
+                </h3>
+                <p
+                  class="text-base font-normal text-gray-500 dark:text-gray-400"
+                >
+                  Get started with dozens of web components and interactive
+                  elements built on top of Tailwind CSS.
+                </p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+{{end}}
