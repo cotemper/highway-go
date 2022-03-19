@@ -32,7 +32,7 @@ func (ws *Server) CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pi, err := ws.Ctrl.StripeIntent(req.Items[0], name)
+	pi, err := ws.Ctrl.StripeIntent(req.Items[0], name, email)
 	log.Printf("pi.New: %v", pi.ClientSecret)
 
 	// fmt.Println(pi.Status)
