@@ -95,7 +95,7 @@ func (ws *Server) StripeWebhook(w http.ResponseWriter, req *http.Request) {
 		}
 		fmt.Println("PaymentIntent was successful!")
 
-		ws.Ctrl.UpdatePayment(paymentIntent.ClientSecret)
+		ws.Ctrl.UpdatePayment(paymentIntent.ID)
 
 	case "payment_method.attached":
 		var paymentMethod stripe.PaymentMethod
