@@ -1,5 +1,5 @@
       // This is your test publishable API key.
-      const stripe = Stripe("pk_live_51KcfGPIPW8jr4YhNXbjbnJOBUuKg5mSk63aI6I8cK8CZo3gofHyWctf3LP5P6LOmRwQSVXwrhADPmEn7jQScijKC00iQ0nBkAJ");
+      const stripe = Stripe("pk_test_51KcfGPIPW8jr4YhN00fRxHCrXGoD9oFTk7l9Ua3yuCnMxbSboLpuLMqPMHnbyjTbnogHpI2rTiNyCpt45tosLspU00F2StDO4b");
 
       // The items the customer wants to buy
       const items = [{ id: "prod_LKu6q3tNbkqzDA" }];
@@ -15,7 +15,7 @@
 
       // Fetches a payment intent and captures the client secret
       async function initialize() {
-          const response = await fetch("/create/payment/intent", {
+          const response = await fetch("/create/payment/intent/" + localStorage.getItem("username"), {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ items }),
@@ -42,9 +42,9 @@
               elements,
               confirmParams: {
                   // Make sure to change this to your payment completion page
-                  return_url: path + "/login",
+                  return_url: path + "/checkout",
               },
-          });
+          })
 
           // This point will only be reached if there is an immediate error when
           // confirming the payment. Otherwise, your customer will be redirected to

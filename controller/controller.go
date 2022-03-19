@@ -130,6 +130,18 @@ func (ctrl *Controller) StripeIntent(item models.SnrItem) (*stripe.PaymentIntent
 	return paymentintent.New(params)
 }
 
+func (ctrl *Controller) AttachIntent(piID string, name string) {
+	ctrl.client.AttachIntent(piID, name)
+}
+
+func (ctrl *Controller) UpdatePayment(piID string) {
+	ctrl.client.SuccessfulPayment(piID)
+}
+
+func (ctrl *Controller) RecordPayment(name string) error {
+	return ctrl.client.RecordPayment(name)
+}
+
 func calculateOrderAmount(item models.SnrItem) int64 {
 	// Replace this constant with a calculation of the order's amount
 	// Calculate the order total on the server to prevent

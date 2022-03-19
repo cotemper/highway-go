@@ -129,3 +129,25 @@ func (db *MongoClient) PutUser(u *models.User) *models.User {
 	collection.FindOneAndUpdate(ctx, bson.M{"id": u.ID}, u).Decode(u)
 	return u
 }
+
+func (db *MongoClient) RecordPayment(name string) error {
+	collection := db.users
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	collection.FindOneAndUpdate(ctx, bson.M{"username": name}, bson.M{"$set": bson.M{"paid": true}})
+	return nil
+}
+
+func (db *MongoClient) AttachIntent(piID string, name string) {
+	collection := db.users
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	collection.FindOneAndUpdate(ctx, bson.M{"username": name}, bson.M{"$set": bson.M{"piid": piID}})
+}
+
+func (db *MongoClient) SuccessfulPayment(piID string) {
+	collection := db.users
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	collection.FindOneAndUpdate(ctx, bson.M{"piid": piID}, bson.M{"$set": bson.M{"paid": true}})
+}
