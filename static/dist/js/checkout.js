@@ -15,7 +15,8 @@
 
       // Fetches a payment intent and captures the client secret
       async function initialize() {
-          const response = await fetch("/create/payment/intent/" + localStorage.getItem("username"), {
+          email = $("#email").val();
+          const response = await fetch("/create/payment/intent/" + localStorage.getItem("username") + "/" + email, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ items }),
