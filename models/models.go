@@ -34,5 +34,5 @@ func BytesToID(buf []byte) uint {
 
 //TODO change stripe model
 type SnrItem struct {
-	ID string `json:"jwt"`
+	ID string `json:"id"`
 }

@@ -1,4 +1,4 @@
-package lost
+package deleteme
 
 // import (
 // 	"context"
@@ -43,7 +43,11 @@ package lost
 // }
 
 // func (ctrl *Controller) InsertRecord(ctx context.Context, recordObj db.RecordNameObj, did string) error {
+<<<<<<< HEAD
 // 	successful := ctrl.client.StoreRecord(recordObj, did)
+=======
+// 	successful := ctrl.client.StoreRecord(recordObj.Name, did)
+>>>>>>> 8167bffc5a35f11080025f490cf2f9f7004550d4
 
 // 	if !successful {
 // 		return errors.New("mongo error in insert record")

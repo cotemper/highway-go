@@ -11,7 +11,7 @@ import (
 )
 
 // defaultTemplates are included every time a template is rendered.
-var defaultTemplates = []string{"./templates/base.html", "./templates/info.html"}
+var defaultTemplates = []string{"./templates/base.html", "./templates/footer.html"}
 
 // JSONResponse attempts to set the status code, c, and marshal the given
 // interface, d, into a response that is written to the given ResponseWriter.

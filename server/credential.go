@@ -40,7 +40,7 @@ func (ws *Server) RequestNewCredential(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//The trimmer
-	if len(username) > 4 || username[len(username)-4:] == ".snr" {
+	if len(username) > 4 && username[len(username)-4:] == ".snr" {
 		username = username[:len(username)-4]
 	}
 	available, err := ws.Ctrl.CheckName(ctx, username)
