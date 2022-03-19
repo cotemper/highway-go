@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/base64"
 	"encoding/binary"
+	"time"
 
 	"github.com/duo-labs/webauthn/webauthn"
 	"github.com/jinzhu/gorm"
@@ -26,6 +27,7 @@ type User struct {
 	Credentials []Credential `json:"credentials,omitempty"`
 	Paid        bool         `json:"paid"`
 	PiID        string       `json:"piid"`
+	Created     time.Time    `json:"created"`
 }
 
 // WebAuthnID returns the user ID as a byte slice
