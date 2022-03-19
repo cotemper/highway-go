@@ -1,204 +1,427 @@
 {{define "content"}}
-<div class="hero section">
-    <div class="container">
-        <div class="row pt-20">
-            <div class="main-content col-md-12 pt-10">
-                <div class="row">
-                    <div class="hero-left order-2 col-lg-6 order-lg-1">
-                        <h2 class="text-4xl font-semibold">Welcome To The New Internet</h2>
-                        <span id="timer" class="text-3xl font-light"></span>
-                        <h5 class="text-3xl font-light">Secure your .snr/ name here</h5>
-                        <div class="pt-2 hero-form">
-                            <div class="form-group">
-                                <input type="email" class="form-control form-control-lg" id="input-email" placeholder="Enter your preferred name, followed by .snr/">
-                            </div>
-                            <div class="input-group mb-3">
-                                <button onclick="makeCredential()" id="register-button" class="btn btn-lg btn-primary">
-                                    Register
-                                </button>
-                            </div>
-                            <div class="input-group">
-                                <div id="alert">
-                                    <img class="warning-icon" src="/dist/images/warning.svg" />
-                                    <span id="alert-msg"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hero-right order-1 col-lg-6 order-lg-2 items-center">
-                        <img role="presentation" class="main" alt="" src="/dist/images/Logomark.png">
-                    </div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Document</title>
+
+    <link href="/index.css" rel="stylesheet" />
+
+    <!-- Outfit Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Validation Function -->
+    <script src="/validate.js"></script>
+
+    <!-- Tailwind <3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        shades: {
+                            black: '#1b1d23',
+                            white: '#f8f8f9',
+                        },
+                        neutrals: {
+                            0: '#fcfcfd',
+                            100: '#f4f5f6',
+                            200: '#e6e8ec',
+                            300: '#b1b5c3',
+                            400: '#777e90',
+                            500: '#353945',
+                            600: '#23262f',
+                            700: '#1a1a1a',
+                        },
+                        primary: {
+                            green: '#14b69a',
+                            red: '#DE4F41',
+                            pink: '#ff2866',
+                            purple: '#9665fd',
+                            blue: {
+                                light: '#1792ff',
+                                dark: '#046de8',
+                            },
+                        },
+                        secondary: {
+                            purple: '#cdb4db',
+                            yellow: '#ffd166',
+                            tan: '#e4d7cf',
+                            blue: '#4bc9f0',
+                        },
+                    },
+                    fontFamily: {
+                        outfit: 'Outfit',
+                    },
+                },
+            },
+        };
+    </script>
+</head>
+
+<body>
+    <!-- Root Div -->
+    <div class="flex justify-center bg-neutrals-700 root">
+        <!-- Container that stops screen from growing too large -->
+        <div class="max-w-screen-xl w-full">
+            <!-- =============================== -->
+            <!-- ========== NAVBAR ============= -->
+            <!-- =============================== -->
+            <!-- <div class="absolute flex sticky top-0 items-center justify-between md:justify-start w-full px-4 py-6">
+                <img src="/static/src/images/White.png" width="100px" height="100px" /> -->
+
+            <!-- Menu Button
+                <svg xmlns="http://www.w3.org/2000/svg" class="flex md:hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 8h16M4 16h16"
+            />
+          </svg> -->
+
+            <!-- Links
+                <ul class="hidden md:flex text-white text-sm space-x-12 ml-12">
+                    <li class="hover:underline decoration-solid text-secondary-purple">
+                        <a href="/index.html">Home</a>
+                    </li>
+                    <li class="hover:underline decoration-solid">
+                        <a href="/domains.html">Domains</a>
+                    </li>
+                    <li class="hover:underline decoration-solid">
+                        <a href="/roadmap.html">Roadmap</a>
+                    </li>
+                    <li class="hover:underline decoration-solid">
+                        <a href="/">Leaderboard</a>
+                    </li>
+                </ul> -->
+
+            <!-- <button class="hidden md:inline bg-primary-red px-4 py-2 rounded-[5px] text-white text-sm ml-auto hover:scale-95 transition-transform">
+            Visit Old Site
+          </button> -->
+            <!--</div>-->
+
+            <!-- ========================================= -->
+            <!-- ========== SECTION 1 - Landing ========== -->
+            <!-- ========================================= -->
+            <div class="py-24 lg:py-48 px-4 flex flex-col md:flex-row justify-between">
+                <div class="mr-24">
+                    <h1 class="text-white text-6xl font-semibold">
+                        The Drivers <br /> License
+                        <br /> for the New <br /> Internet.
+                    </h1>
+                    <br />
+                    <p class="text-gray-400 leading-loose">
+                        Take back your data with the .snr/ domain name <br> totally decentralized. We’re not kidding.
+                    </p>
                 </div>
+
+                <!-- Form -->
+                <form name="registerForm" onsubmit="validateForm()" method="post" action="javascript:makeCredential()" class="flex h-[200px] flex-col p-8 md:w-[600px] bg-white rounded-lg mt-16 lg:mt-0" style="height:240px;">
+                    <input name="input-snr-name" type="text" id="input-snr-name" class="bg-white border px-2 py-4 text-sm rounded-lg" placeholder=".snr/ Name" />
+
+
+                    <!-- <div class="input-group mb-3">
+                    <button onclick="makeCredential()" id="register-button" class="btn btn-lg btn-primary">
+                            Register
+                        </button>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control form-control-lg" id="input-email" placeholder="Enter your preferred name, followed by .snr/">
+                </div> -->
+
+
+                    <!-- 
+              Static label with validation restraints
+              Could be replaced with dynamic errors              
+             -->
+                    <label class="text-sm text-gray-400 font-light px-2">2-20 Characters; No special characters</label
+            >
+            <button
+              type="submit"
+              class="bg-primary-red px-2 py-4 rounded-lg text-white text-sm hover:scale-95 transition-transform mt-4"
+            >
+              Register Name
+            </button>
+          </form>
+        </div>
+
+        <!-- ======================================= -->
+        <!-- ========== SECTION 2 - Video ========== -->
+        <!-- ======================================= -->
+        <div class="py-48 px-4 flex items-center text-center flex-col">
+          <h1 class="text-white text-4xl font-semibold">
+            Decentralized identity (DID)
+          </h1>
+          <p class="text-gray-400 leading-loose">
+            Your .snr/ domain resolves to your decentralized identity <br>
+            in the Sonr ecosystem, allowing you to securely control <br>
+            access to your personal data. Watch this 3 min video by <br>
+            Microsoft to learn more about decentralized identity. <br>
+          </p>
+
+          <iframe
+            class="mt-12 rounded-lg"
+            width="100%"
+            height="400px"
+            src="https://www.youtube.com/embed/Ew-_F-OtDFI"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- ========== SECTION 3 - Key Features ========== -->
+        <!-- ============================================== -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-24 px-16">
+          <div class="flex flex-col items-center text-center">
+            <div
+              class="bg-primary-purple/30 h-16 w-16 rounded-full flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-8 w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#9665fd"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+                />
+              </svg>
             </div>
+
+            <h1 class="font-semibold text-xl text-white mt-4 mb-2">
+                Decentralized
+            </h1>
+            <p class="text-sm text-gray-400">
+                Identity owned by you instead of a central authority.
+            </p>
+          </div>
+
+          <div class="flex flex-col items-center text-center">
+            <div
+              class="bg-primary-red/30 h-16 w-16 rounded-full flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-8 w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#DE4F41"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                />
+              </svg>
+            </div>
+
+            <h1 class="font-semibold text-xl text-white mt-4 mb-2">
+                Cross-chain
+            </h1>
+            <p class="text-sm text-gray-400">
+                Interoperability with blockchains within the Cosmos ecosystem. 
+            </p>
+          </div>
+
+          <div class="flex flex-col items-center text-center">
+            <div
+              class="bg-primary-purple/30 h-16 w-16 rounded-full flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-8 w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#9665fd"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                />
+              </svg>
+            </div>
+
+            <h1 class="font-semibold text-lg text-white mt-4 mb-2">
+                Built-in Resolver
+            </h1>
+            <p class="text-sm text-gray-400">
+                Automatic resolution from .snr/ domain to on-chain decentralized identity.
+            </p>
+          </div>
+
+          <div class="flex flex-col items-center text-center">
+            <div
+              class="bg-primary-red/30 h-16 w-16 rounded-full flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-8 w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#DE4F41"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+                />
+              </svg>
+            </div>
+
+            <h1 class="font-semibold text-xl text-white mt-4 mb-2">
+                Universal
+            </h1>
+            <p class="text-sm text-gray-400">
+                Universally recognized domain for all on-chain identity management.
+            </p>
+          </div>
+
+          <div class="flex flex-col items-center text-center">
+            <div
+              class="bg-secondary-yellow/30 h-16 w-16 rounded-full flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-8 w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#ffd166"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+                />
+              </svg>
+            </div>
+
+            <h1 class="font-semibold text-xl text-white mt-4 mb-2">
+                Communication
+            </h1>
+            <p class="text-sm text-gray-400">
+                Protected communication with peers and decentralized applications.
+            </p>
+          </div>
+
+          <div class="flex flex-col items-center text-center">
+            <div
+              class="bg-primary-purple/30 h-16 w-16 rounded-full flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#9665fd"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+            </div>
+
+            <h1 class="font-semibold text-xl text-white mt-4 mb-2">
+                Single Sign On
+            </h1>
+            <p class="text-sm text-gray-400">
+                Easy of authentication using across Sonr compatible sites and services.
+            </p>
+          </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-7 flex flex-col align-middle text-center pt-20">
-        <h3 class="pb-2 text-6xl font-semibold">What is Sonr?
-            <h3>
-                <p class="font-medium text-xl px-5">
-                    Sonr is an ecosystem of decentralized peer-to-peer applications built on top of an identity-based blockchain, which leverages the
-                    <a href="https://cosmos.network/"> Cosmos infrastructure</a>. The ecosystem includes tools to empower developers to build decentralized applications.
-                </p>
-    </div>
-    <div class="col-lg-5 d-flex justify-content-center mb-5">
-        <img role="presentation" alt="" src="/dist/images/Logomark.png" class="w-1/2 pt-20">
-    </div>
 
+        <!-- ============================================== -->
+        <!-- =============== SECTION 4- Q/A =============== -->
+        <!-- ============================================== -->
+        <div
+          class="py-48 px-4 flex items-center text-center flex-col space-y-4"
+        >
+          <h1 class="text-white text-4xl font-semibold">
+            Frequently <br />
+            Asked Questions
+          </h1>
+          <!-- <p class="text-md text-gray-400 leading-loose">
+            Create custom landing pages with Omega that converts.
+          </p> -->
 
-</div>
-<div class="text-center items-center font-bold text-4xl flex flex-col pt-10">
-    <div class="pb-10">
-        What Are Decentralized Identifiers?
-    </div>
-    <div>
-        <iframe width="1120" height="630" src="https://www.youtube.com/embed/Ew-_F-OtDFI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen className="flex flex-col items-center pr-20"></iframe>
-    </div>
-</div>
-<h3 class="title text-center align-middle text-6xl font-semibold py-20">FAQ</h3>
-</center>
-<div class="flex flex-row">
+          <br />
+          <br />
 
-    <div class="col-lg-6 text-3xl font-light">
-        <h3>What is Sonr?
-            <h3>
-                <p>
-                    Sonr is an ecosystem of decentralized peer-to-peer applications built on top of an identity-based blockchain, which leverages the
-                    <a href="https://cosmos.network/"> Cosmos infrastructure</a>. The ecosystem includes tools to empower developers to build decentralized applications.
-                </p>
-            </h3>
-        </h3>
-    </div>
-    <div class="col-lg-6 text-3xl font-light">
-        <h3>How can I get involved?
-            <h3>
-                <p>
-                    If you’re a developer, check out
-                    <a href="http://sonr.dev ">sonr.dev </a>for information on our available tools, grant programs, hackathons, and bounty opportunity. You can also join our
-                    <a href="https://discord.com/invite/tjWMfvQZ7b">Discord</a> and follow us on
-                    <a href="https://twitter.com/sonr_io"> Twitter</a>.
-                </p>
-            </h3>
-        </h3>
-    </div>
-
-</div>
-<div class="flex flex-row">
-
-    <div class="col-lg-6 text-3xl font-light">
-        <h3>Why should I care?
-            <h3>
-                <p>
-                    Our interactions and experiences in the newly evolving internet paradigm will be governed by decentralized mechanisms. Sonr equips users for this by putting identity at the core of the ecosystem.
-                </p>
-            </h3>
-        </h3>
-    </div>
-    <div class="col-lg-6 text-3xl font-light">
-        <h3>What is in the team’s upcoming roadmap?
-            <h3>
-                <p>
-                    We aim to have our mainnet launched and TGE by July. In parallel the team will build out additional developer tools and work with external developers to build decentralized applications in the ecosystem.
-
-                </p>
-            </h3>
-        </h3>
-    </div>
-
-</div>
-
-
-<div class="flex flex-row">
-    <!-- <style>
-        .container {
-            width: 600px;
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .box {
-            background: rgb(18, 19, 18);
-            width: 100px;
-            height: 100px;
-            margin: 0 15px;
-        }
-
-        h3 {
-            text-align: center;
-            padding-top: 2px;
-            color: blanchedalmond;
-
-        }
-
-        .box h1 {
-            font-size: 50px;
-            text-align: center;
-            font-family: sans-serif;
-            font-weight: 800;
-            margin-bottom: 15px;
-            color: blanchedalmond;
-        }
-
-        .alert {
-            display: none;
-        } -->
-    <!-- </style> -->
-
-    <!-- <div class="container">
-        <div class="box">
-            <h3 id="hourstxt">Hours</h2>
-                <h1 id="hours">00</h1>
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:gap-x-24 gap-y-12 px-4 lg:px-0"
+          >
+            <div class="text-center lg:text-left space-y-6">
+                <h1 class="text-lg text-white font-semibold">
+                    What is Sonr?
+                  </h1>
+                  <p class="text-gray-400">
+                    Sonr is an ecosystem of decentralized peer-to-peer 
+                    applications built on top of an identity-based blockchain, 
+                    which leverages the Cosmos infrastructure. The ecosystem 
+                    includes tools to empower developers to build decentralized applications. 
+                  </p>
+                </div>
+                <div class="text-center lg:text-left space-y-6">
+                  <h1 class="text-lg text-white font-semibold">
+                    How can I get involved?
+                  </h1>
+                  <p class="text-gray-400">
+                    If you’re a developer, check out sonr.dev 
+                    for information on our available tools, grant 
+                    programs, hackathons, and bounty opportunity. 
+                    If you’re a user, secure a Sonr domain. 
+                  </p>
+                </div>
+                <div class="text-center lg:text-left space-y-6">
+                  <h1 class="text-lg text-white font-semibold">
+                    Why should I care?
+                  </h1>
+                  <p class="text-gray-400">
+                    Our interactions and experiences in the newly 
+                    evolving internet paradigm will be governed by 
+                    decentralized mechanisms. Sonr equips users for 
+                    this by putting identity at the core of the ecosystem. 
+                  </p>
+                </div>
+                <div class="text-center lg:text-left space-y-6">
+                  <h1 class="text-lg text-white font-semibold">
+                    What is in the team’s upcoming roadmap?
+                  </h1>
+                  <p class="text-gray-400">
+                    We aim to have our mainnet launched and TGE 
+                    by July. In the months before that the team will 
+                    build out additional developer tools and onboard 
+                    external developers to build decentralized applications 
+                    in the ecosystem. 
+                  </p>
+            </div>
+          </div>
         </div>
-        <div class="box">
-            <h3 id="minutestxt">Minutes</h2>
-                <h1 id="minutes">00</h1>
-        </div>
-        <div class="box">
-            <h3 id="secondstxt">Seconds</h2>
-                <h1 id="seconds">00</h1>
-        </div>
+      </div>
     </div>
-
-    <div style="background: rgb(204, 24, 24);" class="alert">
-        <h1 style="padding: 50px 80px;color: white;">Go Register a .snr/</h1>
-    </div>
-</div>
-<script>
-    const finaleDate = new Date("March 17, 2022 14:30:00").getTime();
-
-    const timer = () => {
-        const now = new Date().getTime();
-        let diff = finaleDate - now;
-        if (diff < 0) {
-            document.querySelector('.alert').style.display = 'block';
-            document.querySelector('.container').style.display = 'none';
-        }
-
-        let days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        let hours = Math.floor(diff % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
-        let minutes = Math.floor(diff % (1000 * 60 * 60) / (1000 * 60));
-        let seconds = Math.floor(diff % (1000 * 60) / 1000);
-
-        days <= 99 ? days = `0${days}` : days;
-        days <= 9 ? days = `00${days}` : days;
-        hours <= 9 ? hours = `0${hours}` : hours;
-        minutes <= 9 ? minutes = `0${minutes}` : minutes;
-        seconds <= 9 ? seconds = `0${seconds}` : seconds;
-
-        document.querySelector('#hours').textContent = hours;
-        document.querySelector('#minutes').textContent = minutes;
-        document.querySelector('#seconds').textContent = seconds;
-
-    }
-    timer();
-    setInterval(timer, 1000);
-
-</script> -->
-
-
+  </body>
+  <footer class="bg-neutrals-700">
     <center>
         <div class="col-lg-12 items-center pb-20">
             <p>
@@ -207,62 +430,6 @@
             </p>
         </div>
     </center>
-
-</div>
-</div>
-<div class="h-[5vh] py-10 bg-gray-100 text-black font-normal align-middle b-0">
-    <div class="float-left ml-10">Sonr Inc, 2022</div>
-    <div class="float-right mr-10 flex flex-row">
-        <a href="https://twitter.com/sonr_io" class="mr-10 hover:underline">
-            Twitter
-          </a>
-        <a href="https://discord.com/invite/tjWMfvQZ7b" class="mr-10 hover:underline">
-          Discord
-        </a>
-        <a href="https://www.instagram.com/sonr.protocol/" class="mr-10 hover:underline">
-          Instagram
-        </a>
-        <a href="https://www.linkedin.com/company/sonr-io/" class="mr-10 hover:underline">
-          LinkedIn
-        </a>
-
-        <a href="mailto:info@sonr.io" class="hover:underline">
-          Contact
-        </a>
-    </div>
-</div>
-<script>
-    (function countdown() {
-        // Set the date we're counting down to
-        var countDownDate = new Date('Mar 17, 2022 15:00:00').getTime();
-
-        // Update the count down every 1 second
-        var x = setInterval(function() {
-            // Get today's date and time
-            var now = new Date().getTime();
-
-            // Find the distance between now and the count down date
-            var distance = countDownDate - now;
-
-            // Time calculations for days, hours, minutes and seconds
-            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            var hours = Math.floor(
-                (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-            );
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Display the result in the element with id="demo"
-            document.getElementById(
-                'timer'
-            ).innerHTML = `Going live in ${hours}h ${minutes}m ${seconds}s!`;
-
-            // If the count down is finished, write some text
-            if (distance < 0) {
-                clearInterval(x);
-                document.getElementById('timer').innerHTML = 'WE ARE LIVE';
-            }
-        }, 1000);
-    })();
-</script>
+</footer>
+</html>
 {{end}}

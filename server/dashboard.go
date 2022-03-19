@@ -29,6 +29,10 @@ func (ws *Server) PaymentPage(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "payment.html", nil)
 }
 
+func (ws *Server) RoadMapPage(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "roadmap.html", nil)
+}
+
 func (ws *Server) CheckoutPage(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "success.html", nil)
 }

@@ -101,13 +101,16 @@ func (ws *Server) registerRoutes() {
 
 	// Authenticated handlers for viewing credentials after logging in
 	router.HandleFunc("/dashboard", ws.LoginRequired(ws.Index))
-	router.HandleFunc("/checkout", ws.CheckoutPage)
-	router.HandleFunc("/payment", ws.PaymentPage)
-	router.HandleFunc("/register/name/{name}", ws.RegisterName).Methods("POST")
+	//router.HandleFunc("/register/name/{name}", ws.RegisterName).Methods("POST")
 
 	//stripe
 	router.HandleFunc("/create/payment/intent/{name}", ws.CreatePaymentIntent).Methods("POST")
 	router.HandleFunc("/stripe/webhook", ws.StripeWebhook).Methods("POST")
+
+	//pages
+	router.HandleFunc("/checkout", ws.CheckoutPage)
+	router.HandleFunc("/payment", ws.PaymentPage)
+	router.HandleFunc("/roadmap", ws.RoadMapPage)
 
 	// Static file serving
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
