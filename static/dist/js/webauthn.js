@@ -58,8 +58,8 @@ function setUser() {
     console.log(username);
     state.user.name = username.toLowerCase().replace(/\s/g, '');
     state.user.displayName = username.toLowerCase();
-    console.log(state.user.name);
-    console.log(state.user.displayName);
+    // console.log(state.user.name);
+    // console.log(state.user.displayName);
     // Store
     localStorage.setItem("username", username);
     // document.cookie(username);
@@ -70,7 +70,6 @@ function checkUserExists() {
         .done(function(response) {
             return true;
         }).catch(function() {
-            showErrorAlert("Name has been taken.");
             return false;
         });
 }
@@ -81,8 +80,6 @@ function getCredentials() {
             console.log(response)
         });
 }
-
-
 
 function makeCredential() {
     hideErrorAlert();
