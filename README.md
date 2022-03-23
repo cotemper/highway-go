@@ -31,10 +31,10 @@ To get a local copy up and running follow these simple steps.
 
   ```shell
   // For Non M1 Systems
-  curl https://sonr.ws/sonr! | sudo bash
+  curl https://sonr.network/sonr! | sudo bash
 
   // For M1 Systems
-  curl https://sonr.ws/sonr | bash # Install
+  curl https://sonr.network/sonr | bash # Install
   sudo mv sonr /usr/local/bin/ # Move to Directory
   ```
 
