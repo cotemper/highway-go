@@ -115,7 +115,7 @@ func (ctrl *Controller) GiveUserCred(username string, cred *models.Credential) e
 // 	return ctrl.client.AddAuthenticator(user, authenticator)
 // }
 
-func (ctrl *Controller) StripeIntent(item models.SnrItem, name string, email string) (*stripe.PaymentIntent, error) {
+func (ctrl *Controller) StripeIntent(item models.SnrItem, name string) (*stripe.PaymentIntent, error) {
 	stripe.Key = ctrl.stripeKey
 
 	desc := "Payment for the .snr/ name " + name
@@ -127,8 +127,7 @@ func (ctrl *Controller) StripeIntent(item models.SnrItem, name string, email str
 		AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
 			Enabled: stripe.Bool(true),
 		},
-		Description:  &desc,
-		ReceiptEmail: &email,
+		Description: &desc,
 	}
 
 	return paymentintent.New(params)

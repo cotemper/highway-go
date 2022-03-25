@@ -104,7 +104,7 @@ func (ws *Server) registerRoutes() {
 	//router.HandleFunc("/register/name/{name}", ws.RegisterName).Methods("POST")
 
 	//stripe
-	router.HandleFunc("/create/payment/intent/{name}/{email}", ws.CreatePaymentIntent).Methods("POST")
+	router.HandleFunc("/create/payment/intent/{name}", ws.CreatePaymentIntent).Methods("POST")
 	router.HandleFunc("/stripe/webhook", ws.StripeWebhook).Methods("POST")
 
 	//pages

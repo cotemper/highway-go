@@ -52,10 +52,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// authConfig, err := config.LoadConfig("config.json")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 
 	authConfig := &config.Config{
 		HostAddress:  highwayConfig.HighwayAddress,
@@ -70,8 +66,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	//get ctrl for highway
 
 	// Create the cosmos listener.
 	l, err := net.Listen(verifyAddress(highwayConfig))
@@ -114,7 +108,6 @@ func main() {
 		//logger.Infof("Starting RPC Service on %s", l.Addr().String())
 	}
 
-	//db
 	DB, err := db.Connect(highwayConfig.MongoUri, highwayConfig.MongoCollectionName, highwayConfig.MongoDbName)
 	if err != nil {
 		logger.Errorf("database connection failed")
@@ -125,12 +118,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// start server
 	server, err := server.NewServer(ctrl, authConfig)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	if err != nil {
 		log.Fatal(err)
 	}

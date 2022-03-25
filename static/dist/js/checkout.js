@@ -1,5 +1,5 @@
       // This is your test publishable API key.
-      const stripe = Stripe("pk_live_51KcfGPIPW8jr4YhNXbjbnJOBUuKg5mSk63aI6I8cK8CZo3gofHyWctf3LP5P6LOmRwQSVXwrhADPmEn7jQScijKC00iQ0nBkAJ");
+      const stripe = Stripe("pk_test_51KcfGPIPW8jr4YhN00fRxHCrXGoD9oFTk7l9Ua3yuCnMxbSboLpuLMqPMHnbyjTbnogHpI2rTiNyCpt45tosLspU00F2StDO4b");
 
       // The items the customer wants to buy
       const items = [{ id: "prod_LKu6q3tNbkqzDA" }];
@@ -16,7 +16,9 @@
       // Fetches a payment intent and captures the client secret
       async function initialize() {
           email = $("#email").val();
-          const response = await fetch("/create/payment/intent/" + localStorage.getItem("username") + "/" + email, {
+          console.log("/create/payment/intent/" + localStorage.getItem("username") + "/" + email)
+          var val = localStorage.getItem("username");
+          const response = await fetch("/create/payment/intent/" + val, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ items }),
